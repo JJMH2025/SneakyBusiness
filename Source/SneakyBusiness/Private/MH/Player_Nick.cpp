@@ -87,6 +87,8 @@ void APlayer_Nick::MoveHorizontal(const FInputActionValue& Value)
 	{
 		AddMovementInput(FVector(MoveValue,0, 0));
 	}
+
+	//좌 우 이동시 플레이어 이동하는 방향으로 회전
 }
 //앞뒤이동
 void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
@@ -105,35 +107,18 @@ void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
 		TargetY = ALoc; // S를 눌렀을 때 앞공간으로 이동
 		bIsMovingDepth = true;
 	}
-	/*
-	float MoveValue= Value.Get<float>();
-	if (MoveValue == 0) return;
-	
-	// 목표 위치 저장
-	float TargetZ = GetActorLocation().Y; // 기본적으로 현재 위치 유지
-
-	if (MoveValue > 0 && GetActorLocation().Y != BLoc)
-	{
-		TargetZ = BLoc; // W를 눌렀을 때 뒤공간으로 이동
-	}
-	else if (MoveValue < 0 && GetActorLocation().Y != ALoc)
-	{
-		TargetZ = ALoc; // S를 눌렀을 때 앞공간으로 이동
-	}
-
-	// 서서히 이동
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetZ, GetWorld()->GetDeltaSeconds(), 5.0f);
-    
-	SetActorLocation(NewLocation);*/
+	//앞,뒤 이동시 플레이어의 앞방향이 키 누른 방향으로 회전하도록
 }
 
 
 void APlayer_Nick::JumpNick()
 {
+	//점프 높이 큐브에 맞추기
 }
 
 void APlayer_Nick::Shoot()
 {
+	//총알 2개 연속 발사 가능.
+	//2발 모두 발사시 총알 하나가 없어져야 새로운 총알 하나 발사가능
 }
 
