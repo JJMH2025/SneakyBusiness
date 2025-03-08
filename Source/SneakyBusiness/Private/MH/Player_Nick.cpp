@@ -114,6 +114,7 @@ void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
 void APlayer_Nick::JumpNick()
 {
 	//점프 높이 큐브에 맞추기
+	//1.
 }
 
 void APlayer_Nick::Shoot()
