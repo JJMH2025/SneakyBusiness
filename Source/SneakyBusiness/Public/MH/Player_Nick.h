@@ -51,8 +51,12 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
 	float BLoc = -100.f;
 	
-	float TargetY; // 목표 이동 위치
+	float TargetYawLot; // 목표 이동 위치
 	bool bIsMovingDepth; // 이동 중인지 확인
+	
+	bool bIsRotating; // 회전 중인지 확인
+	float TargetYaw; // 목표 회전 값
+	float LastHorizontalDirection; // 마지막으로 바라본 좌우 방향 (1: 오른쪽, -1: 왼쪽)
 
 	//공격
 	UFUNCTION()
