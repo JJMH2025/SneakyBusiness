@@ -45,6 +45,9 @@ public:
 	UFUNCTION()
 	void JumpNick();
 
+	//현재 앞,뒤 동간위치 (앞 : true, 뒤: false)
+	bool bIsPlayerLoc = true;
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
 	float ALoc = 0.f;
 	
@@ -54,7 +57,7 @@ public:
 	float TargetYawLot; // 목표 이동 위치
 	bool bIsMovingDepth; // 이동 중인지 확인
 	
-	bool bIsRotating; // 회전 중인지 확인
+	bool bIsRotating; // 이동 중이며 회전 중인지 확인
 	float TargetYaw; // 목표 회전 값
 	float LastHorizontalDirection; // 마지막으로 바라본 좌우 방향 (1: 오른쪽, -1: 왼쪽)
 

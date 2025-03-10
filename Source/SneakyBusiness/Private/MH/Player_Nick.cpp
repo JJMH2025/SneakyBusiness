@@ -34,6 +34,8 @@ APlayer_Nick::APlayer_Nick()
 
 	TargetYaw = 0.0f;
 	LastHorizontalDirection = 1.0f; // 기본적으로 오른쪽을 바라보도록 설정
+	//시작할 때엔 항상 플레이어 위치 앞공간.
+	bIsPlayerLoc = true;
 }
 
 // Called when the game starts or when spawned
@@ -63,48 +65,72 @@ void APlayer_Nick::Tick(float DeltaTime)
 	if (bIsMovingDepth)
 	{
 		FVector NewLocation = GetActorLocation();
-		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 5.0f);
+		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 7.0f);
 		SetActorLocation(NewLocation);
+		bIsRotating = true;
 
-		// 목표 위치에 도달하면 멈추기
-		if (FMath::Abs(NewLocation.Y - TargetYawLot) < 1.0f)
+		if (FMath::Abs(NewLocation.Y - TargetYawLot) < 2.0f)
 		{
 			NewLocation.Y = TargetYawLot; // 정확히 목표 위치로 설정
 			bIsMovingDepth = false; // 이동 중 상태 종료
+
+			//플레이어 현재 위치가 앞(A)공간이라면 True, 뒤(B)라면 false
+			bIsPlayerLoc = TargetYawLot == ALoc;
+
 			//도달 한 뒤 직전 바라보던 방향으로 회전 해야하는데
 			//만약 앞에서 오른쪽을 보고있다가 0 
-			if (LastHorizontalDirection == -1)
+			if (LastHorizontalDirection == 1)
 			{
-				TargetYaw = (TargetYawLot == BLoc) ? 90.f : -90.f;
-				
+				TargetYaw = 0.f;
 			}
-			//왼쪽 보고있다가 180
-			else if (LastHorizontalDirection == 1)
+			//왼쪽 보고있다가  180
+			else if (LastHorizontalDirection == -1)
 			{
-				TargetYaw = (TargetYawLot == BLoc) ? -90.f : 90.f; 
+				TargetYaw = 180.f;
 			}
-			// 🔹 회전 값 보정 (360도 이상 방지)
-			TargetYaw = FMath::UnwindDegrees(TargetYaw);
-			bIsRotating = true;
 		}
 	}
 
-	//회전 처리
-	if (bIsRotating)
+	//앞뒤이동 회전 처리
+	if (bIsRotating && bIsMovingDepth)
+	{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+		//현재 회전값
+		// 현재 회전값 가져오기
+		float CurrentYaw = GetActorRotation().Yaw;
+
+		// 최단 거리 회전각 계산
+		float DeltaYaw = FMath::FindDeltaAngleDegrees(CurrentYaw, TargetYaw);
+
+		//회전보간
+		float InterSpeed = 15.f;
+
+		float NewYaw = FMath::FInterpTo(CurrentYaw, CurrentYaw + DeltaYaw, GetWorld()->GetDeltaSeconds(), InterSpeed);
+		//회전적용
+		SetActorRotation(FRotator(0.f, NewYaw, 0.f));
+
+		if (FMath::Abs(NewYaw - TargetYaw) < 1.0f)
+		{
+			NewYaw = TargetYaw;
+			bIsRotating = false;
+		}
+	}
+	//좌우이동 회전 처리
+	else if (bIsRotating)
 	{
 		//현재 회전값
 		// 현재 회전값 가져오기
 		float CurrentYaw = GetActorRotation().Yaw;
-		
+
 		// 최단 거리 회전각 계산
 		float DeltaYaw = FMath::FindDeltaAngleDegrees(CurrentYaw, TargetYaw);
-		
+
 		//회전보간
 		float InterSpeed = 7.0f;
 
-		float NewYaw = FMath::FInterpTo(CurrentYaw, CurrentYaw+DeltaYaw, GetWorld()->GetDeltaSeconds(), InterSpeed);
+		float NewYaw = FMath::FInterpTo(CurrentYaw, CurrentYaw + DeltaYaw, GetWorld()->GetDeltaSeconds(), InterSpeed);
 		//회전적용
 		SetActorRotation(FRotator(0.f, NewYaw, 0.f));
+		//SetActorRelativeRotation(FRotator(0.f, NewYaw, 0.f));
 
 		if (FMath::Abs(NewYaw - TargetYaw) < 1.0f)
 		{
@@ -151,43 +177,27 @@ void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
 	if (MoveValue == 0) return;
 
 	// 목표 위치를 설정하고 이동 시작
-	if (MoveValue > 0 && GetActorLocation().Y != BLoc)
+	if (MoveValue > 0 && FMath::Abs(GetActorLocation().Y - BLoc) > 2.0f)
 	{
-		TargetYawLot = BLoc; // W를 눌렀을 때 뒤공간으로 이동
-
-		//목표회전
-		if (LastHorizontalDirection == 1)
-		{
-			TargetYaw = GetActorRotation().Yaw - 90.f;
-		}
-		else if (LastHorizontalDirection == -1)
-		{
-			TargetYaw = GetActorRotation().Yaw + 90.f;
-		}
-
-		bIsRotating = true;
+		//앞(A)공간 -> 뒤(B) 공간
+		TargetYawLot = BLoc; //W를 눌렀을 때 뒤공간으로 이동
 		bIsMovingDepth = true;
+		if (bIsMovingDepth)
+		{
+			TargetYaw = -90.f;
+		}
 	}
-	else if (MoveValue < 0 && GetActorLocation().Y != ALoc)
+	else if (MoveValue < 0 && FMath::Abs(GetActorLocation().Y - ALoc) > 2.0f)
 	{
-		TargetYawLot = ALoc; // S를 눌렀을 때 앞공간으로 이동
-		//목표회전
-		TargetYaw = 90.f;
-
-		//목표회전
-		if (LastHorizontalDirection == 1)
-		{
-			TargetYaw = GetActorRotation().Yaw + 90.f;
-		}
-		else if (LastHorizontalDirection == -1)
-		{
-			TargetYaw = GetActorRotation().Yaw - 90.f;
-		}
-
-		bIsRotating = true;
+		//뒤(B) 공간 -> 앞(A)공간
+		TargetYawLot = ALoc; //W를 눌렀을 때 뒤공간으로 이동
 		bIsMovingDepth = true;
+		
+		if (bIsMovingDepth)
+		{
+			TargetYaw = 90.f;
+		}
 	}
-	//앞,뒤 이동시 플레이어의 앞방향이 키 누른 방향으로 회전하도록
 }
 
 
