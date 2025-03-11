@@ -26,6 +26,9 @@ APlayer_Nick::APlayer_Nick()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	//Comp
+	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
+
 	TargetYawLot = GetActorLocation().Y; // 초기 위치 설정
 	bIsMovingDepth = false; // 초기 이동 상태 false
 
@@ -65,7 +68,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 	if (bIsMovingDepth)
 	{
 		FVector NewLocation = GetActorLocation();
-		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 7.0f);
+		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 15.0f);
 		SetActorLocation(NewLocation);
 		bIsRotating = true;
 
@@ -93,7 +96,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 
 	//앞뒤이동 회전 처리
 	if (bIsRotating && bIsMovingDepth)
-	{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+	{
 		//현재 회전값
 		// 현재 회전값 가져오기
 		float CurrentYaw = GetActorRotation().Yaw;
@@ -125,7 +128,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 		float DeltaYaw = FMath::FindDeltaAngleDegrees(CurrentYaw, TargetYaw);
 
 		//회전보간
-		float InterSpeed = 7.0f;
+		float InterSpeed = 15.0f;
 
 		float NewYaw = FMath::FInterpTo(CurrentYaw, CurrentYaw + DeltaYaw, GetWorld()->GetDeltaSeconds(), InterSpeed);
 		//회전적용
@@ -150,6 +153,7 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAMoveHorizontal, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveHorizontal);
 		EnhancedInputComp->BindAction(IAMoveDepth, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveDepth);
 		EnhancedInputComp->BindAction(IAJump, ETriggerEvent::Triggered, this, &APlayer_Nick::JumpNick);
+		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Started, this, &APlayer_Nick::Shooting);
 	}
 }
 
@@ -193,7 +197,7 @@ void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
 		//뒤(B) 공간 -> 앞(A)공간
 		TargetYawLot = ALoc; //W를 눌렀을 때 뒤공간으로 이동
 		bIsMovingDepth = true;
-		
+
 		if (bIsMovingDepth)
 		{
 			TargetYaw = 90.f;
@@ -209,8 +213,28 @@ void APlayer_Nick::JumpNick()
 	Jump();
 }
 
-void APlayer_Nick::Shoot()
+void APlayer_Nick::RespawnSetup()
 {
-	//총알 2개 연속 발사 가능.
-	//2발 모두 발사시 총알 하나가 없어져야 새로운 총알 하나 발사가능
+	PlayerHP = MaxHP;
+}
+
+void APlayer_Nick::Shooting()
+{
+	//앞뒤 이동하고 있을 때, 쿨타임안됐을 때 , 총알 없을 때 발사 불가능.
+	//방향바꾸는 회전하는 중간에 발사하면 하면 다른 방향으로 남아감
+	//플레이어가 좌우 이동 할 때에는 직전 방향으로 발사하도록..
+	//발사 방향을 0또는 180도 로만 하도록
+
+	if (bIsMovingDepth)
+	{
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Rotating"));
+		return;
+	}
+	if (ShootComp != nullptr)
+	{
+		//소켓 위치로 변경 예정
+		FVector testLoc = GetActorLocation();
+		FRotator testRot = GetActorRotation();
+		ShootComp->Shooting(testLoc, testRot);
+	}
 }
