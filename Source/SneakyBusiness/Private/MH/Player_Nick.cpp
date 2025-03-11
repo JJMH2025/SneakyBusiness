@@ -149,6 +149,7 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	{
 		EnhancedInputComp->BindAction(IAMoveHorizontal, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveHorizontal);
 		EnhancedInputComp->BindAction(IAMoveDepth, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveDepth);
+		EnhancedInputComp->BindAction(IAJump, ETriggerEvent::Triggered, this, &APlayer_Nick::JumpNick);
 	}
 }
 
@@ -205,6 +206,7 @@ void APlayer_Nick::JumpNick()
 {
 	//점프 높이 큐브에 맞추기
 	//1.
+	Jump();
 }
 
 void APlayer_Nick::Shoot()
