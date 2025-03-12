@@ -36,4 +36,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	int32 hp = 1;
+
+	// Patrol 관련 변수
+	bool bMovingForward = true;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
+	bool bIsMoving = false;		// 현재 이동 중인지 여부
+	bool bIsRotating = false;	// 회전 중인지 여부
+	float speed = 0.2f;			// 순찰 속도
+	float rotatingSpeed = 1.0f;	// 회전 속도
+	FVector targetLoc;			// 이동 목표 지점
+	FRotator targetRot;			// 목표 회전 값
 };
