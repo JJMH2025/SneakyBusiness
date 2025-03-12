@@ -12,13 +12,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/IA/IA_MoveDepth.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/IA/IA_MoveDepth.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest/A/O1/GS318GL1UUCZXORI158MGN.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest/A/O1/GS318GL1UUCZXORI158MGN.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/Player_Nick.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/Player_Nick.h" afterDir="false" />
-    </list>
+    <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -174,6 +168,7 @@
       <workItem from="1741433089844" duration="8382000" />
       <workItem from="1741507900278" duration="2816000" />
       <workItem from="1741590994660" duration="9408000" />
+      <workItem from="1741623231587" duration="148000" />
     </task>
     <servers />
   </component>
