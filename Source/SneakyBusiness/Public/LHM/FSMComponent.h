@@ -9,7 +9,6 @@ UENUM()
 enum class EnemyState : uint8
 {
 	Patrol		UMETA(DisplayName = "Patrolling"),
-	Detect		UMETA(DisplayName = "Detecting"),
 	Attack		UMETA(DisplayName = "Attacking"),
 	Navigate	UMETA(DisplayName = "Navigating"),
 	Signal		UMETA(DisplayName = "Signaling"),

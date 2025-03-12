@@ -37,9 +37,6 @@ void UFSMComponent::HandleState()
 		case EnemyState::Patrol:
 			enemy->Patrol();
 			break;
-		case EnemyState::Detect:
-			enemy->Detect();
-			break;
 		case EnemyState::Attack:
 			enemy->Attack();
 			break;
