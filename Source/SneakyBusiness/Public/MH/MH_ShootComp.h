@@ -31,7 +31,7 @@ public:
 	void Shooting(FVector FireLocation, FRotator FireRotation);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxAmmo = 2;  // 최대 장전 가능 개수
+	int32 MaxAmmo = 10;  // 최대 장전 가능 개수
 
 	// 총알 개수 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
@@ -50,6 +50,12 @@ public:
 	//발사간격, 쿨타임
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	float ShootCooldown = 0.7f;
-	
-		
+
+	//총알
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
+	TSubclassOf<class  AMH_Bullet> bulletFactory;
+
+	//Owner
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
+	AActor* ShootCompOwner;
 };

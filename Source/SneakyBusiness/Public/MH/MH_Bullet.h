@@ -23,6 +23,26 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+	//이동
+	UPROPERTY(VisibleAnywhere, Category = "Bullet")
+	class UProjectileMovementComponent* MovementComp;
+	//콜리전
+	UPROPERTY(VisibleAnywhere, Category = "Bullet")
+	class USphereComponent* CollisionComp;
+	//메쉬
+	UPROPERTY(VisibleAnywhere, Category = "Bullet")
+	class UStaticMeshComponent* MeshComp;
 
+	UFUNCTION()
+	void OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UPROPERTY()
+	class APlayer_Nick* Player_Nick;
+
+	//총알을 쏜 주인이 에너미인지 플레이어인지 체크
+	UFUNCTION()
+	void SetOwnerActor(AActor* NewOwner);
+
+	UPROPERTY()
+	AActor* OwnerActor;
 };

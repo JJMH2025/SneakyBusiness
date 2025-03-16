@@ -32,7 +32,6 @@ public:
 public:
 	//메쉬
 
-
 	//컴포넌트들
 	//공격
 	UPROPERTY(VisibleAnywhere,Category="Components")
@@ -52,6 +51,9 @@ public:
 	void MoveDepth(const FInputActionValue& Value); //앞뒤 이동 WS
 	UFUNCTION()
 	void JumpNick();
+
+	UPROPERTY()
+	class UArrowComponent* ShootArrowComp;
 
 	//현재 앞,뒤 동간위치 (앞 : true, 뒤: false)
 	bool bIsPlayerLoc = true;
@@ -98,30 +100,14 @@ public:
 	int32 MaxHP = 3;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 PlayerHP = MaxHP;
+	int32 CurrentPlayerHP = MaxHP;
 
-	//총알
-	//총 쏠수 있는지 여부
-	//bool bCanShoot = true;
-	//쿨타임 타이머
-	//FTimerHandle ShootTimer;
-	//발사쿨타임함수
-	//UFUNCTION()
-	//void ResetShoot();
-	//발사간격, 쿨타임
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//float ShootCooldown = .7f;
-	// 총알 개수 변수
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//int32 CurrentAmmo = 2;  // 기본 2발 장전 가능
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//int32 MaxAmmo = 2;  // 최대 장전 가능 개수
-
-	//총알 장전 함수
-	//UFUNCTION()
-	//void ReloadAmmo();
-
+	//데미지
+	UFUNCTION()
+	void PlayerTakeDamage();
+	//사망
+	UFUNCTION()
+	void PlayerDie();
 	
 
 		

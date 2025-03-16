@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MaterialHLSLTree.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -31,6 +32,9 @@ APlayer_Nick::APlayer_Nick()
 
 	TargetYawLot = GetActorLocation().Y; // 초기 위치 설정
 	bIsMovingDepth = false; // 초기 이동 상태 false
+
+	ShootArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
+	ShootArrowComp->SetupAttachment(RootComponent);
 
 	GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향에 따라 회전
 	bUseControllerRotationYaw = false;
@@ -115,6 +119,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 		{
 			NewYaw = TargetYaw;
 			bIsRotating = false;
+			bIsMovingDepth = false;
 		}
 	}
 	//좌우이동 회전 처리
@@ -209,13 +214,12 @@ void APlayer_Nick::MoveDepth(const FInputActionValue& Value)
 void APlayer_Nick::JumpNick()
 {
 	//점프 높이 큐브에 맞추기
-	//1.
 	Jump();
 }
 
 void APlayer_Nick::RespawnSetup()
 {
-	PlayerHP = MaxHP;
+	CurrentPlayerHP = MaxHP;
 }
 
 void APlayer_Nick::Shooting()
@@ -233,8 +237,26 @@ void APlayer_Nick::Shooting()
 	if (ShootComp != nullptr)
 	{
 		//소켓 위치로 변경 예정
-		FVector testLoc = GetActorLocation();
-		FRotator testRot = GetActorRotation();
+		FVector testLoc = ShootArrowComp->GetComponentLocation();
+		FRotator testRot = ShootArrowComp->GetComponentRotation();
 		ShootComp->Shooting(testLoc, testRot);
 	}
+}
+
+
+void APlayer_Nick::PlayerTakeDamage()
+{
+	CurrentPlayerHP -= 1;
+	//기절 하기
+	
+	GEngine->AddOnScreenDebugMessage(-5, 5.f, FColor::Blue, FString::Printf(TEXT("%d"), CurrentPlayerHP));
+	if (CurrentPlayerHP <= 0)
+	{
+		PlayerDie();
+	}
+}
+
+void APlayer_Nick::PlayerDie()
+{
+	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Dieeeeeeee"));
 }
