@@ -9,6 +9,16 @@
 #include "SneakyBusiness/SneakyBusinessCharacter.h"
 #include "Player_Nick.generated.h"
 
+//플레이어 상태 enum
+UENUM(BlueprintType)
+enum class EPlayerState : uint8
+{
+	Normal,
+	Frozen,
+	Invincible,
+	Dead
+};
+
 UCLASS()
 class SNEAKYBUSINESS_API APlayer_Nick : public ACharacter
 {
@@ -30,6 +40,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 public:
+//Test/////////////////////////////////
+	UFUNCTION(Blueprintable)
+	void TestF();
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IATest1;
+///////////////////////////////////
+	
+	
 	//메쉬
 
 	//컴포넌트들
@@ -42,7 +61,27 @@ public:
 	class USpringArmComponent* SpringArmComp;
 	UPROPERTY(EditAnywhere, Category = Camera)
 	class UCameraComponent* CameraComp;
+
+	//플레이어 상태 변경
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category ="MyPlayerSettings")
+	EPlayerState CurrentPlayerState = EPlayerState::Normal;
+
+	FTimerHandle FrozenTimerHandle;
+	FTimerHandle InvincibleTimerHandle;
+
+	// Frozen 기절상태 호출
+	UFUNCTION()
+	void StartFrozen();
 	
+	//Invincible 무적상태 호출
+	UFUNCTION()
+	void StartInvincible();
+	//Normal 일반상태 호출
+	UFUNCTION()
+	void ResetToNormal();
+	//물건 떨굼
+	UFUNCTION()
+	void DropItems();
 	
 	//플레이어 이동
 	UFUNCTION()
@@ -58,10 +97,10 @@ public:
 	//현재 앞,뒤 동간위치 (앞 : true, 뒤: false)
 	bool bIsPlayerLoc = true;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Input")
 	float ALoc = 0.f;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Input")
 	float BLoc = -100.f;
 	
 	float TargetYawLot; // 목표 이동 위치

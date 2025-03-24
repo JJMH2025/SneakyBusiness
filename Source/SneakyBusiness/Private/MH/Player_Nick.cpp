@@ -159,7 +159,13 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAMoveDepth, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveDepth);
 		EnhancedInputComp->BindAction(IAJump, ETriggerEvent::Triggered, this, &APlayer_Nick::JumpNick);
 		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Started, this, &APlayer_Nick::Shooting);
+		EnhancedInputComp->BindAction(IATest1, ETriggerEvent::Triggered, this, &APlayer_Nick::TestF);
 	}
+}
+
+void APlayer_Nick::TestF()
+{
+	PlayerTakeDamage();
 }
 
 //좌우이동
@@ -220,6 +226,14 @@ void APlayer_Nick::JumpNick()
 void APlayer_Nick::RespawnSetup()
 {
 	CurrentPlayerHP = MaxHP;
+
+	//혹시 기절했거나 사망했다가 살아나면 
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		// 입력 다시 활성화
+		EnableInput(PC);
+	}
 }
 
 void APlayer_Nick::Shooting()
@@ -246,17 +260,98 @@ void APlayer_Nick::Shooting()
 
 void APlayer_Nick::PlayerTakeDamage()
 {
-	CurrentPlayerHP -= 1;
-	//기절 하기
+	//한대 맞으면 , 무적상태 또는 기절이 아닐때에만 
+	if (CurrentPlayerState == EPlayerState::Invincible || CurrentPlayerState == EPlayerState::Frozen)
+		return;
 	
+	//HP -1
+	CurrentPlayerHP -= 1;
+
+	//기절 하기
 	GEngine->AddOnScreenDebugMessage(-5, 5.f, FColor::Blue, FString::Printf(TEXT("%d"), CurrentPlayerHP));
 	if (CurrentPlayerHP <= 0)
 	{
 		PlayerDie();
+		return;
 	}
+
+	//기절
+	StartFrozen();
+	//기절 애니메이션
+	
+	//아이템 드롭
+	DropItems();
+
+	// 3초 후 무적 상태 진입
+	GetWorldTimerManager().SetTimer(FrozenTimerHandle, this, &APlayer_Nick::StartInvincible, 3.0f, false);
+	
+}
+
+void APlayer_Nick::StartFrozen()
+{
+	CurrentPlayerState = EPlayerState::Frozen;
+	//움직임 X
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		GEngine->AddOnScreenDebugMessage(-7, 5.f, FColor::Green,TEXT("DisableInput"));
+		// 입력 비활성화
+		DisableInput(PC);
+	}
+	
+	FString EnumName = StaticEnum<EPlayerState>()->GetNameStringByValue((int64)CurrentPlayerState);
+	GEngine->AddOnScreenDebugMessage(-6, 5.f, FColor::Yellow,EnumName);
+	
+	
+	
+}
+
+void APlayer_Nick::StartInvincible()
+{
+	CurrentPlayerState = EPlayerState::Invincible;
+
+
+	GEngine->AddOnScreenDebugMessage(-7, 5.f, FColor::Green,TEXT("EnableInput"));
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		// 입력 다시 활성화 (무적 상태 때)
+		EnableInput(PC);
+	}
+	
+	
+	//무적상태 애니메이션
+	FString EnumName = StaticEnum<EPlayerState>()->GetNameStringByValue((int64)CurrentPlayerState);
+	GEngine->AddOnScreenDebugMessage(-6, 5.f, FColor::Yellow,EnumName);
+	// 3초 후 다시 Normal 상태로 복귀
+	GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &APlayer_Nick::ResetToNormal, 3.0f, false);
+}
+
+void APlayer_Nick::ResetToNormal()
+{
+	CurrentPlayerState = EPlayerState::Normal;
+	FString EnumName = StaticEnum<EPlayerState>()->GetNameStringByValue((int64)CurrentPlayerState);
+	GEngine->AddOnScreenDebugMessage(-6, 5.f, FColor::Yellow,EnumName);
+	//애니메이션 효과 제거
+}
+
+void APlayer_Nick::DropItems()
+{
+	//현재훔친 물건이 있다면
+	//모두 플레이어 발밑으로 떨구기
 }
 
 void APlayer_Nick::PlayerDie()
 {
+	CurrentPlayerState = EPlayerState::Dead;
 	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Dieeeeeeee"));
+
+//움직임 X
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		GEngine->AddOnScreenDebugMessage(-7, 5.f, FColor::Green,TEXT("DisableInput"));
+		// 입력 비활성화
+		DisableInput(PC);
+	}
 }
