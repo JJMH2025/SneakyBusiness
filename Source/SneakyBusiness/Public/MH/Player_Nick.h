@@ -52,6 +52,11 @@ public:
 	//메쉬
 
 	//컴포넌트들
+	//콜리전 오버랩 체크
+	UFUNCTION()
+	void OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	UFUNCTION()
+	void OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	//공격
 	UPROPERTY(VisibleAnywhere,Category="Components")
 	UMH_ShootComp* ShootComp;
@@ -62,6 +67,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Camera)
 	class UCameraComponent* CameraComp;
 
+	
 	//플레이어 상태 변경
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category ="MyPlayerSettings")
 	EPlayerState CurrentPlayerState = EPlayerState::Normal;
@@ -86,6 +92,8 @@ public:
 	//플레이어 이동
 	UFUNCTION()
 	void MoveHorizontal(const FInputActionValue& Value); //좌우 이동 AD
+	UFUNCTION()
+	void StopHorizontal(const FInputActionValue& Value); //좌우 이동 AD
 	UFUNCTION()
 	void MoveDepth(const FInputActionValue& Value); //앞뒤 이동 WS
 	UFUNCTION()
@@ -136,7 +144,7 @@ public:
 
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxHP = 3;
+	int32 MaxHP = 4;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	int32 CurrentPlayerHP = MaxHP;
@@ -147,6 +155,15 @@ public:
 	//사망
 	UFUNCTION()
 	void PlayerDie();
+	//숨기
+	UFUNCTION()
+	void PlayerHideON();
+	UFUNCTION()
+	void PlayerHideOFF();
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
+	bool bIsHiding = false;
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
+	bool bIsInHideZone = false;
 	
 
 		
