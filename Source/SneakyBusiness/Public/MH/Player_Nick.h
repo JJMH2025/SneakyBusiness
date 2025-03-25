@@ -99,6 +99,16 @@ public:
 	UFUNCTION()
 	void JumpNick();
 
+	//플레이어 상호작용
+	UFUNCTION()
+	void PlayerInteract();
+
+	UPROPERTY()
+	bool bIsOverlapDoor = false;
+	UPROPERTY()
+	class AMH_Door* OverlapDoor = nullptr;
+	
+
 	UPROPERTY()
 	class UArrowComponent* ShootArrowComp;
 
@@ -141,6 +151,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* IAShoot;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IAInteract;
 
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")

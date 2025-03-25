@@ -11,6 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "MH/MH_Door.h"
 
 // Sets default values
 APlayer_Nick::APlayer_Nick()
@@ -164,8 +165,9 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAMoveHorizontal, ETriggerEvent::Completed, this, &APlayer_Nick::StopHorizontal);
 		EnhancedInputComp->BindAction(IAMoveDepth, ETriggerEvent::Triggered, this, &APlayer_Nick::MoveDepth);
 		EnhancedInputComp->BindAction(IAJump, ETriggerEvent::Triggered, this, &APlayer_Nick::JumpNick);
-		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Started, this, &APlayer_Nick::Shooting);
+		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::Shooting);
 		EnhancedInputComp->BindAction(IATest1, ETriggerEvent::Triggered, this, &APlayer_Nick::TestF);
+		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::PlayerInteract);
 	}
 }
 
@@ -241,6 +243,17 @@ void APlayer_Nick::JumpNick()
 {
 	//점프 높이 큐브에 맞추기
 	Jump();
+}
+
+void APlayer_Nick::PlayerInteract()
+{
+	if (bIsOverlapDoor)
+	{
+		if (OverlapDoor)
+		{
+			OverlapDoor->DoorOpen(GetActorForwardVector());
+		}
+	}
 }
 
 void APlayer_Nick::RespawnSetup()
@@ -319,6 +332,13 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Wall"));
 		bIsInHideZone = true;
 	}
+
+	OverlapDoor = Cast<AMH_Door>(OtherActor);
+	if (OverlapDoor)
+	{
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Door"));
+		bIsOverlapDoor = true;
+	}
 }
 
 void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -332,6 +352,13 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 			bIsInHideZone = false;
 			PlayerHideOFF();
 		}
+	}
+
+	OverlapDoor = Cast<AMH_Door>(OtherActor);
+	if (OverlapDoor)
+	{
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
+		bIsOverlapDoor = false;
 	}
 }
 
@@ -411,7 +438,7 @@ void APlayer_Nick::PlayerHideON()
 	//숨기 애니메이션 Play
 	GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Purple,TEXT("PlayerHideON"));
 
-	
+
 	//LastHorizontalDirection
 	//왼쪽키 누르고 있으면 왼쪽으로
 	//오른쪽키 누르고 있으면 오른쪽으로 
