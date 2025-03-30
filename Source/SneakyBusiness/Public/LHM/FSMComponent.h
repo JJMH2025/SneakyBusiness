@@ -6,7 +6,7 @@
 
 // FSM 상태 정의
 UENUM()
-enum class EnemyState : uint8
+enum class EEnemyState : uint8
 {
 	Patrol		UMETA(DisplayName = "Patrolling"),
 	Attack		UMETA(DisplayName = "Attacking"),
@@ -25,8 +25,8 @@ class SNEAKYBUSINESS_API UFSMComponent : public UActorComponent
 public:
 	UFSMComponent();
 
-	void SetState(EnemyState NewState);
-	EnemyState GetState() const { return CurrentState; }
+	void SetState(EEnemyState NewState);
+	EEnemyState GetState() const { return CurrentState; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,8 +35,8 @@ protected:
 	void HandleState();
 
 private:
-	class AEnemy* enemy;
+	class AEnemy* Enemy;
 
 	UPROPERTY(VisibleAnywhere, Category = "FSM")
-	EnemyState CurrentState;
+	EEnemyState CurrentState;
 };

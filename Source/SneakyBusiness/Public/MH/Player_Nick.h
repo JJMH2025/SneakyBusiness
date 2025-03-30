@@ -9,6 +9,16 @@
 #include "SneakyBusiness/SneakyBusinessCharacter.h"
 #include "Player_Nick.generated.h"
 
+//플레이어 상태 enum
+UENUM(BlueprintType)
+enum class EPlayerState : uint8
+{
+	Normal,
+	Frozen,
+	Invincible,
+	Dead
+};
+
 UCLASS()
 class SNEAKYBUSINESS_API APlayer_Nick : public ACharacter
 {
@@ -30,10 +40,23 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 public:
+//Test/////////////////////////////////
+	UFUNCTION(Blueprintable)
+	void TestF();
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IATest1;
+///////////////////////////////////
+	
+	
 	//메쉬
 
-
 	//컴포넌트들
+	//콜리전 오버랩 체크
+	UFUNCTION()
+	void OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	UFUNCTION()
+	void OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	//공격
 	UPROPERTY(VisibleAnywhere,Category="Components")
 	UMH_ShootComp* ShootComp;
@@ -43,23 +66,49 @@ public:
 	class USpringArmComponent* SpringArmComp;
 	UPROPERTY(EditAnywhere, Category = Camera)
 	class UCameraComponent* CameraComp;
+
 	
+	//플레이어 상태 변경
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category ="MyPlayerSettings")
+	EPlayerState CurrentPlayerState = EPlayerState::Normal;
+
+	FTimerHandle FrozenTimerHandle;
+	FTimerHandle InvincibleTimerHandle;
+
+	// Frozen 기절상태 호출
+	UFUNCTION()
+	void StartFrozen();
+	
+	//Invincible 무적상태 호출
+	UFUNCTION()
+	void StartInvincible();
+	//Normal 일반상태 호출
+	UFUNCTION()
+	void ResetToNormal();
+	//물건 떨굼
+	UFUNCTION()
+	void DropItems();
 	
 	//플레이어 이동
 	UFUNCTION()
 	void MoveHorizontal(const FInputActionValue& Value); //좌우 이동 AD
 	UFUNCTION()
+	void StopHorizontal(const FInputActionValue& Value); //좌우 이동 AD
+	UFUNCTION()
 	void MoveDepth(const FInputActionValue& Value); //앞뒤 이동 WS
 	UFUNCTION()
 	void JumpNick();
 
+	UPROPERTY()
+	class UArrowComponent* ShootArrowComp;
+
 	//현재 앞,뒤 동간위치 (앞 : true, 뒤: false)
 	bool bIsPlayerLoc = true;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Input")
 	float ALoc = 0.f;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Input")
 	float BLoc = -100.f;
 	
 	float TargetYawLot; // 목표 이동 위치
@@ -95,33 +144,26 @@ public:
 
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxHP = 3;
+	int32 MaxHP = 4;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 PlayerHP = MaxHP;
+	int32 CurrentPlayerHP = MaxHP;
 
-	//총알
-	//총 쏠수 있는지 여부
-	//bool bCanShoot = true;
-	//쿨타임 타이머
-	//FTimerHandle ShootTimer;
-	//발사쿨타임함수
-	//UFUNCTION()
-	//void ResetShoot();
-	//발사간격, 쿨타임
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//float ShootCooldown = .7f;
-	// 총알 개수 변수
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//int32 CurrentAmmo = 2;  // 기본 2발 장전 가능
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	//int32 MaxAmmo = 2;  // 최대 장전 가능 개수
-
-	//총알 장전 함수
-	//UFUNCTION()
-	//void ReloadAmmo();
-
+	//데미지
+	UFUNCTION()
+	void PlayerTakeDamage();
+	//사망
+	UFUNCTION()
+	void PlayerDie();
+	//숨기
+	UFUNCTION()
+	void PlayerHideON();
+	UFUNCTION()
+	void PlayerHideOFF();
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
+	bool bIsHiding = false;
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
+	bool bIsInHideZone = false;
 	
 
 		

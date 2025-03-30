@@ -5,14 +5,14 @@ UFSMComponent::UFSMComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	CurrentState = EnemyState::Patrol;
+	CurrentState = EEnemyState::Patrol;
 }
 
 void UFSMComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	enemy = Cast<AEnemy>(GetOwner());
+	Enemy = Cast<AEnemy>(GetOwner());
 }
 
 void UFSMComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -20,40 +20,40 @@ void UFSMComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// 현재 상태에 따라 행동 실행
-	if (enemy) HandleState();
+	if (Enemy) HandleState();
 }
 
-void UFSMComponent::SetState(EnemyState NewState)
+void UFSMComponent::SetState(EEnemyState NewState)
 {
 	CurrentState = NewState;
 }
 
 void UFSMComponent::HandleState()
 {
-	if (!enemy) return;
+	if (!Enemy) return;
 
 	switch (CurrentState)
 	{
-		case EnemyState::Patrol:
-			enemy->Patrol();
+		case EEnemyState::Patrol:
+			Enemy->Patrol();
 			break;
-		case EnemyState::Attack:
-			enemy->Attack();
+		case EEnemyState::Attack:
+			Enemy->Attack();
 			break;
-		case EnemyState::Navigate:
-			enemy->Navigate();
+		case EEnemyState::Navigate:
+			Enemy->Navigate();
 			break;
-		case EnemyState::Signal:
-			enemy->Signal();
+		case EEnemyState::Signal:
+			Enemy->Signal();
 			break;
-		case EnemyState::HitByDoor:
-			enemy->HitByDoor();
+		case EEnemyState::HitByDoor:
+			Enemy->HitByDoor();
 			break;
-		case EnemyState::Stun:
-			enemy->Stun();
+		case EEnemyState::Stun:
+			Enemy->Stun();
 			break;
-		case EnemyState::WakeUp:
-			enemy->WakeUp();
+		case EEnemyState::WakeUp:
+			Enemy->WakeUp();
 			break;
 		default:
 			break;
