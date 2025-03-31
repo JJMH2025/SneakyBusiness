@@ -2,12 +2,14 @@
 #include "LHM/FSMComponent.h"
 #include "MH/MH_ShootComp.h"
 #include "MH/Player_Nick.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Fsm = CreateDefaultSubobject<UFSMComponent>(TEXT("FSMComp"));
+	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
 
 	bMovingForward = true;
 	bIsMoving = false;
@@ -27,25 +29,33 @@ void AEnemy::Tick(float DeltaTime)
 	// 순찰 중 회전 보간
 	if (bIsRotating) LerpRotation(DeltaTime);
 
+	// 이동 보간 적용
+	if (bIsMovingSideways)
+	{
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpTo(CurrentLocation, SideTargetLocation, DeltaTime, 5.0f);
+		SetActorLocation(NewLocation);
+
+		if (FVector::Dist(NewLocation, SideTargetLocation) < 2.0f)
+		{
+			SetActorLocation(SideTargetLocation);
+			bIsMovingSideways = false;
+		}
+	}
+}
+
+void AEnemy::Patrol()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
+
 	// 플레이어 감지
 	if (!bIsRotating)
 	{
 		if (IsPlayerDetected())
 		{
-			bIsPatrolling = false;
-			Fsm->SetState(EEnemyState::Attack);
+			Fsm->SetState(EEnemyState::Chase);
 		}
 	}
-
-}
-
-void AEnemy::Patrol()
-{
-	if(!bIsPatrolling) return;
-
-	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is patrolling."));
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
-	//bIsPatrolling = true;
 
 	if (!bIsMoving && !bIsRotating)
 	{
@@ -56,7 +66,7 @@ void AEnemy::Patrol()
 
 	// 회전 중이면 이동하지 않음
 	if(bIsRotating) return;
-	
+
 	FVector CurrentLoc = GetActorLocation();
 	FVector Dir = (TargetLoc - CurrentLoc).GetSafeNormal();
 	float Dist = FVector::Dist(CurrentLoc, TargetLoc);
@@ -84,19 +94,37 @@ void AEnemy::Attack()
 	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
-	// @Todo: 발사 3번 연속
-
 	// 플레이어 감지 못하면 순찰상태로 전환
 	if (!IsPlayerDetected())
 	{
-		bIsPatrolling = true;
 		Fsm->SetState(EEnemyState::Patrol);
+	}
+
+	if (!bAttackStarted)
+	{
+		bAttackStarted = true;
+		// 1초 후 총알 발사
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::DoShooting, 1.0f, false);
 	}
 }
 
-void AEnemy::Navigate()
+void AEnemy::Chase()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
+
+	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (Player)
+	{
+		// 플레이어 방향으로 이동
+		FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		AddMovementInput(Direction, 0.5f);
+
+		// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
+		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
+		{
+			Fsm->SetState(EEnemyState::Attack);
+		}
+	}
 }
 
 void AEnemy::Signal()
@@ -127,30 +155,57 @@ void AEnemy::WakeUp()
 
 bool AEnemy::IsPlayerDetected()
 {
-	// @Todo: 플레이어가 벽 뒤에 숨으면 감지 취소 -> 순찰 상태로 전환
-
 	FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
-	FVector ForwardVec = GetActorForwardVector();
-	FVector End = Start + (ForwardVec * 300.0f);
 
-	FHitResult HitResult;
+	FVector ForwardVec = GetActorForwardVector();
+	FVector LeftVec = ForwardVec.RotateAngleAxis(-45, FVector(0, 0, 1));
+	FVector RightVec = ForwardVec.RotateAngleAxis(45, FVector(0, 0, 1));
+
+	FVector End = Start + (ForwardVec * 500.0f);
+	FVector EndLeft = Start + (LeftVec * 500.0f);
+	FVector EndRight = Start + (RightVec * 500.0f);
+
+	FHitResult HitResult, HitResultLeft, HitResultRight;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this); // 에너미 제외
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params);
+	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(HitResultLeft, Start, EndLeft, ECC_Pawn, Params);
+	bool bHitRight = GetWorld()->LineTraceSingleByChannel(HitResultRight, Start, EndRight, ECC_Pawn, Params);
 
 	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), Start, EndLeft, bHitLeft ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), Start, EndRight, bHitRight ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
 
 	if (bHit)
 	{
 		AActor* HitActor = HitResult.GetActor();
 		if(HitActor && HitActor->ActorHasTag("Player"))
 		{
-			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy detected the player!"));
-			UE_LOG(LogTemp, Warning, TEXT("Enemy detected the player!"));
 			return true;
 		}
 	}
+
+	/*if (bHitLeft)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor && HitActor->ActorHasTag("Player"))
+		{
+			MoveSideways(-100.0f);
+			return true;
+		}
+	}
+
+	if (bHitRight)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor && HitActor->ActorHasTag("Player"))
+		{
+			MoveSideways(100.0f);
+			return true;
+		}
+	}*/
+
 	return false;
 }
 
@@ -167,6 +222,34 @@ void AEnemy::LerpRotation(float DeltaTime)
 		SetActorRotation(TargetRot);
 		bIsRotating = false;
 	}
+}
+
+void AEnemy::MoveSideways(float OffsetY)
+{
+	// 현재 회전 값 저장
+	float InitialYaw = GetActorRotation().Yaw;
+
+	// 먼저 -90도 회전 시작
+	TargetYaw = InitialYaw = 90.0f;
+
+	// 이동 목표 설정
+	SideTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
+	bIsMovingSideways = true;
+}
+
+void AEnemy::DoShooting()
+{
+	// 총알 발사
+	if (ShootComp)
+	{
+		FVector FireLocation = GetActorLocation();
+		FRotator FireRotation = GetActorRotation();
+		ShootComp->Shooting(FireLocation, FireRotation);
+	}
+
+	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
+	bAttackStarted = false;
+	Fsm->SetState(EEnemyState::Patrol);
 }
 
 void AEnemy::ReceiveDamage()

@@ -40,8 +40,8 @@ void UFSMComponent::HandleState()
 		case EEnemyState::Attack:
 			Enemy->Attack();
 			break;
-		case EEnemyState::Navigate:
-			Enemy->Navigate();
+		case EEnemyState::Chase:
+			Enemy->Chase();
 			break;
 		case EEnemyState::Signal:
 			Enemy->Signal();

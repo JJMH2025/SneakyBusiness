@@ -22,7 +22,7 @@ public:
 
 	virtual void Patrol();		// 순찰
 	virtual void Attack();		// 공격
-	virtual void Navigate();	// 추적
+	virtual void Chase();		// 추적
 	virtual void Signal();		// 신호
 	virtual void HitByDoor();	// 문에 부딪힘
 	virtual void Stun();		// 기절
@@ -31,16 +31,22 @@ public:
 	bool IsPlayerDetected();	// 감지
 	void ReceiveDamage();		// 피격
 	void LerpRotation(float DeltaTime);	// 순찰 중 회전
+	void MoveSideways(float OffsetY);
+	void DoShooting();
+	
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Custom");
 	class UFSMComponent* Fsm;
 
+	UPROPERTY(VisibleAnywhere, Category = "Custom")
+	class UMH_ShootComp* ShootComp;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Custom")
 	int32 Hp = 1;
 
 	// Patrol 관련 변수
-	bool bIsPatrolling = true;
+	//bool bIsPatrolling = true;
 	bool bMovingForward = true;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
 	bool bIsMoving = false;		// 현재 이동 중인지 여부
 	bool bIsRotating = false;	// 회전 중인지 여부
@@ -48,7 +54,13 @@ private:
 	FVector TargetLoc;			// 이동 목표 지점
 	FRotator TargetRot;			// 목표 회전 값
 
-	FTimerHandle WakeUpTimer;
+	// Chase
+	bool bIsMovingSideways = false; // 좌우 이동 중인지 여부
+	FVector SideTargetLocation;		// 목표 이동 위치
+	float TargetYaw = 0.0f;			// 목표 회전 값
 
+	// Attack
+	FTimerHandle AttackTimerHandle;
+	bool bAttackStarted = false;
 	
 };
