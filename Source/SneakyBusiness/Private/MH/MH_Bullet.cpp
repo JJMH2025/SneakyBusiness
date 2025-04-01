@@ -76,7 +76,8 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			if (OtherActor == Hitenemy)
 			{
 				GEngine->AddOnScreenDebugMessage(-4, 5.f, FColor::Green,TEXT("Enemy Overlap!!"));
-				//else if(OtherActor == 에너미) = 에너미 기절
+				//에너미 기절
+				Hitenemy->ReceiveDamage();
 			}
 			//플레이어 총알 재장전 ++
 			if (Player_Nick)
