@@ -92,6 +92,7 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			APlayer_Nick* Hitplayer = Cast<APlayer_Nick>(OwnerActor);
 			if (OtherActor == Hitplayer)
 			{
+				GEngine->AddOnScreenDebugMessage(-4, 5.f, FColor::Green,TEXT("Player Overlap!!"));
 				//HP-1
 				Hitplayer->PlayerTakeDamage();
 			}
