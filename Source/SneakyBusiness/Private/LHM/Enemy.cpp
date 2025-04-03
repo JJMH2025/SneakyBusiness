@@ -91,8 +91,8 @@ void AEnemy::Patrol()
 
 void AEnemy::Attack()
 {
-	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
+	//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
 	// 플레이어 감지 못하면 순찰상태로 전환
 	if (!IsPlayerDetected())
@@ -111,6 +111,8 @@ void AEnemy::Attack()
 void AEnemy::Chase()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
+
+	if (IsPlayerStateToFrozenOrDead()) return;
 
 	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (Player)
@@ -155,6 +157,8 @@ void AEnemy::WakeUp()
 
 bool AEnemy::IsPlayerDetected()
 {
+	if(IsPlayerStateToFrozenOrDead()) return;
+
 	FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
 
 	FVector ForwardVec = GetActorForwardVector();
@@ -250,6 +254,26 @@ void AEnemy::DoShooting()
 	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
 	bAttackStarted = false;
 	Fsm->SetState(EEnemyState::Patrol);
+}
+
+bool AEnemy::IsPlayerStateToFrozenOrDead()
+{
+	// MH요청 : 플레이어가 Frozen, Dead일 때 감지 못하게 설정
+	APlayer_Nick* Player = Cast<APlayer_Nick>(GetOwner());
+	if (Player)
+	{
+		EPlayerState PlayerState = Player->CurrentPlayerState;
+		if (PlayerState == EPlayerState::Frozen || PlayerState == EPlayerState::Invincible)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return false;
 }
 
 void AEnemy::ReceiveDamage()
