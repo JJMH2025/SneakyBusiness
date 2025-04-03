@@ -34,6 +34,7 @@ public:
 	void MoveSideways(float OffsetY);
 	void DoShooting();
 	
+	bool IsPlayerStateToFrozenOrDead();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Custom");
