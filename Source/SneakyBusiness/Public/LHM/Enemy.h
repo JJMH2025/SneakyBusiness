@@ -28,26 +28,37 @@ public:
 	virtual void Stun();		// 기절
 	virtual void WakeUp();		// 깨어남
 
-	bool IsPlayerDetected();	// 감지
-	void ReceiveDamage();		// 피격
+	UFUNCTION()
+	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+	//bool IsPlayerDetected();			// 감지
 	void LerpRotation(float DeltaTime);	// 순찰 중 회전
 	void MoveSideways(float OffsetY);
 	void DoShooting();
+	void ReceiveDamage();				// 피격
 	
+	// 플레이어 상태 체크
 	bool IsPlayerStateToFrozenOrDead();
+	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
+	bool IsPlayerDetectedByAIPerception();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Custom");
+	UPROPERTY(VisibleAnywhere, Category = "FSM");
 	class UFSMComponent* Fsm;
 
-	UPROPERTY(VisibleAnywhere, Category = "Custom")
+	UPROPERTY(VisibleAnywhere, Category = "FSM");
+	class UAIPerceptionComponent* AIPerceptionComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "FSM");
+	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
+
+	UPROPERTY(VisibleAnywhere, Category = "FSM")
 	class UMH_ShootComp* ShootComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Custom")
+	UPROPERTY(EditDefaultsOnly, Category = "FSM")
 	int32 Hp = 1;
 
 	// Patrol 관련 변수
-	//bool bIsPatrolling = true;
 	bool bMovingForward = true;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
 	bool bIsMoving = false;		// 현재 이동 중인지 여부
 	bool bIsRotating = false;	// 회전 중인지 여부

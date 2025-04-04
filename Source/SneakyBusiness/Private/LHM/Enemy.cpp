@@ -1,8 +1,10 @@
-#include "LHM/Enemy.h"
+ï»¿#include "LHM/Enemy.h"
 #include "LHM/FSMComponent.h"
 #include "MH/MH_ShootComp.h"
 #include "MH/Player_Nick.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 AEnemy::AEnemy()
 {
@@ -10,10 +12,26 @@ AEnemy::AEnemy()
 
 	Fsm = CreateDefaultSubobject<UFSMComponent>(TEXT("FSMComp"));
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
+	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
-	bMovingForward = true;
-	bIsMoving = false;
-	bIsRotating = false;
+	// ì‹œì•¼ ì„¤ì •
+	SightConfig->SightRadius = 500.0f; // í”Œë ˆì´ì–´ë¥¼ ê°ì§€í•  ìˆ˜ ìˆëŠ” ê±°ë¦¬
+	SightConfig->LoseSightRadius = 520.0f; // í”Œë ˆì´ì–´ë¥¼ ì‹œì•¼ì—ì„œ ë†“ì¹˜ëŠ” ê±°ë¦¬ (ì•½ê°„ ì—¬ìœ )
+	SightConfig->PeripheralVisionAngleDegrees = 90.0f; // ì–‘ ì˜†ìœ¼ë¡œ 45ë„ì”© ì´ 90ë„ ì‹œì•¼ê°
+
+	// DetectionByAffiliation ì–´ë–¤ íŒ€ íƒ€ì…(Pawn) ê°ì§€í• ì§€ ì—¬ë¶€
+	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+	// ì–´ë–¤ ê°ì§€ ì„¼ìŠ¤ë¥¼ ì‚¬ìš©í• ì§€ ë“±ë¡
+	AIPerceptionComp->ConfigureSense(*SightConfig);
+	// ì´ AIê°€ ì‚¬ìš©í•˜ëŠ” ì£¼ ê°ì§€ íƒ€ì… ì„¤ì •
+	AIPerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());
+	// ë¸ë¦¬ê²Œì´íŠ¸ ë°”ì¸ë”© (ê°ì§€ ëŒ€ìƒì´ ê°±ì‹ ë  ë•Œë§ˆë‹¤ í˜¸ì¶œ)
+	AIPerceptionComp->OnPerceptionUpdated.AddDynamic(this, &AEnemy::OnPerceptionUpdated);
+
 }
 
 void AEnemy::BeginPlay()
@@ -26,10 +44,22 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// ¼øÂû Áß È¸Àü º¸°£
+	// ì‹œì•¼ ë²”ìœ„ ì‹œê°í™”
+	if (SightConfig)
+	{
+		FVector Start = GetActorLocation()+FVector(0,0,50.0f);
+		FVector Forward = GetActorForwardVector();
+
+		float SightRadius = SightConfig->SightRadius;
+		float HalfFOVRadians = FMath::DegreesToRadians(SightConfig->PeripheralVisionAngleDegrees / 2.0f);
+
+		DrawDebugCone(GetWorld(), Start, Forward, SightRadius, HalfFOVRadians, HalfFOVRadians, 12, FColor::Green, false, 0.1f, 0, 2.0f);
+	}
+
+	// ìˆœì°° ì¤‘ íšŒì „ ë³´ê°„
 	if (bIsRotating) LerpRotation(DeltaTime);
 
-	// ÀÌµ¿ º¸°£ Àû¿ë
+	// ì´ë™ ë³´ê°„ ì ìš©
 	if (bIsMovingSideways)
 	{
 		FVector CurrentLocation = GetActorLocation();
@@ -48,41 +78,43 @@ void AEnemy::Patrol()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
 
-	// ÇÃ·¹ÀÌ¾î °¨Áö
+	// í”Œë ˆì´ì–´ ê°ì§€
 	if (!bIsRotating)
 	{
-		if (IsPlayerDetected())
+		//if (IsPlayerDetected())
+		if(IsPlayerDetectedByAIPerception())
 		{
 			Fsm->SetState(EEnemyState::Chase);
+			return;
 		}
 	}
 
 	if (!bIsMoving && !bIsRotating)
 	{
-		// ¸ñÇ¥ À§Ä¡ ¼³Á¤
+		// ëª©í‘œ ìœ„ì¹˜ ì„¤ì •
 		TargetLoc = GetActorLocation() + FVector((bMovingForward ? 500.0f : -500.0f), 0, 0);
 		bIsMoving = true;
 	}
 
-	// È¸Àü ÁßÀÌ¸é ÀÌµ¿ÇÏÁö ¾ÊÀ½
+	// íšŒì „ ì¤‘ì´ë©´ ì´ë™í•˜ì§€ ì•ŠìŒ
 	if(bIsRotating) return;
 
 	FVector CurrentLoc = GetActorLocation();
 	FVector Dir = (TargetLoc - CurrentLoc).GetSafeNormal();
 	float Dist = FVector::Dist(CurrentLoc, TargetLoc);
 
-	// ¸ñÇ¥ ÁöÁ¡±îÁö ¾ÆÁ÷ µµ´ŞÇÏÁö ¾Ê¾ÒÀ¸¸é ÀÌµ¿
+	// ëª©í‘œ ì§€ì ê¹Œì§€ ì•„ì§ ë„ë‹¬í•˜ì§€ ì•Šì•˜ìœ¼ë©´ ì´ë™
 	if (Dist > 1.0f)
 	{
 		AddMovementInput(Dir, Speed);
 	}
-	// ¸ñÇ¥ ÁöÁ¡¿¡ µµ´ŞÇÏ¸é ¹æÇâ ¹İÀü
+	// ëª©í‘œ ì§€ì ì— ë„ë‹¬í•˜ë©´ ë°©í–¥ ë°˜ì „
 	else
 	{
 		bMovingForward = !bMovingForward;
 		bIsMoving = false;
 
-		// ¹æÇâ¿¡ µû¶ó ZÃà È¸Àü°ª ¼³Á¤
+		// ë°©í–¥ì— ë”°ë¼ Zì¶• íšŒì „ê°’ ì„¤ì •
 		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
@@ -91,19 +123,21 @@ void AEnemy::Patrol()
 
 void AEnemy::Attack()
 {
-	//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
+	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
+	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
-	// ÇÃ·¹ÀÌ¾î °¨Áö ¸øÇÏ¸é ¼øÂû»óÅÂ·Î ÀüÈ¯
-	if (!IsPlayerDetected())
+	// í”Œë ˆì´ì–´ ê°ì§€ ëª»í•˜ë©´ ìˆœì°°ìƒíƒœë¡œ ì „í™˜
+	//if (!IsPlayerDetected())
+	if(!IsPlayerDetectedByAIPerception())
 	{
 		Fsm->SetState(EEnemyState::Patrol);
+		return;
 	}
 
 	if (!bAttackStarted)
 	{
 		bAttackStarted = true;
-		// 1ÃÊ ÈÄ ÃÑ¾Ë ¹ß»ç
+		// 1ì´ˆ í›„ ì´ì•Œ ë°œì‚¬
 		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::DoShooting, 1.0f, false);
 	}
 }
@@ -117,11 +151,11 @@ void AEnemy::Chase()
 	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (Player)
 	{
-		// ÇÃ·¹ÀÌ¾î ¹æÇâÀ¸·Î ÀÌµ¿
+		// í”Œë ˆì´ì–´ ë°©í–¥ìœ¼ë¡œ ì´ë™
 		FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 		AddMovementInput(Direction, 0.5f);
 
-		// ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸® Ã¼Å© (300 ÀÌÇÏÀÌ¸é Attack »óÅÂ·Î ÀüÈ¯)
+		// í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ ì²´í¬ (300 ì´í•˜ì´ë©´ Attack ìƒíƒœë¡œ ì „í™˜)
 		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
 		{
 			Fsm->SetState(EEnemyState::Attack);
@@ -145,7 +179,7 @@ void AEnemy::Stun()
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
 
 	Hp = 1;
-	// 3ÃÊ µÚ ±ú¾î³²À¸·Î »óÅÂ º¯°æ
+	// 3ì´ˆ ë’¤ ê¹¨ì–´ë‚¨ìœ¼ë¡œ ìƒíƒœ ë³€ê²½
 	Fsm->SetState(EEnemyState::WakeUp);
 }
 
@@ -155,63 +189,94 @@ void AEnemy::WakeUp()
 	Fsm->SetState(EEnemyState::Patrol);
 }
 
-bool AEnemy::IsPlayerDetected()
+void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if(IsPlayerStateToFrozenOrDead()) return;
-
-	FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
-
-	FVector ForwardVec = GetActorForwardVector();
-	FVector LeftVec = ForwardVec.RotateAngleAxis(-45, FVector(0, 0, 1));
-	FVector RightVec = ForwardVec.RotateAngleAxis(45, FVector(0, 0, 1));
-
-	FVector End = Start + (ForwardVec * 500.0f);
-	FVector EndLeft = Start + (LeftVec * 500.0f);
-	FVector EndRight = Start + (RightVec * 500.0f);
-
-	FHitResult HitResult, HitResultLeft, HitResultRight;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // ¿¡³Ê¹Ì Á¦¿Ü
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params);
-	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(HitResultLeft, Start, EndLeft, ECC_Pawn, Params);
-	bool bHitRight = GetWorld()->LineTraceSingleByChannel(HitResultRight, Start, EndRight, ECC_Pawn, Params);
-
-	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-	//DrawDebugLine(GetWorld(), Start, EndLeft, bHitLeft ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-	//DrawDebugLine(GetWorld(), Start, EndRight, bHitRight ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-
-	if (bHit)
+	for (AActor* Actor : UpdatedActors)
 	{
-		AActor* HitActor = HitResult.GetActor();
-		if(HitActor && HitActor->ActorHasTag("Player"))
+		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
+		{
+			if (!IsPlayerStateToFrozenOrDead())
+			{
+				Fsm->SetState(EEnemyState::Chase);
+				return;
+			}
+		}
+	}
+}
+
+bool AEnemy::IsPlayerDetectedByAIPerception()
+{
+	TArray<AActor*> SensedActors;
+	AIPerceptionComp->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SensedActors);
+
+	for (AActor* Actor : SensedActors)
+	{
+		APlayer_Nick* Player = Cast<APlayer_Nick>(Actor);
+		if (Player && !IsPlayerStateToFrozenOrDead())
 		{
 			return true;
 		}
 	}
-
-	/*if (bHitLeft)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor && HitActor->ActorHasTag("Player"))
-		{
-			MoveSideways(-100.0f);
-			return true;
-		}
-	}
-
-	if (bHitRight)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor && HitActor->ActorHasTag("Player"))
-		{
-			MoveSideways(100.0f);
-			return true;
-		}
-	}*/
-
 	return false;
 }
+
+//bool AEnemy::IsPlayerDetected()
+//{
+//	if(IsPlayerStateToFrozenOrDead()) return false;
+//
+//	FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
+//
+//	FVector ForwardVec = GetActorForwardVector();
+//	FVector LeftVec = ForwardVec.RotateAngleAxis(-45, FVector(0, 0, 1));
+//	FVector RightVec = ForwardVec.RotateAngleAxis(45, FVector(0, 0, 1));
+//
+//	FVector End = Start + (ForwardVec * 500.0f);
+//	FVector EndLeft = Start + (LeftVec * 500.0f);
+//	FVector EndRight = Start + (RightVec * 500.0f);
+//
+//	FHitResult HitResult, HitResultLeft, HitResultRight;
+//	FCollisionQueryParams Params;
+//	Params.AddIgnoredActor(this); // ì—ë„ˆë¯¸ ì œì™¸
+//
+//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params);
+//	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(HitResultLeft, Start, EndLeft, ECC_Pawn, Params);
+//	bool bHitRight = GetWorld()->LineTraceSingleByChannel(HitResultRight, Start, EndRight, ECC_Pawn, Params);
+//
+//	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
+//	//DrawDebugLine(GetWorld(), Start, EndLeft, bHitLeft ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
+//	//DrawDebugLine(GetWorld(), Start, EndRight, bHitRight ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
+//
+//	if (bHit)
+//	{
+//		AActor* HitActor = HitResult.GetActor();
+//		if(HitActor && HitActor->ActorHasTag("Player"))
+//		{
+//			return true;
+//		}
+//	}
+//
+//	/*if (bHitLeft)
+//	{
+//		AActor* HitActor = HitResult.GetActor();
+//		if (HitActor && HitActor->ActorHasTag("Player"))
+//		{
+//			MoveSideways(-100.0f);
+//			return true;
+//		}
+//	}
+//
+//	if (bHitRight)
+//	{
+//		AActor* HitActor = HitResult.GetActor();
+//		if (HitActor && HitActor->ActorHasTag("Player"))
+//		{
+//			MoveSideways(100.0f);
+//			return true;
+//		}
+//	}*/
+//
+//	return false;
+//}
 
 void AEnemy::LerpRotation(float DeltaTime)
 {
@@ -220,7 +285,7 @@ void AEnemy::LerpRotation(float DeltaTime)
 
 	SetActorRotation(NewRot);
 
-	// ¸ñÇ¥ È¸Àü¿¡ °ÅÀÇ µµ´ŞÇÏ¸é Á¾·á
+	// ëª©í‘œ íšŒì „ì— ê±°ì˜ ë„ë‹¬í•˜ë©´ ì¢…ë£Œ
 	if (FMath::Abs(NewRot.Yaw - TargetRot.Yaw) < 1.0f)
 	{
 		SetActorRotation(TargetRot);
@@ -230,20 +295,20 @@ void AEnemy::LerpRotation(float DeltaTime)
 
 void AEnemy::MoveSideways(float OffsetY)
 {
-	// ÇöÀç È¸Àü °ª ÀúÀå
+	// í˜„ì¬ íšŒì „ ê°’ ì €ì¥
 	float InitialYaw = GetActorRotation().Yaw;
 
-	// ¸ÕÀú -90µµ È¸Àü ½ÃÀÛ
+	// ë¨¼ì € -90ë„ íšŒì „ ì‹œì‘
 	TargetYaw = InitialYaw = 90.0f;
 
-	// ÀÌµ¿ ¸ñÇ¥ ¼³Á¤
+	// ì´ë™ ëª©í‘œ ì„¤ì •
 	SideTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
 	bIsMovingSideways = true;
 }
 
 void AEnemy::DoShooting()
 {
-	// ÃÑ¾Ë ¹ß»ç
+	// ì´ì•Œ ë°œì‚¬
 	if (ShootComp)
 	{
 		FVector FireLocation = GetActorLocation();
@@ -251,19 +316,19 @@ void AEnemy::DoShooting()
 		ShootComp->Shooting(FireLocation, FireRotation);
 	}
 
-	// °ø°İ ÈÄ ´Ù½Ã Chase »óÅÂ·Î ÀüÈ¯ÇØ¼­ ÇÃ·¹ÀÌ¾î¸¦ ÃßÀû
+	// ê³µê²© í›„ ë‹¤ì‹œ Chase ìƒíƒœë¡œ ì „í™˜í•´ì„œ í”Œë ˆì´ì–´ë¥¼ ì¶”ì 
 	bAttackStarted = false;
 	Fsm->SetState(EEnemyState::Patrol);
 }
 
 bool AEnemy::IsPlayerStateToFrozenOrDead()
 {
-	// MH¿äÃ» : ÇÃ·¹ÀÌ¾î°¡ Frozen, DeadÀÏ ¶§ °¨Áö ¸øÇÏ°Ô ¼³Á¤
-	APlayer_Nick* Player = Cast<APlayer_Nick>(GetOwner());
+	// MHìš”ì²­ : í”Œë ˆì´ì–´ê°€ Frozen, Deadì¼ ë•Œ ê°ì§€ ëª»í•˜ê²Œ ì„¤ì •
+	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (Player)
 	{
-		EPlayerState PlayerState = Player->CurrentPlayerState;
-		if (PlayerState == EPlayerState::Frozen || PlayerState == EPlayerState::Invincible)
+		if (Player->CurrentPlayerState == EPlayerState::Frozen
+		|| Player->CurrentPlayerState == EPlayerState::Invincible)
 		{
 			return true;
 		}
