@@ -13,8 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest/3/2V/4CZ3QSS9JDVMCN9ER1CHYN.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest/3/2V/4CZ3QSS9JDVMCN9ER1CHYN.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MHPlayer_Nick.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MHPlayer_Nick.uasset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,6 +200,10 @@
       <workItem from="1742832496918" duration="105000" />
       <workItem from="1742872515990" duration="21771000" />
       <workItem from="1743073739431" duration="1945000" />
+      <workItem from="1743529107790" duration="802000" />
+      <workItem from="1743658510098" duration="1736000" />
+      <workItem from="1743870903927" duration="1112000" />
+      <workItem from="1743879847275" duration="707000" />
     </task>
     <servers />
   </component>
