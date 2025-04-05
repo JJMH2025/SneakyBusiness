@@ -141,7 +141,6 @@ void AEnemy::Chase()
 		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
-		bIsMoving = false;
 
 		Fsm->SetState(EEnemyState::Patrol);
 		return;
