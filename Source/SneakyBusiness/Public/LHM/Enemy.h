@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "FSMComponent.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -20,29 +21,31 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Patrol();		// ¼øÂû
-	virtual void Attack();		// °ø°İ
-	virtual void Chase();		// ÃßÀû
-	virtual void Signal();		// ½ÅÈ£
-	virtual void HitByDoor();	// ¹®¿¡ ºÎµúÈû
-	virtual void Stun();		// ±âÀı
-	virtual void WakeUp();		// ±ú¾î³²
+	virtual void Patrol();		// ìˆœì°°
+	virtual void Attack();		// ê³µê²©
+	virtual void Chase();		// ì¶”ì 
+	virtual void Signal();		// ì‹ í˜¸
+	virtual void HitByDoor();	// ë¬¸ì— ë¶€ë”ªí˜
+	virtual void Stun();		// ê¸°ì ˆ
+	virtual void WakeUp();		// ê¹¨ì–´ë‚¨
 
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	// Chaseì¼ ë•Œ A, B ê³µê°„ ì „í™˜ìš© ìƒíƒœì— ë”°ë¥¸ í•¨ìˆ˜ë“¤
+	void HandleChaseExtended(EEnemyState& OutNextState);
 
-	//bool IsPlayerDetected();			// °¨Áö
-	void LerpRotation(float DeltaTime);	// ¼øÂû Áß È¸Àü
-	void MoveSideways(float OffsetY);
-	void DoShooting();					// ÃÑ¾Ë ¹ß»ç
-	void ReceiveDamage();				// ÇÇ°İ
-	
-	// ÇÃ·¹ÀÌ¾î »óÅÂ Ã¼Å©
-	bool IsPlayerStateToFrozenOrDead();
-	// ¼öµ¿À¸·Î »óÅÂ À¯Áö ¿©ºÎ ÆÇ´Ü (ÃßÀû Áß ÇÃ·¹ÀÌ¾î¸¦ ³õÃÆ´ÂÁö ÆÇ´Ü)
+	void LerpRotation(float DeltaTime);	// ìˆœì°° ì¤‘ íšŒì „
+	void LerpMoveToDepth(float DeltaTime);	// ì¶”ì  ì¤‘ ê³µê°„ ì´ë™
+	void DoShooting();					// ì´ì•Œ ë°œì‚¬
+	void ReceiveDamage();				// í”¼ê²©
+
+
+	// ìˆ˜ë™ìœ¼ë¡œ ìƒíƒœ ìœ ì§€ ì—¬ë¶€ íŒë‹¨ (ì¶”ì  ì¤‘ í”Œë ˆì´ì–´ë¥¼ ë†“ì³¤ëŠ”ì§€ íŒë‹¨)
 	bool IsPlayerDetectedByAIPerception();
-	// Àå¾Ö¹°ÀÌ ÆÇº°
+	// ì¥ì• ë¬¼ì´ íŒë³„
 	bool IsObstacleAhead(float Distance = 100.0f);
+	// í”Œë ˆì´ì–´ ìƒíƒœ ì²´í¬
+	bool IsPlayerStateToFrozenOrDead();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "FSM");
@@ -52,7 +55,7 @@ private:
 	class UAIPerceptionComponent* AIPerceptionComp;
 	
 	UPROPERTY(VisibleAnywhere, Category = "FSM");
-	class UAISenseConfig_Sight* SightConfig; // ½Ã°¢ ±â¹İ °¨Áö
+	class UAISenseConfig_Sight* SightConfig; // ì‹œê° ê¸°ë°˜ ê°ì§€
 
 	UPROPERTY(VisibleAnywhere, Category = "FSM")
 	class UMH_ShootComp* ShootComp;
@@ -60,16 +63,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "FSM")
 	int32 Hp = 1;
 
-	// Patrol °ü·Ã º¯¼ö
-	bool bMovingForward = true;	// ÀÌµ¿ ¹æÇâ (true: ¿À¸¥ÂÊ, false: ¿ŞÂÊ)
-	bool bIsRotating = false;	// È¸Àü ÁßÀÎÁö ¿©ºÎ
-	float Speed = 0.2f;			// ¼øÂû ¼Óµµ
-	FRotator TargetRot;			// ¸ñÇ¥ È¸Àü °ª
-
 	// Chase
-	bool bIsMovingSideways = false; // ÁÂ¿ì ÀÌµ¿ ÁßÀÎÁö ¿©ºÎ
-	FVector SideTargetLocation;		// ¸ñÇ¥ ÀÌµ¿ À§Ä¡
-	float TargetYaw = 0.0f;			// ¸ñÇ¥ È¸Àü °ª
+	bool bIsASpace = true;	// ì•ê³µê°„(A) = true, ë’¤ê³µê°„(B) = false
+	FVector MoveTargetLocation;
+	bool bIsMovingDepth = false;
+
+	// Patrol
+	bool bMovingForward = true;	// ì´ë™ ë°©í–¥ (true: ì˜¤ë¥¸ìª½, false: ì™¼ìª½)
+	bool bIsRotating = false;	// íšŒì „ ì¤‘ì¸ì§€ ì—¬ë¶€
+	float Speed = 0.2f;			// ìˆœì°° ì†ë„
+	FRotator TargetRot;			// ëª©í‘œ íšŒì „ ê°’
 
 	// Attack
 	FTimerHandle AttackTimerHandle;

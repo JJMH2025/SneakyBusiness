@@ -59,19 +59,8 @@ void AEnemy::Tick(float DeltaTime)
 	// 순찰 중 회전 보간
 	if (bIsRotating) LerpRotation(DeltaTime);
 
-	// 이동 보간 적용
-	if (bIsMovingSideways)
-	{
-		FVector CurrentLocation = GetActorLocation();
-		FVector NewLocation = FMath::VInterpTo(CurrentLocation, SideTargetLocation, DeltaTime, 5.0f);
-		SetActorLocation(NewLocation);
-
-		if (FVector::Dist(NewLocation, SideTargetLocation) < 2.0f)
-		{
-			SetActorLocation(SideTargetLocation);
-			bIsMovingSideways = false;
-		}
-	}
+	// 추적 중 공간 이동 보간
+	if (bIsMovingDepth) LerpMoveToDepth(DeltaTime);
 }
 
 void AEnemy::Patrol()
@@ -114,7 +103,6 @@ void AEnemy::Attack()
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
 	// 플레이어 감지 못하면 순찰상태로 전환
-	//if (!IsPlayerDetected())
 	if(!IsPlayerDetectedByAIPerception())
 	{
 		Fsm->SetState(EEnemyState::Patrol);
@@ -133,8 +121,14 @@ void AEnemy::Chase()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
 
-	if (IsPlayerStateToFrozenOrDead()) return;
+	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
+	if (IsPlayerStateToFrozenOrDead())
+	{
+		Fsm->SetState(EEnemyState::Patrol);
+		return;
+	}
 
+	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
 	if (IsObstacleAhead(100.0f))
 	{
 		bMovingForward = !bMovingForward;
@@ -201,6 +195,126 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	}
 }
 
+void AEnemy::HandleChaseExtended(EEnemyState& OutNextState)
+{
+	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
+	if (IsPlayerStateToFrozenOrDead())
+	{
+		Fsm->SetState(EEnemyState::Patrol);
+		return;
+	}
+
+	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
+	if (IsObstacleAhead(100.0f))
+	{
+		bMovingForward = !bMovingForward;
+		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
+		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
+		bIsRotating = true;
+
+		Fsm->SetState(EEnemyState::Patrol);
+		return;
+	}
+
+	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!Player) return;
+
+	switch (Fsm->GetState())
+	{
+		case EEnemyState::Chase:
+		{
+			if (Player->bIsPlayerLoc != bIsASpace)
+			{
+				// A공간에 있지만 플레이어가 B에 있을 경우 → 먼저 X축 정렬을 시도
+				FVector DirToPlayer = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+				AddMovementInput(FVector(DirToPlayer.X, 0, 0), 0.5f); // X축만 이동
+
+				float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
+				if (XDiff < 150.0f)
+				{
+					OutNextState = EEnemyState::MoveToDepth;
+				}
+			}
+			else
+			{
+				Chase();
+			}
+			break;
+		}
+
+		case EEnemyState::MoveToDepth:
+		{
+			//float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
+			//SetActorLocation(GetActorLocation() + FVector(0, OffsetY, 0));
+			//bIsASpace = !bIsASpace; // 공간 전환 완료
+			//OutNextState = EEnemyState::Chase;
+			//break;
+
+			if (!bIsMovingDepth)
+			{
+				float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
+				MoveTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
+				bIsMovingDepth = true;
+			}
+			break;
+		}
+
+		default:
+			break;
+	}
+}
+
+void AEnemy::LerpRotation(float DeltaTime)
+{
+	FRotator CurrrentRot = GetActorRotation();
+	FRotator NewRot = FMath::RInterpTo(CurrrentRot, TargetRot, DeltaTime, 5.0f);
+
+	SetActorRotation(NewRot);
+
+	// 목표 회전에 거의 도달하면 종료
+	if (FMath::Abs(NewRot.Yaw - TargetRot.Yaw) < 1.0f)
+	{
+		SetActorRotation(TargetRot);
+		bIsRotating = false;
+	}
+}
+
+void AEnemy::LerpMoveToDepth(float DeltaTime)
+{
+	FVector NewLoc = FMath::Lerp(GetActorLocation(), MoveTargetLocation, 5.0f * DeltaTime);
+	SetActorLocation(NewLoc);
+
+	if (FVector::Dist(NewLoc, MoveTargetLocation) < 1.0f)
+	{
+		SetActorLocation(MoveTargetLocation);
+		bIsASpace = !bIsASpace;
+		bIsMovingDepth = false;
+		Fsm->SetState(EEnemyState::Chase);
+	}
+}
+
+void AEnemy::DoShooting()
+{
+	// 총알 발사
+	if (ShootComp)
+	{
+		FVector FireLocation = GetActorLocation();
+		FRotator FireRotation = GetActorRotation();
+		ShootComp->Shooting(FireLocation, FireRotation);
+	}
+
+	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
+	bAttackStarted = false;
+	Fsm->SetState(EEnemyState::Patrol);
+}
+
+void AEnemy::ReceiveDamage()
+{
+	UE_LOG(LogTemp, Log, TEXT("Enemy is Received Damage!"));
+	//Hp -= 1;
+	//if (Hp <= 0) Fsm->SetState(EEnemyState::Stun);
+}
+
 bool AEnemy::IsPlayerDetectedByAIPerception()
 {
 	TArray<AActor*> SensedActors;
@@ -224,114 +338,15 @@ bool AEnemy::IsObstacleAhead(float Distance)
 	FVector End = Start + (ForwardVec * Distance);
 
 	FHitResult HitResult;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_WorldStatic, Params);
+	bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, ObjectQueryParams, Params);
 	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Blue, false, 1.0f, 0, 2.0f);
 
 	return bHit;
-}
-
-//bool AEnemy::IsPlayerDetected()
-//{
-//	if(IsPlayerStateToFrozenOrDead()) return false;
-//
-//	FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
-//
-//	FVector ForwardVec = GetActorForwardVector();
-//	FVector LeftVec = ForwardVec.RotateAngleAxis(-45, FVector(0, 0, 1));
-//	FVector RightVec = ForwardVec.RotateAngleAxis(45, FVector(0, 0, 1));
-//
-//	FVector End = Start + (ForwardVec * 500.0f);
-//	FVector EndLeft = Start + (LeftVec * 500.0f);
-//	FVector EndRight = Start + (RightVec * 500.0f);
-//
-//	FHitResult HitResult, HitResultLeft, HitResultRight;
-//	FCollisionQueryParams Params;
-//	Params.AddIgnoredActor(this); // 에너미 제외
-//
-//	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params);
-//	bool bHitLeft = GetWorld()->LineTraceSingleByChannel(HitResultLeft, Start, EndLeft, ECC_Pawn, Params);
-//	bool bHitRight = GetWorld()->LineTraceSingleByChannel(HitResultRight, Start, EndRight, ECC_Pawn, Params);
-//
-//	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-//	//DrawDebugLine(GetWorld(), Start, EndLeft, bHitLeft ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-//	//DrawDebugLine(GetWorld(), Start, EndRight, bHitRight ? FColor::Red : FColor::Green, false, 1.0f, 0, 2.0f);
-//
-//	if (bHit)
-//	{
-//		AActor* HitActor = HitResult.GetActor();
-//		if(HitActor && HitActor->ActorHasTag("Player"))
-//		{
-//			return true;
-//		}
-//	}
-//
-//	/*if (bHitLeft)
-//	{
-//		AActor* HitActor = HitResult.GetActor();
-//		if (HitActor && HitActor->ActorHasTag("Player"))
-//		{
-//			MoveSideways(-100.0f);
-//			return true;
-//		}
-//	}
-//
-//	if (bHitRight)
-//	{
-//		AActor* HitActor = HitResult.GetActor();
-//		if (HitActor && HitActor->ActorHasTag("Player"))
-//		{
-//			MoveSideways(100.0f);
-//			return true;
-//		}
-//	}*/
-//
-//	return false;
-//}
-
-void AEnemy::LerpRotation(float DeltaTime)
-{
-	FRotator CurrrentRot = GetActorRotation();
-	FRotator NewRot = FMath::RInterpTo(CurrrentRot, TargetRot, DeltaTime, 5.0f);
-
-	SetActorRotation(NewRot);
-
-	// 목표 회전에 거의 도달하면 종료
-	if (FMath::Abs(NewRot.Yaw - TargetRot.Yaw) < 1.0f)
-	{
-		SetActorRotation(TargetRot);
-		bIsRotating = false;
-	}
-}
-
-void AEnemy::MoveSideways(float OffsetY)
-{
-	// 현재 회전 값 저장
-	float InitialYaw = GetActorRotation().Yaw;
-
-	// 먼저 -90도 회전 시작
-	TargetYaw = InitialYaw = 90.0f;
-
-	// 이동 목표 설정
-	SideTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
-	bIsMovingSideways = true;
-}
-
-void AEnemy::DoShooting()
-{
-	// 총알 발사
-	if (ShootComp)
-	{
-		FVector FireLocation = GetActorLocation();
-		FRotator FireRotation = GetActorRotation();
-		ShootComp->Shooting(FireLocation, FireRotation);
-	}
-
-	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
-	bAttackStarted = false;
-	Fsm->SetState(EEnemyState::Patrol);
 }
 
 bool AEnemy::IsPlayerStateToFrozenOrDead()
@@ -341,7 +356,7 @@ bool AEnemy::IsPlayerStateToFrozenOrDead()
 	if (Player)
 	{
 		if (Player->CurrentPlayerState == EPlayerState::Frozen
-		|| Player->CurrentPlayerState == EPlayerState::Invincible)
+			|| Player->CurrentPlayerState == EPlayerState::Invincible)
 		{
 			return true;
 		}
@@ -352,10 +367,4 @@ bool AEnemy::IsPlayerStateToFrozenOrDead()
 	}
 
 	return false;
-}
-
-void AEnemy::ReceiveDamage()
-{
-	Hp -= 1;
-	if (Hp <= 0) Fsm->SetState(EEnemyState::Stun);
 }

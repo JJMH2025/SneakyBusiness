@@ -1,4 +1,4 @@
-#include "LHM/FSMComponent.h"
+ï»¿#include "LHM/FSMComponent.h"
 #include "LHM/Enemy.h"
 
 UFSMComponent::UFSMComponent()
@@ -19,7 +19,7 @@ void UFSMComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ÇöÀç »óÅÂ¿¡ µû¶ó Çàµ¿ ½ÇÇà
+	// í˜„ìž¬ ìƒíƒœì— ë”°ë¼ í–‰ë™ ì‹¤í–‰
 	if (Enemy) HandleState();
 }
 
@@ -41,7 +41,8 @@ void UFSMComponent::HandleState()
 			Enemy->Attack();
 			break;
 		case EEnemyState::Chase:
-			Enemy->Chase();
+		case EEnemyState::MoveToDepth:
+			Enemy->HandleChaseExtended(CurrentState);
 			break;
 		case EEnemyState::Signal:
 			Enemy->Signal();
