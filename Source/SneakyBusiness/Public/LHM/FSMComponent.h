@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "FSMComponent.generated.h"
 
-// FSM »óÅÂ Á¤ÀÇ
+// FSM ìƒíƒœ ì •ì˜
 UENUM()
 enum class EEnemyState : uint8
 {
@@ -14,7 +14,10 @@ enum class EEnemyState : uint8
 	Signal		UMETA(DisplayName = "Signaling"),
 	HitByDoor	UMETA(DisplayName = "Hit by Door"),
 	Stun		UMETA(DisplayName = "Stunned"),
-	WakeUp		UMETA(DisplayName = "Waking Up")
+	WakeUp		UMETA(DisplayName = "Waking Up"),
+
+	// ì¶”ì  ì¤‘ ê³µê°„ ì „í™˜ìš© ìƒíƒœ
+	MoveToDepth
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
