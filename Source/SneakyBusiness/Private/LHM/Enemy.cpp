@@ -89,36 +89,23 @@ void AEnemy::Patrol()
 		}
 	}
 
-	if (!bIsMoving && !bIsRotating)
-	{
-		// 목표 위치 설정
-		TargetLoc = GetActorLocation() + FVector((bMovingForward ? 500.0f : -500.0f), 0, 0);
-		bIsMoving = true;
-	}
-
 	// 회전 중이면 이동하지 않음
-	if(bIsRotating) return;
+	if (bIsRotating) return;
 
-	FVector CurrentLoc = GetActorLocation();
-	FVector Dir = (TargetLoc - CurrentLoc).GetSafeNormal();
-	float Dist = FVector::Dist(CurrentLoc, TargetLoc);
-
-	// 목표 지점까지 아직 도달하지 않았으면 이동
-	if (Dist > 1.0f)
+	// 장애물 감지
+	if (IsObstacleAhead(100.0f))
 	{
-		AddMovementInput(Dir, Speed);
-	}
-	// 목표 지점에 도달하면 방향 반전
-	else
-	{
+		// 방향 반전 + 회전
 		bMovingForward = !bMovingForward;
-		bIsMoving = false;
-
-		// 방향에 따라 Z축 회전값 설정
 		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
+		//bIsMoving = false;
+		return;
 	}
+
+	// 정면으로 이동
+	AddMovementInput(GetActorForwardVector(), Speed);
 }
 
 void AEnemy::Attack()
@@ -148,18 +135,29 @@ void AEnemy::Chase()
 
 	if (IsPlayerStateToFrozenOrDead()) return;
 
-	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (Player)
+	if (IsObstacleAhead(100.0f))
 	{
-		// 플레이어 방향으로 이동
-		FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		AddMovementInput(Direction, 0.5f);
+		bMovingForward = !bMovingForward;
+		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
+		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
+		bIsRotating = true;
+		bIsMoving = false;
 
-		// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
-		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
-		{
-			Fsm->SetState(EEnemyState::Attack);
-		}
+		Fsm->SetState(EEnemyState::Patrol);
+		return;
+	}
+
+	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if(!Player) return;
+
+	// 플레이어 방향으로 이동
+	FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	AddMovementInput(Direction, 0.5f);
+
+	// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
+	if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
+	{
+		Fsm->SetState(EEnemyState::Attack);
 	}
 }
 
@@ -218,6 +216,22 @@ bool AEnemy::IsPlayerDetectedByAIPerception()
 		}
 	}
 	return false;
+}
+
+bool AEnemy::IsObstacleAhead(float Distance)
+{
+	FVector Start = GetActorLocation() + FVector(0, 0, -30.0f);
+	FVector ForwardVec = GetActorForwardVector();
+	FVector End = Start + (ForwardVec * Distance);
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_WorldStatic, Params);
+	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Red : FColor::Blue, false, 1.0f, 0, 2.0f);
+
+	return bHit;
 }
 
 //bool AEnemy::IsPlayerDetected()

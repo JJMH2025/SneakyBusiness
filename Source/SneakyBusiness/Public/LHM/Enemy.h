@@ -34,13 +34,15 @@ public:
 	//bool IsPlayerDetected();			// 감지
 	void LerpRotation(float DeltaTime);	// 순찰 중 회전
 	void MoveSideways(float OffsetY);
-	void DoShooting();
+	void DoShooting();					// 총알 발사
 	void ReceiveDamage();				// 피격
 	
 	// 플레이어 상태 체크
 	bool IsPlayerStateToFrozenOrDead();
 	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
 	bool IsPlayerDetectedByAIPerception();
+	// 장애물이 판별
+	bool IsObstacleAhead(float Distance = 100.0f);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "FSM");
@@ -60,10 +62,8 @@ private:
 
 	// Patrol 관련 변수
 	bool bMovingForward = true;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
-	bool bIsMoving = false;		// 현재 이동 중인지 여부
 	bool bIsRotating = false;	// 회전 중인지 여부
 	float Speed = 0.2f;			// 순찰 속도
-	FVector TargetLoc;			// 이동 목표 지점
 	FRotator TargetRot;			// 목표 회전 값
 
 	// Chase
