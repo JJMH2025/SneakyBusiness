@@ -177,7 +177,8 @@ public:
 	bool bIsHiding = false;
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
 	bool bIsInHideZone = false;
-	
+
+	bool bIsOverlapTargetItem;
 
 		
 };

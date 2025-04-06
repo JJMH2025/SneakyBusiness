@@ -23,12 +23,26 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+//Box Collision
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* BoxComponent;
+	
+	//Secne : 회전 애니메이션  root
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* RootScene;
+
+	//메쉬
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* DoorMesh;
+	
+	
 	UFUNCTION(Blueprintable)
-	void DoorOpen(const FVector& InstigatorForward);
+	void DoorOpen(const float LastDirection);
 
 	UFUNCTION(Blueprintable)
 	void DoorClosed();
 
-	
+	bool bIsRotatingDoor; // 회전
+	float TargetYaw; // 목표 회전 값
 
 };

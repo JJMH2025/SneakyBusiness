@@ -167,7 +167,7 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAJump, ETriggerEvent::Triggered, this, &APlayer_Nick::JumpNick);
 		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::Shooting);
 		EnhancedInputComp->BindAction(IATest1, ETriggerEvent::Triggered, this, &APlayer_Nick::TestF);
-		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::PlayerInteract);
+		EnhancedInputComp->BindAction(IAInteract, ETriggerEvent::Triggered, this, &APlayer_Nick::PlayerInteract);
 	}
 }
 
@@ -247,11 +247,12 @@ void APlayer_Nick::JumpNick()
 
 void APlayer_Nick::PlayerInteract()
 {
+	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Push E"));
 	if (bIsOverlapDoor)
 	{
 		if (OverlapDoor)
 		{
-			OverlapDoor->DoorOpen(GetActorForwardVector());
+			OverlapDoor->DoorOpen(LastHorizontalDirection);
 		}
 	}
 }
@@ -333,11 +334,19 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		bIsInHideZone = true;
 	}
 
-	OverlapDoor = Cast<AMH_Door>(OtherActor);
-	if (OverlapDoor)
+	if (OtherActor && OtherActor->ActorHasTag("Door"))
 	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Door"));
-		bIsOverlapDoor = true;
+		OverlapDoor = Cast<AMH_Door>(OtherActor);
+		if (OverlapDoor)
+		{
+			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Door"));
+			bIsOverlapDoor = true;
+		}
+	}
+
+	if (OtherActor && OtherActor->ActorHasTag("TargetItem"))
+	{
+		
 	}
 }
 
@@ -354,11 +363,15 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 		}
 	}
 
-	OverlapDoor = Cast<AMH_Door>(OtherActor);
-	if (OverlapDoor)
+	if (OtherActor && OtherActor->ActorHasTag("Door"))
 	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
-		bIsOverlapDoor = false;
+		if (OverlapDoor)
+		{
+			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
+			bIsOverlapDoor = false;
+			OverlapDoor->DoorClosed();
+			OverlapDoor=nullptr;
+		}
 	}
 }
 
