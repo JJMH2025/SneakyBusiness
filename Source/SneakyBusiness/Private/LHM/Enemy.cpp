@@ -112,7 +112,13 @@ void AEnemy::Attack()
 	{
 		bAttackStarted = true;
 		// 1초 후 총알 발사
-		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemy::DoShooting, 1.0f, false);
+		GetWorldTimerManager().SetTimer(
+			AttackTimerHandle, 
+			this, 
+			&AEnemy::DoShooting, 
+			1.0f, 
+			false
+		);
 	}
 }
 
@@ -168,22 +174,33 @@ void AEnemy::HitByDoor()
 
 void AEnemy::Stun()
 {
+	if(bIsStunned) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
 
+	bIsStunned = true;
 	Hp = 1;
-	// 3초 뒤 깨어남으로 상태 변경
-	Fsm->SetState(EEnemyState::WakeUp);
+
+	// 5초 뒤에 깨어남
+	GetWorldTimerManager().SetTimer(
+		StunTimerHandle,
+		this,
+		&AEnemy::HandleStunEnd,
+		5.0f,
+		false
+	);
 }
 
 void AEnemy::WakeUp()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy has woken up!"));
 	UE_LOG(LogTemp, Warning, TEXT("Enemy has woken up!"));
 	Fsm->SetState(EEnemyState::Patrol);
 }
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if (bIsRotating) return;
+	if (bIsRotating && bIsStunned) return;
 	
 	for (AActor* Actor : UpdatedActors)
 	{
@@ -233,7 +250,7 @@ void AEnemy::HandleChaseExtended(EEnemyState& OutNextState)
 				AddMovementInput(FVector(DirToPlayer.X, 0, 0), 0.5f); // X축만 이동
 
 				float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
-				if (XDiff < 150.0f)
+				if (XDiff < 100.0f)
 				{
 					OutNextState = EEnemyState::MoveToDepth;
 				}
@@ -313,9 +330,10 @@ void AEnemy::DoShooting()
 
 void AEnemy::ReceiveDamage()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy is Received Damage!"));
 	UE_LOG(LogTemp, Log, TEXT("Enemy is Received Damage!"));
-	//Hp -= 1;
-	//if (Hp <= 0) Fsm->SetState(EEnemyState::Stun);
+	Hp -= 1;
+	if (Hp <= 0) Fsm->SetState(EEnemyState::Stun);
 }
 
 bool AEnemy::IsPlayerDetectedByAIPerception()
@@ -370,4 +388,10 @@ bool AEnemy::IsPlayerStateToFrozenOrDead()
 	}
 
 	return false;
+}
+
+void AEnemy::HandleStunEnd()
+{
+	bIsStunned = false;
+	Fsm->SetState(EEnemyState::WakeUp);
 }
