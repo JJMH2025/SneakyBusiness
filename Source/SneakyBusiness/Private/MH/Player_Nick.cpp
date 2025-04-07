@@ -253,7 +253,7 @@ void APlayer_Nick::PlayerInteract()
 	{
 		if (OverlapDoor)
 		{
-			OverlapDoor->DoorOpen(GetActorForwardVector());
+			OverlapDoor->DoorOpen(GetActorForwardVector(),this);
 		}
 	}
 	if (bCanPickup)
@@ -331,7 +331,7 @@ void APlayer_Nick::PlayerTakeDamage()
 	}
 
 	//기절
-	StartFrozen();
+	Frozen();
 	//기절 애니메이션
 
 	//아이템 드롭
@@ -399,8 +399,11 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
-void APlayer_Nick::StartFrozen()
+void APlayer_Nick::Frozen()
 {
+	if (CurrentPlayerState == EPlayerState::Invincible || CurrentPlayerState == EPlayerState::Frozen)
+		return;
+	
 	CurrentPlayerState = EPlayerState::Frozen;
 	//움직임 X
 	APlayerController* PC = Cast<APlayerController>(GetController());

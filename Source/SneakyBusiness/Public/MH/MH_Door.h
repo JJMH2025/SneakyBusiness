@@ -27,6 +27,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComponent;
 	
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* BoxComponentL;
+	
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* BoxComponentR;
+	
 	//Secne : 회전 애니메이션  root
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* RootScene;
@@ -37,7 +43,7 @@ public:
 	
 	
 	UFUNCTION(Blueprintable)
-	void DoorOpen(const FVector& InstigatorForward);
+	void DoorOpen(const FVector& InstigatorForward,AActor* InteractingActor);
 
 	UFUNCTION(Blueprintable)
 	void DoorClosed();
@@ -45,4 +51,21 @@ public:
 	bool bIsRotatingDoor; // 회전
 	float TargetYaw; // 목표 회전 값
 
+	//문열림 때 기절
+	UFUNCTION()
+	void OnDoorBeginOverlapDoor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnDoorEndOverlapDoor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY()
+	AActor* LastActorOpened;
+
+	//문열리는 방향 0 : R , 1 : L 
+	UPROPERTY()
+	bool bDoorOpenedR;
+	UPROPERTY()
+	TSet<AActor*> OverlappingActorsL;
+	UPROPERTY()
+	TSet<AActor*> OverlappingActorsR;
 };

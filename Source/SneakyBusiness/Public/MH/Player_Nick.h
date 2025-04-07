@@ -77,7 +77,7 @@ public:
 
 	// Frozen 기절상태 호출
 	UFUNCTION()
-	void StartFrozen();
+	void Frozen();
 	
 	//Invincible 무적상태 호출
 	UFUNCTION()
