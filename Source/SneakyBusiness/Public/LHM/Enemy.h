@@ -34,11 +34,11 @@ public:
 	// Chase일 때 A, B 공간 전환용 상태에 따른 함수들
 	void HandleChaseExtended(EEnemyState& OutNextState);
 
-	void LerpRotation(float DeltaTime);	// 순찰 중 회전
+	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
-	void DoShooting();					// 총알 발사
-	void ReceiveDamage();				// 피격
-
+	void DoShooting();						// 총알 발사
+	void ReceiveDamage();					// 피격
+	void HandleStunEnd();					// 기절 3초 뒤 깨어남 
 
 	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
 	bool IsPlayerDetectedByAIPerception();
@@ -77,5 +77,9 @@ private:
 	// Attack
 	FTimerHandle AttackTimerHandle;
 	bool bAttackStarted = false;
+	
+	// Stun
+	FTimerHandle StunTimerHandle;
+	bool bIsStunned = false;
 	
 };
