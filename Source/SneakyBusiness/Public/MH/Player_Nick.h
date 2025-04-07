@@ -178,7 +178,10 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="MyPlayerSettings")
 	bool bIsInHideZone = false;
 
-	bool bIsOverlapTargetItem;
+	//훔치기
+	UPROPERTY()
+	class AMH_TargetItem* OverlappingItem;
+	bool bCanPickup = false;
 
 		
 };

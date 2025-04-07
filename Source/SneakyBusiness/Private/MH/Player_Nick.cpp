@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MH/MH_Door.h"
+#include "MH/MH_TargetItem.h"
 
 // Sets default values
 APlayer_Nick::APlayer_Nick()
@@ -79,7 +80,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 	{
 		FVector NewLocation = GetActorLocation();
 		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 15.0f);
-		SetActorLocation(NewLocation);
+		SetActorLocation(NewLocation,true);
 		bIsRotating = true;
 
 		if (FMath::Abs(NewLocation.Y - TargetYawLot) < 2.0f)
@@ -252,7 +253,23 @@ void APlayer_Nick::PlayerInteract()
 	{
 		if (OverlapDoor)
 		{
-			OverlapDoor->DoorOpen(LastHorizontalDirection);
+			OverlapDoor->DoorOpen(GetActorForwardVector());
+		}
+	}
+	if (bCanPickup)
+	{
+		if (OverlappingItem)
+		{
+			//여기서 아이템 태그 확인하고 게임모드에 1번 아이템 습득 표시!!_현민
+			int32 Stage = OverlappingItem->StageIndex;
+			int32 Index = OverlappingItem->ItemIndex;
+
+			// GameMode로 보고
+			//GetGameMode()->RegisterItem(Stage, Index);
+			
+			OverlappingItem->Destroy();
+			OverlappingItem = nullptr;
+			bIsOverlapDoor = false;
 		}
 	}
 }
@@ -283,7 +300,7 @@ void APlayer_Nick::Shooting()
 
 	if (bIsMovingDepth)
 	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Rotating"));
+		//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Rotating"));
 		return;
 	}
 	if (ShootComp != nullptr)
@@ -330,7 +347,6 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor && OtherActor->ActorHasTag("Wall"))
 	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Wall"));
 		bIsInHideZone = true;
 	}
 
@@ -339,14 +355,15 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		OverlapDoor = Cast<AMH_Door>(OtherActor);
 		if (OverlapDoor)
 		{
-			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap Door"));
 			bIsOverlapDoor = true;
 		}
 	}
 
 	if (OtherActor && OtherActor->ActorHasTag("TargetItem"))
 	{
-		
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap TargetItem"));
+		OverlappingItem = Cast<AMH_TargetItem>(OtherActor);
+		bCanPickup = true;
 	}
 }
 
@@ -368,10 +385,17 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 		if (OverlapDoor)
 		{
 			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
-			bIsOverlapDoor = false;
 			OverlapDoor->DoorClosed();
-			OverlapDoor=nullptr;
+			OverlapDoor = nullptr;
+			bIsOverlapDoor = false;
 		}
+	}
+
+	if (OtherActor && OtherActor->ActorHasTag("TargetItem"))
+	{
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap TargetItem"));
+		OverlappingItem = nullptr;
+		bCanPickup = false;
 	}
 }
 

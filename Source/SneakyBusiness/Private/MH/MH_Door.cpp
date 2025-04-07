@@ -57,20 +57,19 @@ void AMH_Door::Tick(float DeltaTime)
 	}
 }
 
-void AMH_Door::DoorOpen(const float LastDirection)
+void AMH_Door::DoorOpen(const FVector& InstigatorForward)
 {
 	GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("DoorOpen"));
 	//문열리기
 	bIsRotatingDoor = true;
-
+	float Dot = FVector::DotProduct(InstigatorForward, GetActorForwardVector());
 	//오른쪽
-	if (LastDirection == 1)
+	if (Dot > 0.5f)
 	{
 		TargetYaw = -90.f;
 	}
-
 	//왼쪽
-	else if (LastDirection == -1)
+	else if (Dot < -0.5f) 
 	{
 		TargetYaw = 90.f;
 	}

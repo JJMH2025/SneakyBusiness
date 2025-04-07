@@ -37,7 +37,7 @@ public:
 	
 	
 	UFUNCTION(Blueprintable)
-	void DoorOpen(const float LastDirection);
+	void DoorOpen(const FVector& InstigatorForward);
 
 	UFUNCTION(Blueprintable)
 	void DoorClosed();

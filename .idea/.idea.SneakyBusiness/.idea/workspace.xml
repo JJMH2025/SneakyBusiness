@@ -13,14 +13,103 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/Content/May/BP/BP_TargetItem.uasset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/NJ/UMNPV4GUCHL5NCCRIOGWWD.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_TargetItemSpawner.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_0.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_1.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_2.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem1_1.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/C7/7WUPUJJOXEQJLTBB8QGQ4R.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/J8/NPEMCI095NI86B01HH9T6D.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/H9/YFQNJCYH0VJ50V8UF7RT30.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/M5/M9PY5XB04EF152P33LMUGA.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/NB/NL7MY0AIUH95JG5QGEXX0K.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/Y5/0DPECC8EZ715MD64Q7XMQV.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/1U/HV4OS8GLEENT1HPOXY9X9A.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/O3/GP646K9788PYOH4YQ4GJ79.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/TS/Q7TKK71ZQBDMMRRED5TYB2.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/82/7BPFFFO5G9NI3F66YN3KBY.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/CJ/HCM11T7Q4L593CHCB5N2RP.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/NZ/6BU5WX8IW0LLCTEVDMSQ0F.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/PQ/DVJ506ZKUT1W43G80EZ4PQ.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/HZ/ZHDQLIHAMFDP6H59Q6AD67.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/8M/FYGX1NUBHOPXZT1C4QTBHA.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/WH/89QSR01GRMWDCU4K7SHC8U.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/26/BBH53W3CLPLIOPKJSBP8P4.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/HS/NTCWFTS0HUPV99SNLKHB0F.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/KX/JYOGTQSF4B0TGIGAQY5YDH.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/OD/5IA07MJ1L2SN2Z0QKXA9IB.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/Q3/VV3WHVKQ81B8CQI9O8GIA1.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/DD/0WL58DKXI8S48A6KWWJN2I.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/S8/CCSWGNVYFQ4GZSWEF1JQZG.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/U3/7MFH97GVFA8267RJRIT61C.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/K0/YCKX06QOEZG2PD6UI8Z9RI.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/L8/LTMQ9UAHVOM1YKNVB5XJH7.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/TT/PW3U0IT2VT4MLNTDGNXWEH.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/VI/FJUGZ9UPPGF2130GY1EUTW.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/W1/GF60R0TLS9LAYFVXFX2X3H.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/ZV/45GWVB8OPXV710HE9FWOCS.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/8M/LVQZNGXIMYU63FYY8CKJD5.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/BQ/J0PNHQR3SYG24AHARNE727.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/LO/Y70KTEQVLBJT14FVV53W58.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/V7/9RIM10WHYEXS0KCHE0IEG7.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItem.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItemSpawner.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItem.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItemSpawner.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_TargetItem.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_TargetItem.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Maps/LV_MHTest_Stage01.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/Maps/LV_MHTest_Stage01.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/JW/EYF93V0BKBOKKL1SN8G0RI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/JW/EYF93V0BKBOKKL1SN8G0RI.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/N7/X5K4MC86PYVRF1E4Q16XLJ.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/N7/X5K4MC86PYVRF1E4Q16XLJ.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/RU/N6P7VEB4DPUH0OEJH6S6HL.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/TR/MDQHVQK2QE3V9CDHJ42WBB.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/W0/MFGEY2T12XJYCCZS2IKPDM.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/YK/P79B4DEESN0DY0EV0LKYUG.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/YK/P79B4DEESN0DY0EV0LKYUG.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/00/SJ9I3MJGHUDQM8SXDCVL3Y.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/ZL/OROVWW9S4KVSRZ42F11079.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/57/T8IO23MM9UDSY6TZOG7RBE.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/XC/LH5P01EVFO43Y258QRAPO3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/XC/LH5P01EVFO43Y258QRAPO3.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/YW/ZQBCU5IB0I8OETNWMPSA3S.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/50/N5EDGBCFHN02PZPQ14W6HQ.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/1C/EED98IBNQP7W1ZPKIKTAH9.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/1C/EED98IBNQP7W1ZPKIKTAH9.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/9P/PLKY8XMHSHBQNDZW2DU2DU.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/1/KR/NMABUAH0E2TN0GH5PG13FF.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/BX/TDMD6KLG6SV379BF3ZWNUI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/BX/TDMD6KLG6SV379BF3ZWNUI.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/DL/90ECMTIM1RWJ59TRL6XXHA.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/EK/35K832IA0H2PYZ9YFGYXAA.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/3/PY/MGNEIU4V8OBQTWZHIL5OUD.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/2Z/SR4IKGCHIMYU6P12EYI22G.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/2Z/SR4IKGCHIMYU6P12EYI22G.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/IG/H4NXHW6A4TSQQPYG6G6OX3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/IG/H4NXHW6A4TSQQPYG6G6OX3.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/Y0/V06Z5516329CIKHT94T4TB.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/Y0/V06Z5516329CIKHT94T4TB.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/ZF/07XJ8Q2WECBOCXI2AHDC9M.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/ZF/07XJ8Q2WECBOCXI2AHDC9M.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/3O/JWMKIVAY81Y7F3XYZB8JUN.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/EK/FKR0EVIR1A37YIX8FYMPVO.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/Y9/4E2AY69D16FGGK1M9MDP4N.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/Y9/4E2AY69D16FGGK1M9MDP4N.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/5B/23JNFXA69F2ILTNOLVWWBE.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/5B/23JNFXA69F2ILTNOLVWWBE.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/8P/43OB3XMQDTLB258V1PWZWW.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/RD/QVF8MD8104GV8POVCCVXIY.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/DQ/7ELU25IQHHH7H1GHBUFG6E.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/DQ/7ELU25IQHHH7H1GHBUFG6E.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/NO/5ZR0X84TFMBLLRTJFAUYGO.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/NO/5ZR0X84TFMBLLRTJFAUYGO.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/WS/RTUHYBIMQVSIMYFTA9XHHV.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/6/WS/RTUHYBIMQVSIMYFTA9XHHV.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/1O/Y2P7YF8ME7ZQYH9FFR8B65.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/1O/Y2P7YF8ME7ZQYH9FFR8B65.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/WZ/9R0NCRNZRC1EGHSCW28715.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/WZ/9R0NCRNZRC1EGHSCW28715.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/YZ/JZD93GT4GBMRKE9Q5JSMU3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/7/YZ/JZD93GT4GBMRKE9Q5JSMU3.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/CL/4EU6LKIMVGV7JOKG1JQ5WJ.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/8/CL/4EU6LKIMVGV7JOKG1JQ5WJ.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/IU/G0JVELDCGICFQVJ7UZF20L.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/IU/G0JVELDCGICFQVJ7UZF20L.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/Z0/TDAXSAXQ5VB9EN68XK6NQO.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/Z0/TDAXSAXQ5VB9EN68XK6NQO.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/26/I9B9W58ZRZQE5VOUQL1704.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/NB/DBJNG25YZDQLEVW64ZJEWF.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/W8/N84MCFRO5G5I0ZL66H006B.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/W8/N84MCFRO5G5I0ZL66H006B.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/YG/CX1P7VMNTS42K6WF0UJFL7.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/RE/JVIUSP51F5V3ETG8UAHQ3N.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/8F/7FVV85HZQRY10JMETCBNVN.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/8F/7FVV85HZQRY10JMETCBNVN.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/DI/Z3SBTJUAHY2K9II4IK5ABG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/NJ/UMNPV4GUCHL5NCCRIOGWWD.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/ZY/Y0STZ2C8BYKHI24CKF94Y9.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/B/ZY/Y0STZ2C8BYKHI24CKF94Y9.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/1Y/A1ICOMWKOVAJMERTAYMYSS.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/5Y/E6T20C1TI2RDKN3GYXF22W.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/5Y/E6T20C1TI2RDKN3GYXF22W.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/6P/09WJPPO8BYKGXNNQOGHMTO.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/6P/09WJPPO8BYKGXNNQOGHMTO.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/TL/8B28O5105MWLGQUW0BV1XV.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/TL/8B28O5105MWLGQUW0BV1XV.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/BV/2LN4EDWQ8XNL4CM1NYWHX1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/D/LS/5OOXCGY24LWTR8IW90UK1D.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/C/9Q/DDQGGNRPHKNQ3EGP9EFGMF.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/7O/TINSD2LLF7I0Q6PMJK212B.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/7O/TINSD2LLF7I0Q6PMJK212B.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/E4/8NJBZR84UOH0JWQH8Q8ENP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/E4/8NJBZR84UOH0JWQH8Q8ENP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/HN/RH62RQ5602OSUY0EL24Y1Y.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/HN/RH62RQ5602OSUY0EL24Y1Y.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/QQ/VOBEM19ZZJUDB046SJ0TQM.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/15/WH7WI7J0C4YVX7NB8AGF4O.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/S3/BGNU1G9SNWAOV7LMPYOVQL.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/S3/BGNU1G9SNWAOV7LMPYOVQL.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/YY/H5JH1IGAVT2YP1OR0RT4WH.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/YY/H5JH1IGAVT2YP1OR0RT4WH.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/F/4O/1VEAC1F5MP8YQQAENWJYDS.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/F/4O/1VEAC1F5MP8YQQAENWJYDS.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" afterDir="false" />
@@ -54,10 +143,14 @@
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Engine/Public/TimerManager.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_ShootComp.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItemSpawner.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/LHM/Enemy.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_ShootComp.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItem.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItemSpawner.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/Player_Nick.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -214,6 +307,7 @@
       <workItem from="1743658510098" duration="1736000" />
       <workItem from="1743870903927" duration="1112000" />
       <workItem from="1743879847275" duration="6779000" />
+      <workItem from="1743926617402" duration="18107000" />
     </task>
     <servers />
   </component>
