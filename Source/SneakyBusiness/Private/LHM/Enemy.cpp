@@ -68,7 +68,7 @@ void AEnemy::Patrol()
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
 
 	// 플레이어 감지
-	if (!bIsRotating)
+	if (!bIsRotating || !bIsStunned)
 	{
 		//if (IsPlayerDetected())
 		if (IsPlayerDetectedByAIPerception())
@@ -98,6 +98,8 @@ void AEnemy::Patrol()
 
 void AEnemy::Attack()
 {
+	if(bIsStunned) return;
+
 	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
@@ -126,7 +128,7 @@ void AEnemy::Chase()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
 
-	if (bIsRotating) return;
+	if (bIsRotating || bIsStunned) return;
 
 	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
 	if (IsPlayerStateToFrozenOrDead())
@@ -200,7 +202,7 @@ void AEnemy::WakeUp()
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if (bIsRotating && bIsStunned) return;
+	if (bIsRotating || bIsStunned) return;
 	
 	for (AActor* Actor : UpdatedActors)
 	{
@@ -217,6 +219,8 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 
 void AEnemy::HandleChaseExtended(EEnemyState& OutNextState)
 {
+	if(bIsRotating || bIsStunned) return;
+
 	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
 	if (IsPlayerStateToFrozenOrDead())
 	{
@@ -315,6 +319,8 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 
 void AEnemy::DoShooting()
 {
+	if(bIsStunned) return;
+	
 	// 총알 발사
 	if (ShootComp)
 	{
@@ -338,6 +344,8 @@ void AEnemy::ReceiveDamage()
 
 bool AEnemy::IsPlayerDetectedByAIPerception()
 {
+	if (bIsRotating || bIsStunned) return false;
+
 	TArray<AActor*> SensedActors;
 	AIPerceptionComp->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SensedActors);
 
@@ -354,6 +362,8 @@ bool AEnemy::IsPlayerDetectedByAIPerception()
 
 bool AEnemy::IsObstacleAhead(float Distance)
 {
+	if(bIsRotating) return false;
+
 	FVector Start = GetActorLocation() + FVector(0, 0, -30.0f);
 	FVector ForwardVec = GetActorForwardVector();
 	FVector End = Start + (ForwardVec * Distance);
