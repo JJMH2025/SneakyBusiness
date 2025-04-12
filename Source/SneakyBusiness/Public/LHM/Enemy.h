@@ -4,8 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "FSMComponent.h"
 #include "Enemy.generated.h"
+
+UENUM(BlueprintType)
+enum class EEnemyAIState : uint8
+{
+	Patrol				UMETA(DisplayName = "Patrol"),
+	Chase				UMETA(DisplayName = "Chase"),
+	Attack				UMETA(DisplayName = "Attack"),
+	Signal				UMETA(DisplayName = "Signal"),
+	HitByDoor			UMETA(DisplayName = "HitByDoor"),
+	Stunned				UMETA(DisplayName = "Stunned"),
+	WakeUp				UMETA(DisplayName = "WakeUp"),
+	MovingToAlignX		UMETA(DisplayName = "MovingToAlignX"),
+	MovingToOtherSpace	UMETA(DisplayName = "MovingToOtherSpace"),
+
+	MAX					UMETA(Hidden)
+};
 
 UCLASS()
 class SNEAKYBUSINESS_API AEnemy : public ACharacter
@@ -21,6 +36,20 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	// Behavior Tree
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* BT;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBlackboardData* BBD;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAIPerceptionComponent* AIPerceptionComp;
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI");
+	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
+
 	virtual void Patrol();		// 순찰
 	virtual void Attack();		// 공격
 	virtual void Chase();		// 추적
@@ -29,10 +58,11 @@ public:
 	virtual void Stun();		// 기절
 	virtual void WakeUp();		// 깨어남
 
+	virtual void AlignXToPlayer();			// 추적 시 플레이어 방향으로 X축 먼저 정렬
+	virtual void PrepareMoveToOtherSpace(); // 추적 시 X축 정렬 후 A/B 공간 전환
+
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-	// Chase일 때 A, B 공간 전환용 상태에 따른 함수들
-	void HandleChaseExtended(EEnemyState& OutNextState);
 
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
@@ -42,20 +72,12 @@ public:
 
 	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
 	bool IsPlayerDetectedByAIPerception();
-	// 장애물이 판별
+	// 장애물 판별
 	bool IsObstacleAhead(float Distance = 100.0f);
 	// 플레이어 상태 체크
 	bool IsPlayerStateToFrozenOrDead();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "FSM");
-	class UFSMComponent* Fsm;
-
-	UPROPERTY(VisibleAnywhere, Category = "FSM");
-	class UAIPerceptionComponent* AIPerceptionComp;
-	
-	UPROPERTY(VisibleAnywhere, Category = "FSM");
-	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
 	UPROPERTY(VisibleAnywhere, Category = "FSM")
 	class UMH_ShootComp* ShootComp;

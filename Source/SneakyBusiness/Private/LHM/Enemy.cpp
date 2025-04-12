@@ -1,16 +1,15 @@
 ﻿#include "LHM/Enemy.h"
-#include "LHM/FSMComponent.h"
 #include "MH/MH_ShootComp.h"
 #include "MH/Player_Nick.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "LHM/AI/EnemyAIController.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Fsm = CreateDefaultSubobject<UFSMComponent>(TEXT("FSMComp"));
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
@@ -38,6 +37,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentState = EEnemyAIState::Patrol;
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -65,7 +65,7 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::Patrol()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
 
 	// 플레이어 감지
 	if (!bIsRotating || !bIsStunned)
@@ -73,7 +73,7 @@ void AEnemy::Patrol()
 		//if (IsPlayerDetected())
 		if (IsPlayerDetectedByAIPerception())
 		{
-			Fsm->SetState(EEnemyState::Chase);
+			CurrentState = EEnemyAIState::Chase;
 			return;
 		}
 	}
@@ -100,13 +100,13 @@ void AEnemy::Attack()
 {
 	if(bIsStunned) return;
 
-	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
+	//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
 	// 플레이어 감지 못하면 순찰상태로 전환
 	if (!IsPlayerDetectedByAIPerception())
 	{
-		Fsm->SetState(EEnemyState::Patrol);
+		CurrentState = EEnemyAIState::Patrol;
 		return;
 	}
 
@@ -126,14 +126,14 @@ void AEnemy::Attack()
 
 void AEnemy::Chase()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
 
 	if (bIsRotating || bIsStunned) return;
 
 	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
 	if (IsPlayerStateToFrozenOrDead())
 	{
-		Fsm->SetState(EEnemyState::Patrol);
+		CurrentState = EEnemyAIState::Patrol;
 		return;
 	}
 
@@ -145,7 +145,7 @@ void AEnemy::Chase()
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
 
-		Fsm->SetState(EEnemyState::Patrol);
+		CurrentState = EEnemyAIState::Patrol;
 		return;
 	}
 
@@ -159,26 +159,26 @@ void AEnemy::Chase()
 	// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
 	if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
 	{
-		Fsm->SetState(EEnemyState::Attack);
+		CurrentState = EEnemyAIState::Attack;
 	}
 }
 
 void AEnemy::Signal()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is signaling nearby enemies!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is signaling nearby enemies!"));
 }
 
 void AEnemy::HitByDoor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy was hit by a door and is stunned!"));
-	Fsm->SetState(EEnemyState::Stun);
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy was hit by a door and is stunned!"));
+	CurrentState = EEnemyAIState::Stunned;
 }
 
 void AEnemy::Stun()
 {
 	if(bIsStunned) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
 
 	bIsStunned = true;
 	Hp = 1;
@@ -195,9 +195,10 @@ void AEnemy::Stun()
 
 void AEnemy::WakeUp()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy has woken up!"));
-	UE_LOG(LogTemp, Warning, TEXT("Enemy has woken up!"));
-	Fsm->SetState(EEnemyState::Patrol);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy has woken up!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy has woken up!"));
+
+	CurrentState = EEnemyAIState::Patrol;
 }
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -210,81 +211,50 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 		{
 			if (!IsPlayerStateToFrozenOrDead())
 			{
-				Fsm->SetState(EEnemyState::Chase);
-				return;
+				AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+				if (AIController)
+				{
+					AIController->SetTargetActor(Player);
+					CurrentState = EEnemyAIState::MovingToAlignX;
+					return;
+				}
 			}
 		}
 	}
 }
 
-void AEnemy::HandleChaseExtended(EEnemyState& OutNextState)
+void AEnemy::AlignXToPlayer()
 {
-	if(bIsRotating || bIsStunned) return;
-
-	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
-	if (IsPlayerStateToFrozenOrDead())
-	{
-		Fsm->SetState(EEnemyState::Patrol);
-		return;
-	}
-
-	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
-	if (IsObstacleAhead(100.0f))
-	{
-		bMovingForward = !bMovingForward;
-		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
-		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
-		bIsRotating = true;
-
-		Fsm->SetState(EEnemyState::Patrol);
-		return;
-	}
-
 	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!Player) return;
 
-	switch (Fsm->GetState())
+	if (Player->bIsPlayerLoc != bIsASpace)
 	{
-		case EEnemyState::Chase:
+		// 먼저 X축 정렬을 시도
+		FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
+		AddMovementInput(Dir, 0.5f);
+
+		float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
+		if (XDiff < 100.0f)
 		{
-			if (Player->bIsPlayerLoc != bIsASpace)
-			{
-				// A공간에 있지만 플레이어가 B에 있을 경우 → 먼저 X축 정렬을 시도
-				FVector DirToPlayer = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-				AddMovementInput(FVector(DirToPlayer.X, 0, 0), 0.5f); // X축만 이동
-
-				float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
-				if (XDiff < 100.0f)
-				{
-					OutNextState = EEnemyState::MoveToDepth;
-				}
-			}
-			else
-			{
-				Chase();
-			}
-			break;
+			CurrentState = EEnemyAIState::MovingToOtherSpace;
 		}
+	}
+	else
+	{
+		CurrentState = EEnemyAIState::Chase;
+	}
+}
 
-		case EEnemyState::MoveToDepth:
-		{
-			//float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
-			//SetActorLocation(GetActorLocation() + FVector(0, OffsetY, 0));
-			//bIsASpace = !bIsASpace; // 공간 전환 완료
-			//OutNextState = EEnemyState::Chase;
-			//break;
-
-			if (!bIsMovingDepth)
-			{
-				float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
-				MoveTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
-				bIsMovingDepth = true;
-			}
-			break;
-		}
-
-		default:
-			break;
+void AEnemy::PrepareMoveToOtherSpace()
+{
+	if (!bIsMovingDepth)
+	{
+		float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
+		MoveTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
+		bIsMovingDepth = true;
+		// Tick에서 bIsMovingDepth가 true이면 LerpMoveToDepth()호출 -> 이동 시작 -> chase로 상태 전환
+		//CurrentState = EEnemyAIState::Chase;
 	}
 }
 
@@ -313,7 +283,7 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 		SetActorLocation(MoveTargetLocation);
 		bIsASpace = !bIsASpace;
 		bIsMovingDepth = false;
-		Fsm->SetState(EEnemyState::Chase);
+		CurrentState = EEnemyAIState::Chase;
 	}
 }
 
@@ -331,7 +301,7 @@ void AEnemy::DoShooting()
 
 	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
 	bAttackStarted = false;
-	Fsm->SetState(EEnemyState::Patrol);
+	CurrentState = EEnemyAIState::Patrol;
 }
 
 void AEnemy::ReceiveDamage()
@@ -339,7 +309,10 @@ void AEnemy::ReceiveDamage()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy is Received Damage!"));
 	UE_LOG(LogTemp, Log, TEXT("Enemy is Received Damage!"));
 	Hp -= 1;
-	if (Hp <= 0) Fsm->SetState(EEnemyState::Stun);
+	if (Hp <= 0)
+	{
+		CurrentState = EEnemyAIState::Stunned;
+	}
 }
 
 bool AEnemy::IsPlayerDetectedByAIPerception()
@@ -403,5 +376,5 @@ bool AEnemy::IsPlayerStateToFrozenOrDead()
 void AEnemy::HandleStunEnd()
 {
 	bIsStunned = false;
-	Fsm->SetState(EEnemyState::WakeUp);
+	CurrentState = EEnemyAIState::WakeUp;
 }
