@@ -36,8 +36,6 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	CurrentState = EEnemyAIState::Patrol;
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -234,7 +232,7 @@ void AEnemy::WakeUp()
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if (bIsRotating || bIsStunned) return;
+	if (bIsRotating || bIsMovingDepth || bIsStunned) return;
 	
 	for (AActor* Actor : UpdatedActors)
 	{
@@ -242,13 +240,8 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 		{
 			if (!IsPlayerStateToFrozenOrDead())
 			{
-				AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-				if (AIController)
-				{
-					AIController->SetTargetActor(Player);
-					CurrentState = EEnemyAIState::MovingToAlignX;
-					return;
-				}
+				CurrentState = EEnemyAIState::MovingToAlignX;
+				return;
 			}
 		}
 	}
@@ -326,12 +319,11 @@ bool AEnemy::IsPlayerDetectedByAIPerception()
 
 	for (AActor* Actor : SensedActors)
 	{
-		APlayer_Nick* Player = Cast<APlayer_Nick>(Actor);
-
-		if (Player && !IsPlayerStateToFrozenOrDead())
+		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
 		{
+			// 플레이어가 Frozen 또는 Dead 상태가 아니고
 			// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
-			if (ShouldDetectHiddenPlayer())
+			if(!IsPlayerStateToFrozenOrDead() && ShouldDetectHiddenPlayer())
 			{
 				return true;
 			}

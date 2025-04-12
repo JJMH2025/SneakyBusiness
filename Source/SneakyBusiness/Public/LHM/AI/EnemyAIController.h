@@ -17,8 +17,6 @@ class SNEAKYBUSINESS_API AEnemyAIController : public AAIController
 public:
 	virtual void OnPossess(APawn* InPawn) override;
 
-	void SetTargetActor(AActor* NewTarget);
-
 private:
 	UPROPERTY()
 	class UBlackboardComponent* BBComp;

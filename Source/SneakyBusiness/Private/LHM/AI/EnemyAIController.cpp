@@ -15,8 +15,3 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		RunBehaviorTree(Enemy->BT);
 	}
 }
-
-void AEnemyAIController::SetTargetActor(AActor* NewTarget)
-{
-	BBComp->SetValueAsObject(TEXT("TargetActor"), NewTarget);
-}
