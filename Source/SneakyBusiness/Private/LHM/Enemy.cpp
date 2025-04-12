@@ -300,6 +300,12 @@ void AEnemy::DoShooting()
 	CurrentState = EEnemyAIState::Patrol;
 }
 
+void AEnemy::HandleStunEnd()
+{
+	bIsStunned = false;
+	CurrentState = EEnemyAIState::WakeUp;
+}
+
 void AEnemy::ReceiveDamage()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy is Received Damage!"));
@@ -313,7 +319,7 @@ void AEnemy::ReceiveDamage()
 
 bool AEnemy::IsPlayerDetectedByAIPerception()
 {
-	if (bIsRotating || bIsStunned) return false;
+	if (bIsRotating || bIsMovingDepth || bIsStunned) return false;
 
 	TArray<AActor*> SensedActors;
 	AIPerceptionComp->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SensedActors);
@@ -321,9 +327,19 @@ bool AEnemy::IsPlayerDetectedByAIPerception()
 	for (AActor* Actor : SensedActors)
 	{
 		APlayer_Nick* Player = Cast<APlayer_Nick>(Actor);
+
 		if (Player && !IsPlayerStateToFrozenOrDead())
 		{
-			return true;
+			// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
+			if (ShouldDetectHiddenPlayer())
+			{
+				return true;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Log, TEXT("플레이어 숨음 -> 감지 불가"));
+				return false;
+			}
 		}
 	}
 	return false;
@@ -369,8 +385,23 @@ bool AEnemy::IsPlayerStateToFrozenOrDead()
 	return false;
 }
 
-void AEnemy::HandleStunEnd()
+bool AEnemy::ShouldDetectHiddenPlayer()
 {
-	bIsStunned = false;
-	CurrentState = EEnemyAIState::WakeUp;
+	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if(!Player) return false;
+
+	// 플레이어가 숨지 않은 상태면 무조건 감지
+	if(!Player->bIsHiding) return true;
+
+	// 플레이어가 숨은 상태에서 방향 비교
+	FVector EnemyForwardVec = GetActorForwardVector();
+	
+	// 에너미가 왼쪽을 바라보는지 판별
+	bool bEnemyFacingLeft = EnemyForwardVec.X < 0;
+
+	// 플레이어가 왼쪽을 보고 있다면 (LastHorizontalDirection == -1)
+	bool bPlayerLookingLeft = Player->LastHorizontalDirection < 0;
+
+	// 조건 : 에너미와 플레이어의 방향이 같아야 감지 가능
+	return bEnemyFacingLeft == bPlayerLookingLeft;
 }

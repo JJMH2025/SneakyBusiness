@@ -39,11 +39,6 @@ public:
 	class UBehaviorTree* BT;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardData* BBD;
-	
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAIPerceptionComponent* AIPerceptionComp;
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI");
 	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
@@ -62,10 +57,12 @@ public:
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
+	void ReceiveDamage();					// 피격
+
+protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
 	void DoShooting();						// 총알 발사
-	void ReceiveDamage();					// 피격
 	void HandleStunEnd();					// 기절 3초 뒤 깨어남 
 
 	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
@@ -74,12 +71,19 @@ public:
 	bool IsObstacleAhead(float Distance = 100.0f);
 	// 플레이어 상태 체크
 	bool IsPlayerStateToFrozenOrDead();
+	// 플레이어가 숨은 방향에 따라서 감지 여부 판단
+	bool ShouldDetectHiddenPlayer();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "FSM")
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAIPerceptionComponent* AIPerceptionComp;
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
+
+	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "FSM")
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	int32 Hp = 1;
 
 	// Chase
