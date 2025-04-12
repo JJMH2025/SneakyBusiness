@@ -10,13 +10,23 @@
 UBTT_Chase::UBTT_Chase()
 {
 	NodeName = TEXT("Chase");
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type UBTT_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	return EBTNodeResult::InProgress;
+}
+
+void UBTT_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!Enemy) return EBTNodeResult::Failed;
+	if (!Enemy) return;
 
 	Enemy->Chase();
-	return EBTNodeResult::Succeeded;
+
+	if (Enemy->CurrentState != EEnemyAIState::Chase)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

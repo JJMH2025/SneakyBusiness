@@ -11,14 +11,23 @@
 UBTT_MoveXToPlayer::UBTT_MoveXToPlayer()
 {
 	NodeName = TEXT("Move X To Player");
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type UBTT_MoveXToPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	return EBTNodeResult::InProgress;
+}
+
+void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	
-	if (!Enemy) return EBTNodeResult::Failed;
+	if (!Enemy) return;
 
 	Enemy->AlignXToPlayer();
-	return EBTNodeResult::Succeeded;
+
+	if (Enemy->CurrentState != EEnemyAIState::MovingToAlignX)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

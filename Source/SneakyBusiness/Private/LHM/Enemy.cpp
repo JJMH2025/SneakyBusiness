@@ -67,22 +67,18 @@ void AEnemy::Patrol()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
 
+	// 회전 중이거나 기절 상태면 이동하지 않음
+	if (bIsRotating || bIsMovingDepth || bIsStunned) return;
+
 	// 플레이어 감지
-	if (!bIsRotating || !bIsStunned)
+	if (IsPlayerDetectedByAIPerception())
 	{
-		//if (IsPlayerDetected())
-		if (IsPlayerDetectedByAIPerception())
-		{
-			CurrentState = EEnemyAIState::Chase;
-			return;
-		}
+		CurrentState = EEnemyAIState::MovingToAlignX;
+		return;
 	}
 
-	// 회전 중이면 이동하지 않음
-	if (bIsRotating) return;
-
 	// 장애물 감지
-	if (IsObstacleAhead(100.0f))
+	if (IsObstacleAhead(150.0f))
 	{
 		// 방향 반전 + 회전
 		bMovingForward = !bMovingForward;
@@ -93,7 +89,81 @@ void AEnemy::Patrol()
 	}
 
 	// 정면으로 이동
-	AddMovementInput(GetActorForwardVector(), Speed);
+	AddMovementInput(GetActorForwardVector(), 0.2f);
+}
+
+void AEnemy::AlignXToPlayer()
+{
+	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!Player) return;
+
+	if (Player->bIsPlayerLoc != bIsASpace)
+	{
+		// 먼저 X축 정렬을 시도
+		FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
+		AddMovementInput(Dir, 0.5f);
+
+		float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
+		if (XDiff < 100.0f)
+		{
+			CurrentState = EEnemyAIState::MovingToOtherSpace;
+		}
+	}
+	else
+	{
+		CurrentState = EEnemyAIState::Chase;
+	}
+}
+
+void AEnemy::PrepareMoveToOtherSpace()
+{
+	if (!bIsMovingDepth)
+	{
+		float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
+		MoveTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
+		
+		// Tick에서 bIsMovingDepth가 true이면 LerpMoveToDepth()호출 -> 이동 시작 -> chase로 상태 전환
+		bIsMovingDepth = true;
+	}
+}
+
+void AEnemy::Chase()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
+
+	if (bIsRotating || bIsMovingDepth || bIsStunned || IsPlayerStateToFrozenOrDead())
+	{
+		CurrentState = EEnemyAIState::Patrol;
+		return;
+	}
+
+	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
+	if (IsObstacleAhead(130.0f))
+	{
+		bMovingForward = !bMovingForward;
+		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
+		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
+		bIsRotating = true;
+
+		CurrentState = EEnemyAIState::Patrol;
+	}
+	else
+	{
+		AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		if (!Player) return;
+
+		// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
+		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
+		{
+			CurrentState = EEnemyAIState::Attack;
+		}
+		else
+		{
+			// 플레이어 방향으로 이동
+			FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
+			AddMovementInput(Dir, 0.5f);
+		}
+	}
 }
 
 void AEnemy::Attack()
@@ -121,45 +191,6 @@ void AEnemy::Attack()
 			1.0f, 
 			false
 		);
-	}
-}
-
-void AEnemy::Chase()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
-
-	if (bIsRotating || bIsStunned) return;
-
-	// 플레이어가 Frozen 또는 Dead 상태이면 순찰 상태로 전환
-	if (IsPlayerStateToFrozenOrDead())
-	{
-		CurrentState = EEnemyAIState::Patrol;
-		return;
-	}
-
-	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
-	if (IsObstacleAhead(100.0f))
-	{
-		bMovingForward = !bMovingForward;
-		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
-		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
-		bIsRotating = true;
-
-		CurrentState = EEnemyAIState::Patrol;
-		return;
-	}
-
-	AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (!Player) return;
-
-	// 플레이어 방향으로 이동
-	FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	AddMovementInput(Direction, 0.5f);
-
-	// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
-	if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
-	{
-		CurrentState = EEnemyAIState::Attack;
 	}
 }
 
@@ -223,41 +254,6 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	}
 }
 
-void AEnemy::AlignXToPlayer()
-{
-	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!Player) return;
-
-	if (Player->bIsPlayerLoc != bIsASpace)
-	{
-		// 먼저 X축 정렬을 시도
-		FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
-		AddMovementInput(Dir, 0.5f);
-
-		float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
-		if (XDiff < 100.0f)
-		{
-			CurrentState = EEnemyAIState::MovingToOtherSpace;
-		}
-	}
-	else
-	{
-		CurrentState = EEnemyAIState::Chase;
-	}
-}
-
-void AEnemy::PrepareMoveToOtherSpace()
-{
-	if (!bIsMovingDepth)
-	{
-		float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
-		MoveTargetLocation = GetActorLocation() + FVector(0, OffsetY, 0);
-		bIsMovingDepth = true;
-		// Tick에서 bIsMovingDepth가 true이면 LerpMoveToDepth()호출 -> 이동 시작 -> chase로 상태 전환
-		//CurrentState = EEnemyAIState::Chase;
-	}
-}
-
 void AEnemy::LerpRotation(float DeltaTime)
 {
 	FRotator CurrrentRot = GetActorRotation();
@@ -283,7 +279,7 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 		SetActorLocation(MoveTargetLocation);
 		bIsASpace = !bIsASpace;
 		bIsMovingDepth = false;
-		CurrentState = EEnemyAIState::Chase;
+		CurrentState = EEnemyAIState::Patrol;
 	}
 }
 
