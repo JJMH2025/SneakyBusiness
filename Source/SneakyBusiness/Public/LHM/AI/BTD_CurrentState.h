@@ -17,9 +17,9 @@ class SNEAKYBUSINESS_API UBTD_CurrentState : public UBTDecorator_BlackboardBase
 	
 public:
 	UBTD_CurrentState();
-
+ 
 protected:
-	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 
 public:
 	// 비교할 상태값

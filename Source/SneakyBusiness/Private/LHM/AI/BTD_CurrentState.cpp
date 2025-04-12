@@ -6,18 +6,17 @@
 
 UBTD_CurrentState::UBTD_CurrentState()
 {
-	NodeName = TEXT("Is Current State");
+    NodeName = "Is Current State";
 }
 
-bool UBTD_CurrentState::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+bool UBTD_CurrentState::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	UBlackboardComponent* BBComp = OwnerComp.GetBlackboardComponent();
+    UBlackboardComponent* BBComp = OwnerComp.GetBlackboardComponent();
 	if(!BBComp) return false;
 
 	FName StateName = BBComp->GetValueAsName(GetSelectedBlackboardKey());
 	FString EnumStr = StaticEnum<EEnemyAIState>()->GetNameStringByValue((int64)DesiredState);
-	EnumStr = EnumStr.RightChop(FString("EEnemyAIState::").Len());
-
 	FName DesiredName(*EnumStr);
+
 	return StateName == DesiredName;
 }
