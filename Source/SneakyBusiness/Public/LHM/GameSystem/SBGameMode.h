@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class SNEAKYBUSINESS_API ASBGameMode : public AGameModeBase
 {
@@ -21,11 +22,14 @@ public:
 	void OnStageClear();
 	void OnStageFailed();
 
-	UFUNCTION(BlueprintCallable)
 	int32 GetRequiredItemCount() const;
 
-	UFUNCTION()
-	void OnItemStolen(int32 StageIndex, int32 TargetIndex/*, AActor* ItemActor*/);
+	void OnItemStolen(int32 StageIndex, int32 TargetIndex);
+	void DropItemsOnDeath(FVector DeathLocation);
+	
+    // 모든 아이템 목록
+    UPROPERTY(EditAnywhere)
+    TArray<TSubclassOf<AActor>> AllTargetItemBPs;
 
 private:
 	void CheckClearConditions();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "SBGameState.h"
 #include "SBSaveGame.generated.h"
 
 /**
@@ -31,7 +32,7 @@ struct FStageSaveData
     FVector LastPlayerLocation;
 
     UPROPERTY()
-    TArray<int32> CollectedTargetIndices; // 이 스테이지에서 훔친 TargetIndex 리스트
+    TArray<FStolenItemInfo> StolenItems;
 };
 
 UCLASS()

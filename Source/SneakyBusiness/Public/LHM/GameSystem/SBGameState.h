@@ -9,6 +9,19 @@
 /**
  * 
  */
+ 
+USTRUCT(BlueprintType)
+struct FStolenItemInfo
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    int32 StageIndex;
+
+    UPROPERTY()
+    int32 ItemIndex;
+};
+
 UCLASS()
 class SNEAKYBUSINESS_API ASBGameState : public AGameStateBase
 {
@@ -43,11 +56,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bRechedGoal = false;
 
-	// 훔친 아이템 리스트 (런타임용)
-	//UPROPERTY()
-	//TArray<AActor*> CollectedTargetActors;
-
-	// 세이브 시 사용할 인덱스 리스트 (직렬화 가능)
-	UPROPERTY()
-	TArray<int32> CollectedTargetIndices;
+	// 훔친 아이템 정보 전체 리스트
+    UPROPERTY()
+    TArray<FStolenItemInfo> StolenItems;
 };
