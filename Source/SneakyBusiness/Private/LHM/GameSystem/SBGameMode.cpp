@@ -7,6 +7,7 @@
 #include <MH/Player_Nick.h>
 #include <Kismet/GameplayStatics.h>
 #include "LHM/GameSystem/SBSaveGame.h"
+#include <MH/MH_TargetItem.h>
 
 void ASBGameMode::BeginPlay()
 {
@@ -61,7 +62,6 @@ void ASBGameMode::OnStageClear()
 	
 	// 게임 인스턴스에 최종 스코어 저장
 	GI->SetTotalScore(TotalScore);
-	GI->CurrentStageIndex += 1;
 
 	// 게임 데이터 저장
 	USBSaveGame* Save = Cast<USBSaveGame>(UGameplayStatics::CreateSaveGameObject(USBSaveGame::StaticClass()));
@@ -74,11 +74,13 @@ void ASBGameMode::OnStageClear()
 	Data.TimeLeft = TimeLeft;
 	Data.bCleared = true;
 	Data.LastPlayerLocation = Player->GetActorLocation();
-	Data.CollectedTargetIndices = GS->CollectedTargetIndices;
+	Data.StolenItems = GS->StolenItems;
 
 	Save->StageDataMap.Add(GI->CurrentStageIndex, Data);
 
 	UGameplayStatics::SaveGameToSlot(Save, TEXT("PlayerSaveSlot"), 0);
+
+	GI->CurrentStageIndex += 1;
 
 	// Steam 업적 호출
 	// EX: ISBSteamAPI::UnlockAchievement("ACH_Stage1_CLEAR");
@@ -101,21 +103,57 @@ int32 ASBGameMode::GetRequiredItemCount() const
 	return GS->RequiredItemCount;
 }
 
-void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex/*, AActor* ItemActor*/)
+void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex)
 {
 	ASBGameState* GS = GetGameState<ASBGameState>();
 	if (!GS) return;
 
-	int32 CountPerStage = GetRequiredItemCount();
-	int32 GlobalIndex = StageIndex * CountPerStage + TargetIndex;
+	// 이미 존재하는 도둑질인지 확인
+	bool bAlreadyStolen = GS->StolenItems.ContainsByPredicate([&](const FStolenItemInfo& Item){
+		return Item.StageIndex == StageIndex && Item.ItemIndex == TargetIndex;
+	});
 
-	if (!GS->CollectedTargetIndices.Contains(GlobalIndex))
+	if (!bAlreadyStolen)
 	{
-		GS->CollectedTargetIndices.Add(GlobalIndex);
-		//GS->CollectedTargetActors.Add(ItemActor);
-
 		GS->CollectItem(); // 카운트 증가
+
+		FStolenItemInfo Info;
+		Info.StageIndex = StageIndex;
+		Info.ItemIndex = TargetIndex;
+		GS->StolenItems.Add(Info);
 	}
+}
+
+void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
+{
+	ASBGameState* GS = GetGameState<ASBGameState>();
+	if(!GS || AllTargetItemBPs.Num() == 0 || GS->StolenItems.Num() == 0) return;
+
+	const float SpreadRadius = 100;
+
+	for (const FStolenItemInfo& Info : GS->StolenItems)
+	{
+		int32 SpawnIndex = Info.StageIndex * GetRequiredItemCount() + Info.ItemIndex;
+
+		if(!AllTargetItemBPs.IsValidIndex(SpawnIndex)) continue;
+
+		FVector SpawnLocation = DeathLocation + FVector(
+			FMath::RandRange(-SpreadRadius, SpreadRadius), 0, 30
+		);
+
+		AActor* Spawned = GetWorld()->SpawnActor<AActor>(
+			AllTargetItemBPs[SpawnIndex],
+			SpawnLocation,
+			FRotator::ZeroRotator);
+
+		if (AMH_TargetItem* Item = Cast<AMH_TargetItem>(Spawned))
+		{
+			Item->StageIndex = Info.StageIndex;
+			Item->ItemIndex = Info.ItemIndex;
+		}
+	}
+
+	GS->StolenItems.Empty();  // 리셋
 }
 
 void ASBGameMode::CheckClearConditions()
