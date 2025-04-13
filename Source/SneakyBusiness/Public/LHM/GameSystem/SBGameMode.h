@@ -21,10 +21,16 @@ public:
 	void OnStageClear();
 	void OnStageFailed();
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetRequiredItemCount() const;
+
+	UFUNCTION()
+	void OnItemStolen(int32 StageIndex, int32 TargetIndex/*, AActor* ItemActor*/);
+
 private:
 	void CheckClearConditions();
 
 	// 스테이지 이름: 랭킹 저장에 사용
-	FName CurrentStageName = "Stage1";
+	FName CurrentStageName = "";
 
 };

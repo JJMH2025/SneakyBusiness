@@ -65,9 +65,19 @@ void ASBGameMode::OnStageClear()
 
 	// 게임 데이터 저장
 	USBSaveGame* Save = Cast<USBSaveGame>(UGameplayStatics::CreateSaveGameObject(USBSaveGame::StaticClass()));
-	Save->StageScoreMap.Add(CurrentStageName, TotalScore);
-	Save->StageTimeMap.Add(CurrentStageName, TimeLeft);
-	Save->ClearedStages.Add(CurrentStageName);
+	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if(!Save || !Player) return;
+
+	FStageSaveData& Data = Save->StageDataMap.FindOrAdd(GI->CurrentStageIndex);
+	Data.StageIndex = GI->CurrentStageIndex;
+	Data.Score = TotalScore;
+	Data.TimeLeft = TimeLeft;
+	Data.bCleared = true;
+	Data.LastPlayerLocation = Player->GetActorLocation();
+	Data.CollectedTargetIndices = GS->CollectedTargetIndices;
+
+	Save->StageDataMap.Add(GI->CurrentStageIndex, Data);
+
 	UGameplayStatics::SaveGameToSlot(Save, TEXT("PlayerSaveSlot"), 0);
 
 	// Steam 업적 호출
@@ -83,6 +93,29 @@ void ASBGameMode::OnStageFailed()
 {
 	UE_LOG(LogTemp, Log, TEXT("Stage Failed."));
 	// RETRY UI 표시 또는 메인 메뉴 전환
+}
+
+int32 ASBGameMode::GetRequiredItemCount() const
+{
+	ASBGameState* GS = GetGameState<ASBGameState>();
+	return GS->RequiredItemCount;
+}
+
+void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex/*, AActor* ItemActor*/)
+{
+	ASBGameState* GS = GetGameState<ASBGameState>();
+	if (!GS) return;
+
+	int32 CountPerStage = GetRequiredItemCount();
+	int32 GlobalIndex = StageIndex * CountPerStage + TargetIndex;
+
+	if (!GS->CollectedTargetIndices.Contains(GlobalIndex))
+	{
+		GS->CollectedTargetIndices.Add(GlobalIndex);
+		//GS->CollectedTargetActors.Add(ItemActor);
+
+		GS->CollectItem(); // 카운트 증가
+	}
 }
 
 void ASBGameMode::CheckClearConditions()

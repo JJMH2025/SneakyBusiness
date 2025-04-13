@@ -9,23 +9,37 @@
 /**
  * 
  */
+
+ USTRUCT(BlueprintType)
+struct FStageSaveData
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    int32 StageIndex;
+
+    UPROPERTY()
+    int32 Score;
+
+    UPROPERTY()
+    float TimeLeft;
+
+    UPROPERTY()
+    bool bCleared;
+
+    UPROPERTY()
+    FVector LastPlayerLocation;
+
+    UPROPERTY()
+    TArray<int32> CollectedTargetIndices; // 이 스테이지에서 훔친 TargetIndex 리스트
+};
+
 UCLASS()
 class SNEAKYBUSINESS_API USBSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 	
 public:
-	// 스테이지 별 점수, 시간
 	UPROPERTY()
-	TMap<FName, int32> StageScoreMap;
-	UPROPERTY()
-	TMap<FName, float> StageTimeMap;
-
-	// 각 스테이지 클리어 여부
-	UPROPERTY()
-	TSet<FName> ClearedStages;
-
-	// 마지막 위치
-	UPROPERTY()
-	FVector LastPlayerLocation;
+    TMap<int32, FStageSaveData> StageDataMap; // StageIndex별 데이터 저장
 };
