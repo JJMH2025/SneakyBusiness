@@ -75,6 +75,10 @@ public:
 	FTimerHandle FrozenTimerHandle;
 	FTimerHandle InvincibleTimerHandle;
 
+	//미끄러 넘어졌을 때
+	UFUNCTION()
+	void Slip();
+	
 	// Frozen 기절상태 호출
 	UFUNCTION()
 	void Frozen();

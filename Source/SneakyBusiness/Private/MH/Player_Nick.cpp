@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MH/MH_Door.h"
+#include "MH/MH_SlipTrap.h"
 #include "MH/MH_TargetItem.h"
 
 // Sets default values
@@ -80,7 +81,7 @@ void APlayer_Nick::Tick(float DeltaTime)
 	{
 		FVector NewLocation = GetActorLocation();
 		NewLocation.Y = FMath::FInterpTo(NewLocation.Y, TargetYawLot, DeltaTime, 15.0f);
-		SetActorLocation(NewLocation,true);
+		SetActorLocation(NewLocation, true);
 		bIsRotating = true;
 
 		if (FMath::Abs(NewLocation.Y - TargetYawLot) < 2.0f)
@@ -253,7 +254,7 @@ void APlayer_Nick::PlayerInteract()
 	{
 		if (OverlapDoor)
 		{
-			OverlapDoor->DoorOpen(GetActorForwardVector(),this);
+			OverlapDoor->DoorOpen(GetActorForwardVector(), this);
 		}
 	}
 	if (bCanPickup)
@@ -266,7 +267,7 @@ void APlayer_Nick::PlayerInteract()
 
 			// GameMode로 보고
 			//GetGameMode()->RegisterItem(Stage, Index);
-			
+
 			OverlappingItem->Destroy();
 			OverlappingItem = nullptr;
 			bIsOverlapDoor = false;
@@ -365,6 +366,18 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		OverlappingItem = Cast<AMH_TargetItem>(OtherActor);
 		bCanPickup = true;
 	}
+
+	if (OtherActor && OtherActor->ActorHasTag("SlipTrap"))
+	{
+		AMH_SlipTrap* SlipTrap = Cast<AMH_SlipTrap>(OtherActor);
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap SlipTrap"));
+		//Trap 위치이동
+		if (SlipTrap && SlipTrap->CanTrigger())
+		{
+				SlipTrap->SlipStart(this);
+				Slip();
+		}
+	}
 }
 
 void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -399,11 +412,26 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
+void APlayer_Nick::Slip()
+{
+	//기절
+	Frozen();
+	//넘어지는 애니메이션
+	//방해아이템 날아가는 시퀀스 플레이
+	//사운드로 에너미들 어그로
+	// 3초 후 다시 Normal 상태로 복귀
+	GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &APlayer_Nick::ResetToNormal, 3.0f, false);
+
+	//문제
+	//Y축이 고정되서 플레이어가 움직이는 방향 앞 뒤로만 튀어야 하는데 아무대로나 막 튐.
+	//콜리전 무시 안됨...
+}
+
 void APlayer_Nick::Frozen()
 {
 	if (CurrentPlayerState == EPlayerState::Invincible || CurrentPlayerState == EPlayerState::Frozen)
 		return;
-	
+
 	CurrentPlayerState = EPlayerState::Frozen;
 	//움직임 X
 	APlayerController* PC = Cast<APlayerController>(GetController());
@@ -441,6 +469,13 @@ void APlayer_Nick::StartInvincible()
 
 void APlayer_Nick::ResetToNormal()
 {
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		// 입력 다시 활성화 (무적 상태 때)
+		EnableInput(PC);
+	}
+	
 	CurrentPlayerState = EPlayerState::Normal;
 	FString EnumName = StaticEnum<EPlayerState>()->GetNameStringByValue((int64)CurrentPlayerState);
 	GEngine->AddOnScreenDebugMessage(-6, 5.f, FColor::Yellow, EnumName);

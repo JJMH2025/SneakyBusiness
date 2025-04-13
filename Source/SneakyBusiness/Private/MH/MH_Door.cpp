@@ -126,7 +126,7 @@ void AMH_Door::DoorOpen(const FVector& InstigatorForward, AActor* InteractingAct
 				if (PlayerNick)
 				{
 					//기절함수 호출
-					PlayerNick->Frozen();
+					PlayerNick->PlayerTakeDamage();
 				}
 				//애너미
 				AEnemy* Enemy = Cast<AEnemy>(OtherActor);
