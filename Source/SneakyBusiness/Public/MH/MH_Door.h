@@ -24,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 //Box Collision
+
+	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComponent;
 	
