@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MH/MH_Door.h"
+#include "MH/MH_LiftActor.h"
 #include "MH/MH_SlipTrap.h"
 #include "MH/MH_TargetItem.h"
 
@@ -250,13 +251,15 @@ void APlayer_Nick::JumpNick()
 void APlayer_Nick::PlayerInteract()
 {
 	GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("Push E"));
+	//문열기
 	if (bIsOverlapDoor)
 	{
-		if (OverlapDoor)
+		if (OverlapDoor && !OverlapDoor->bIsRotatingDoor)
 		{
 			OverlapDoor->DoorOpen(GetActorForwardVector(), this);
 		}
 	}
+	//훔치기
 	if (bCanPickup)
 	{
 		if (OverlappingItem)
@@ -272,6 +275,12 @@ void APlayer_Nick::PlayerInteract()
 			OverlappingItem = nullptr;
 			bIsOverlapDoor = false;
 		}
+	}
+
+	//리프트
+	if (bIsOverlappingLift)
+	{
+		UseLift();
 	}
 }
 
@@ -374,8 +383,17 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		//Trap 위치이동
 		if (SlipTrap && SlipTrap->CanTrigger())
 		{
-				SlipTrap->SlipStart(this);
-				Slip();
+			SlipTrap->SlipStart(this);
+			Slip();
+		}
+	}
+
+	if (OtherActor && OtherActor->ActorHasTag("Lift"))
+	{
+		Lift = Cast<AMH_LiftActor>(OtherActor);
+		if (Lift)
+		{
+			bIsOverlappingLift = true;
 		}
 	}
 }
@@ -409,6 +427,16 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap TargetItem"));
 		OverlappingItem = nullptr;
 		bCanPickup = false;
+	}
+
+	if (OtherActor && OtherActor->ActorHasTag("Lift"))
+	{
+		Lift = Cast<AMH_LiftActor>(OtherActor);
+		if (Lift)
+		{
+			bIsOverlappingLift = false;
+			Lift = nullptr;
+		}
 	}
 }
 
@@ -475,7 +503,7 @@ void APlayer_Nick::ResetToNormal()
 		// 입력 다시 활성화 (무적 상태 때)
 		EnableInput(PC);
 	}
-	
+
 	CurrentPlayerState = EPlayerState::Normal;
 	FString EnumName = StaticEnum<EPlayerState>()->GetNameStringByValue((int64)CurrentPlayerState);
 	GEngine->AddOnScreenDebugMessage(-6, 5.f, FColor::Yellow, EnumName);
@@ -526,4 +554,48 @@ void APlayer_Nick::PlayerHideOFF()
 
 	//숨기 애니메이션 Stop
 	GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Purple,TEXT("PlayerHideOFF"));
+}
+
+void APlayer_Nick::UseLift()
+{
+	if (Lift)
+	{
+		bIsOnLift = true;
+
+		//움직임 X
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC)
+		{
+			// 입력 비활성화
+			DisableInput(PC);
+		}
+		
+		AttachToActor(Lift, FAttachmentTransformRules::KeepWorldTransform);
+		GetCharacterMovement()->GravityScale = 0.f;
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+		//리프트 도착하면 알림 받게 등록
+		Lift->OnLiftArrived.RemoveDynamic(this, &APlayer_Nick::OnLiftArrived); // 혹시 중복 방지
+		Lift->OnLiftArrived.AddDynamic(this, &APlayer_Nick::OnLiftArrived);
+		
+		Lift->ActivateLift();
+	}
+
+}
+
+void APlayer_Nick::OnLiftArrived()
+{
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	GetCharacterMovement()->GravityScale = 1.f;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	bIsOnLift = false;
+
+	// 입력 다시 활성화
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		EnableInput(PC);
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Lift 도착 완료! 중력 복구"));
 }

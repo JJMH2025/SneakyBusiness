@@ -187,5 +187,20 @@ public:
 	class AMH_TargetItem* OverlappingItem;
 	bool bCanPickup = false;
 
-		
+	//리프트
+	UPROPERTY(VisibleAnywhere)
+	bool bIsOverlappingLift = false;
+
+	//탑승확인
+	UPROPERTY(VisibleAnywhere)
+	bool bIsOnLift = false;
+
+	UPROPERTY()
+	class AMH_LiftActor* Lift;
+
+	UFUNCTION()
+	void UseLift();
+	
+	UFUNCTION()
+	void OnLiftArrived();
 };

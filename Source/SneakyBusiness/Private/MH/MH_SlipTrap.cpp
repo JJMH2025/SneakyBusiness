@@ -67,6 +67,9 @@ void AMH_SlipTrap::ResetCooldown()
 void AMH_SlipTrap::ActivateTrapEffect()
 {
 	//밟으면 소리나기
+	//이슈 올리기
+	//월드 -> 거리 계산해서 일정거리 안에 있는 애들 불러오게 //사운드
+	//에너미 함수(트랩 위치값)
 	//에너미 불러들이기
 }
 
