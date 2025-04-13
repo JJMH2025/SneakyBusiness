@@ -146,8 +146,8 @@ void AMH_Door::DoorClosed()
 	bIsRotatingDoor = true;
 	GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("DoorClosed"));
 	//문닫히기
-	TargetYaw = 0.f;
 	//회전값 원래 위치로 돌아가기
+	TargetYaw = 0.f;
 }
 
 void AMH_Door::OnDoorBeginOverlapDoor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -156,7 +156,7 @@ void AMH_Door::OnDoorBeginOverlapDoor(UPrimitiveComponent* OverlappedComponent, 
 {
 	//오른쪽 
 	if (OverlappedComponent == BoxComponentR)
-	{
+	{GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("DoorR"));
 		//오버랩된 액터가 문을 연 액터라면 무시
 		if (OtherActor == LastActorOpened)
 		{
@@ -169,8 +169,8 @@ void AMH_Door::OnDoorBeginOverlapDoor(UPrimitiveComponent* OverlappedComponent, 
 		}
 	}
 	//왼쪽
-	if (OverlappedComponent == BoxComponentR)
-	{
+	if (OverlappedComponent == BoxComponentL)
+	{GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("DoorL"));
 		//오버랩된 액터가 문을 연 액터라면 무시
 		if (OtherActor == LastActorOpened)
 		{
@@ -199,7 +199,7 @@ void AMH_Door::OnDoorEndOverlapDoor(UPrimitiveComponent* OverlappedComponent, AA
 		OverlappingActorsR.Remove(OtherActor);
 	}
 	//왼쪽
-	if (OverlappedComponent == BoxComponentR)
+	if (OverlappedComponent == BoxComponentL)
 	{
 		//오버랩된 액터가 문을 연 액터라면 무시
 		if (OtherActor == LastActorOpened)

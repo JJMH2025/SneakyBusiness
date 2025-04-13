@@ -8,6 +8,7 @@
 #include "MaterialHLSLTree.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -365,7 +366,10 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		OverlapDoor = Cast<AMH_Door>(OtherActor);
 		if (OverlapDoor)
 		{
-			bIsOverlapDoor = true;
+			if (OtherComp == Cast<UPrimitiveComponent>(OverlapDoor->BoxComponent))
+			{
+				bIsOverlapDoor = true;
+			}
 		}
 	}
 
@@ -413,12 +417,16 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (OtherActor && OtherActor->ActorHasTag("Door"))
 	{
+		//문 오버랩
 		if (OverlapDoor)
 		{
-			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
-			OverlapDoor->DoorClosed();
-			OverlapDoor = nullptr;
-			bIsOverlapDoor = false;
+			if (OtherComp == Cast<UPrimitiveComponent>(OverlapDoor->BoxComponent))
+			{
+				GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap Door"));
+				OverlapDoor->DoorClosed();
+				OverlapDoor = nullptr;
+				bIsOverlapDoor = false;
+			}
 		}
 	}
 
@@ -569,7 +577,7 @@ void APlayer_Nick::UseLift()
 			// 입력 비활성화
 			DisableInput(PC);
 		}
-		
+
 		AttachToActor(Lift, FAttachmentTransformRules::KeepWorldTransform);
 		GetCharacterMovement()->GravityScale = 0.f;
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
@@ -577,10 +585,9 @@ void APlayer_Nick::UseLift()
 		//리프트 도착하면 알림 받게 등록
 		Lift->OnLiftArrived.RemoveDynamic(this, &APlayer_Nick::OnLiftArrived); // 혹시 중복 방지
 		Lift->OnLiftArrived.AddDynamic(this, &APlayer_Nick::OnLiftArrived);
-		
+
 		Lift->ActivateLift();
 	}
-
 }
 
 void APlayer_Nick::OnLiftArrived()
