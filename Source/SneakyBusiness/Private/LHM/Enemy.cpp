@@ -71,7 +71,7 @@ void AEnemy::Patrol()
 	// 플레이어 감지
 	if (IsPlayerDetectedByAIPerception())
 	{
-		CurrentState = EEnemyAIState::MovingToAlignX;
+		SetEnemyAIState(EEnemyAIState::Chase);
 		return;
 	}
 
@@ -104,12 +104,12 @@ void AEnemy::AlignXToPlayer()
 		float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
 		if (XDiff < 100.0f)
 		{
-			CurrentState = EEnemyAIState::MovingToOtherSpace;
+			SetEnemyAIState(EEnemyAIState::MovingToOtherSpace);
 		}
 	}
 	else
 	{
-		CurrentState = EEnemyAIState::Chase;
+		SetEnemyAIState(EEnemyAIState::Chase);
 	}
 }
 
@@ -131,7 +131,7 @@ void AEnemy::Chase()
 
 	if (bIsRotating || bIsMovingDepth || bIsStunned || IsPlayerStateToFrozenOrDead())
 	{
-		CurrentState = EEnemyAIState::Patrol;
+		SetEnemyAIState(EEnemyAIState::Patrol);
 		return;
 	}
 
@@ -143,7 +143,7 @@ void AEnemy::Chase()
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
 
-		CurrentState = EEnemyAIState::Patrol;
+		SetEnemyAIState(EEnemyAIState::Patrol);
 	}
 	else
 	{
@@ -153,7 +153,7 @@ void AEnemy::Chase()
 		// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
 		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
 		{
-			CurrentState = EEnemyAIState::Attack;
+			SetEnemyAIState(EEnemyAIState::Attack);
 		}
 		else
 		{
@@ -174,7 +174,7 @@ void AEnemy::Attack()
 	// 플레이어 감지 못하면 순찰상태로 전환
 	if (!IsPlayerDetectedByAIPerception())
 	{
-		CurrentState = EEnemyAIState::Patrol;
+		SetEnemyAIState(EEnemyAIState::Patrol);
 		return;
 	}
 
@@ -200,7 +200,7 @@ void AEnemy::Signal()
 void AEnemy::HitByDoor()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Enemy was hit by a door and is stunned!"));
-	CurrentState = EEnemyAIState::Stunned;
+	SetEnemyAIState(EEnemyAIState::Stunned);
 }
 
 void AEnemy::Stun()
@@ -227,7 +227,7 @@ void AEnemy::WakeUp()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy has woken up!"));
 	//UE_LOG(LogTemp, Warning, TEXT("Enemy has woken up!"));
 
-	CurrentState = EEnemyAIState::Patrol;
+	SetEnemyAIState(EEnemyAIState::Patrol);
 }
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -240,7 +240,7 @@ void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 		{
 			if (!IsPlayerStateToFrozenOrDead())
 			{
-				CurrentState = EEnemyAIState::MovingToAlignX;
+				SetEnemyAIState(EEnemyAIState::MovingToOtherSpace);
 				return;
 			}
 		}
@@ -272,7 +272,7 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 		SetActorLocation(MoveTargetLocation);
 		bIsASpace = !bIsASpace;
 		bIsMovingDepth = false;
-		CurrentState = EEnemyAIState::Patrol;
+		SetEnemyAIState(EEnemyAIState::Patrol);
 	}
 }
 
@@ -290,13 +290,13 @@ void AEnemy::DoShooting()
 
 	// 공격 후 다시 Chase 상태로 전환해서 플레이어를 추적
 	bAttackStarted = false;
-	CurrentState = EEnemyAIState::Patrol;
+	SetEnemyAIState(EEnemyAIState::Patrol);
 }
 
 void AEnemy::HandleStunEnd()
 {
 	bIsStunned = false;
-	CurrentState = EEnemyAIState::WakeUp;
+	SetEnemyAIState(EEnemyAIState::WakeUp);
 }
 
 void AEnemy::ReceiveDamage()
@@ -306,7 +306,7 @@ void AEnemy::ReceiveDamage()
 	Hp -= 1;
 	if (Hp <= 0)
 	{
-		CurrentState = EEnemyAIState::Stunned;
+		SetEnemyAIState(EEnemyAIState::Stunned);
 	}
 }
 

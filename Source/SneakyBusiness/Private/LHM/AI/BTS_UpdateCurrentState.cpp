@@ -21,6 +21,6 @@ void UBTS_UpdateCurrentState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
 
 	UEnum* EnumPtr = StaticEnum<EEnemyAIState>();
-	FString EnumStr = EnumPtr->GetNameStringByValue((int64)Enemy->CurrentState);
+	FString EnumStr = EnumPtr->GetNameStringByValue((int64)Enemy->GetEnemyAIState());
 	BB->SetValueAsName("CurrentState", FName(*EnumStr));
 }

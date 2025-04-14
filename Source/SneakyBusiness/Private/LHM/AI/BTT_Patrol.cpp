@@ -24,7 +24,7 @@ void UBTT_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 
 	Enemy->Patrol();
 
-	if (Enemy->CurrentState != EEnemyAIState::Patrol)
+	if (Enemy->GetEnemyAIState() != EEnemyAIState::Patrol)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

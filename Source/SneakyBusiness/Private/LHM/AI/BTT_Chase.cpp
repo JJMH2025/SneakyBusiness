@@ -25,7 +25,7 @@ void UBTT_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, 
 
 	Enemy->Chase();
 
-	if (Enemy->CurrentState != EEnemyAIState::Chase)
+	if (Enemy->GetEnemyAIState() != EEnemyAIState::Chase)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
