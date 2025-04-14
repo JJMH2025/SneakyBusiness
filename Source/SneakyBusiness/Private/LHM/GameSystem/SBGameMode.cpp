@@ -4,10 +4,25 @@
 #include "LHM/GameSystem/SBGameMode.h"
 #include "LHM/GameSystem/SBGameInstance.h"
 #include "LHM/GameSystem/SBGameState.h"
-#include <MH/Player_Nick.h>
-#include <Kismet/GameplayStatics.h>
 #include "LHM/GameSystem/SBSaveGame.h"
+#include <Kismet/GameplayStatics.h>
+#include <MH/Player_Nick.h>
 #include <MH/MH_TargetItem.h>
+
+ASBGameMode::ASBGameMode()
+{
+	static ConstructorHelpers::FClassFinder<APawn> PlyerNickRef (TEXT("/Game/May/BP/BP_MHPlayer_Nick"));
+	if (PlyerNickRef.Class)
+	{
+		DefaultPawnClass = PlyerNickRef.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<ASBGameState> GameStateRef(TEXT("/Script/SneakyBusiness.SBGameState"));
+	if (GameStateRef.Class)
+	{
+		GameStateClass = GameStateRef.Class;
+	}
+}
 
 void ASBGameMode::BeginPlay()
 {

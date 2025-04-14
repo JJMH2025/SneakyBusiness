@@ -16,6 +16,8 @@ class SNEAKYBUSINESS_API ASBGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	ASBGameMode();
+
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
