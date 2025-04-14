@@ -63,12 +63,12 @@ protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
 	void DoShooting();						// 총알 발사
-	void HandleStunEnd();					// 기절 3초 뒤 깨어남 
+	void HandleHitByDoorAndStunEnd();		// 문 부딪힘 & 기절 5초 뒤 깨어남 
 
-	// 수동으로 상태 유지 여부 판단 (추적 중 플레이어를 놓쳤는지 판단)
+	// 플레이어 감지
 	bool IsPlayerDetectedByAIPerception();
 	// 장애물 판별
-	bool IsObstacleAhead(float Distance = 100.0f);
+	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
 	// 플레이어 상태 체크
 	bool IsPlayerStateToFrozenOrDead();
 	// 플레이어가 숨은 방향에 따라서 감지 여부 판단
@@ -86,12 +86,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	int32 Hp = 1;
-
 	// Chase
 	bool bIsASpace = true;	// 앞공간(A) = true, 뒤공간(B) = false
-	FVector MoveTargetLocation;
+	FVector MoveDepthLocation;
 	bool bIsMovingDepth = false;
 
 	// Patrol
