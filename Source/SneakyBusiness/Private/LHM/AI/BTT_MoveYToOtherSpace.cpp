@@ -24,7 +24,7 @@ void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	Enemy->PrepareMoveToOtherSpace();
 
-	if (Enemy->CurrentState != EEnemyAIState::MovingToOtherSpace)
+	if (Enemy->GetEnemyAIState() != EEnemyAIState::MovingToOtherSpace)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

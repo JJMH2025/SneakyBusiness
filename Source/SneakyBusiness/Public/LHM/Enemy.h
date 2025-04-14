@@ -34,14 +34,14 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	EEnemyAIState GetEnemyAIState() const { return CurrentState; }
+	void SetEnemyAIState(EEnemyAIState NewState) { CurrentState = NewState; }
+
 	// Behavior Tree
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BT;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardData* BBD;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI");
-	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
 
 	// 상태에 따른 행동 함수
 	virtual void Patrol();					// 순찰
@@ -75,6 +75,9 @@ protected:
 	bool ShouldDetectHiddenPlayer();
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
+
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	class UAIPerceptionComponent* AIPerceptionComp;
 	UPROPERTY(VisibleAnywhere, Category = "AI");
