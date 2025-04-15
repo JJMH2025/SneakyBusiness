@@ -12,11 +12,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_Door.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/N7/X5K4MC86PYVRF1E4Q16XLJ.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/N7/X5K4MC86PYVRF1E4Q16XLJ.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" afterDir="false" />
-    </list>
+    <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -218,6 +214,7 @@
       <workItem from="1744199325159" duration="2763000" />
       <workItem from="1744455501146" duration="1753000" />
       <workItem from="1744513401358" duration="18268000" />
+      <workItem from="1744696108251" duration="848000" />
     </task>
     <servers />
   </component>
