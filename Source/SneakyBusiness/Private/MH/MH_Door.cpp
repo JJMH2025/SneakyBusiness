@@ -101,7 +101,7 @@ void AMH_Door::DoorOpen(const FVector& InstigatorForward, AActor* InteractingAct
 				AEnemy* Enemy = Cast<AEnemy>(OtherActor);
 				if (Enemy)
 				{
-					Enemy->HitByDoor();
+					Enemy->SetEnemyAIState(EEnemyAIState::HitByDoor);;
 				}
 				//초기화
 				LastActorOpened = nullptr;

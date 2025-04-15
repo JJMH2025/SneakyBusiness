@@ -3,6 +3,8 @@
 
 #include "MH/MH_TargetItemSpawner.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "LHM/GameSystem/SBGameMode.h"
 #include "MH/MH_TargetItem.h"
 
 // Sets default values
@@ -17,26 +19,33 @@ void AMH_TargetItemSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	int32 Index = StageIndex * 3 + TargetIndex;
-	if (!SpawnedItems.IsValidIndex(Index))
+	GM = Cast<ASBGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GM)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid item index: %d"), Index);
-		return;
-	}
+		int32 CountPerStage = GM->GetRequiredItemCount();
 
-	TSubclassOf<AActor> SpawnActor = SpawnedItems[Index];
-	if (SpawnActor)
-	{
-		FActorSpawnParameters Params;
-		AMH_TargetItem* SpawnedItem = GetWorld()->SpawnActor<
-			AMH_TargetItem>(SpawnActor, GetActorLocation(), GetActorRotation(), Params);
-
-		if (SpawnedItem)
+		int32 Index = StageIndex * CountPerStage + TargetIndex;
+		if (!SpawnedItems.IsValidIndex(Index))
 		{
-			//오버랩 체크용
-			SpawnedItem->Tags.Add("TargetItem");
-			SpawnedItem->StageIndex = StageIndex;
-			SpawnedItem->ItemIndex = TargetIndex;
+			UE_LOG(LogTemp, Error, TEXT("Invalid item index: %d"), Index);
+			return;
+		}
+
+
+		TSubclassOf<AActor> SpawnActor = SpawnedItems[Index];
+		if (SpawnActor)
+		{
+			FActorSpawnParameters Params;
+			AMH_TargetItem* SpawnedItem = GetWorld()->SpawnActor<
+				AMH_TargetItem>(SpawnActor, GetActorLocation(), GetActorRotation(), Params);
+
+			if (SpawnedItem)
+			{
+				//오버랩 체크용
+				SpawnedItem->Tags.Add("TargetItem");
+				SpawnedItem->StageIndex = StageIndex;
+				SpawnedItem->ItemIndex = TargetIndex;
+			}
 		}
 	}
 }

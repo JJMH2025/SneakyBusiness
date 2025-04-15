@@ -12,6 +12,9 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "LHM/GameSystem/SBGameMode.h"
+#include "LHM/GameSystem/SBGameState.h"
 #include "MH/MH_Door.h"
 #include "MH/MH_LiftActor.h"
 #include "MH/MH_SlipTrap.h"
@@ -59,6 +62,9 @@ void APlayer_Nick::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Nick::OnPlayerBeginOverlap);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APlayer_Nick::OnPlayerEndOverlap);
+
+	GM = Cast<ASBGameMode>(UGameplayStatics::GetGameMode(this));
+	GS = GetWorld()->GetGameState<ASBGameState>();
 
 	//Enhanced Input Subsystem 설정
 	APlayerController* PC = Cast<APlayerController>(GetController());
@@ -269,8 +275,8 @@ void APlayer_Nick::PlayerInteract()
 			int32 Stage = OverlappingItem->StageIndex;
 			int32 Index = OverlappingItem->ItemIndex;
 
-			// GameMode로 보고
-			//GetGameMode()->RegisterItem(Stage, Index);
+			//GameMode로 보고, 훔칠 때
+			GM->OnItemStolen(Stage, Index);
 
 			OverlappingItem->Destroy();
 			OverlappingItem = nullptr;
@@ -345,8 +351,8 @@ void APlayer_Nick::PlayerTakeDamage()
 	Frozen();
 	//기절 애니메이션
 
-	//아이템 드롭
-	DropItems();
+	//아이템 드롭은.. 사망에서?
+	//DropItems();
 
 	// 3초 후 무적 상태 진입
 	GetWorldTimerManager().SetTimer(FrozenTimerHandle, this, &APlayer_Nick::StartInvincible, 3.0f, false);
@@ -521,7 +527,14 @@ void APlayer_Nick::ResetToNormal()
 void APlayer_Nick::DropItems()
 {
 	//현재훔친 물건이 있다면
-	//모두 플레이어 발밑으로 떨구기
+	if (GS && GS->StolenItems.Num() > 0)
+	{
+		//모두 플레이어 발밑으로 떨구기
+		if (GM)
+		{
+			GM->DropItemsOnDeath(GetActorLocation());
+		}
+	}
 }
 
 void APlayer_Nick::PlayerDie()
@@ -536,6 +549,9 @@ void APlayer_Nick::PlayerDie()
 		GEngine->AddOnScreenDebugMessage(-7, 5.f, FColor::Green,TEXT("DisableInput"));
 		// 입력 비활성화
 		DisableInput(PC);
+
+		//아이템 드롭
+		DropItems();
 	}
 }
 

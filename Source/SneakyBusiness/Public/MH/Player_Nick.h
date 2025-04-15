@@ -203,4 +203,11 @@ public:
 	
 	UFUNCTION()
 	void OnLiftArrived();
+	
+	UPROPERTY()
+	class ASBGameMode* GM;
+
+	UPROPERTY()
+	class ASBGameState* GS;
+
 };

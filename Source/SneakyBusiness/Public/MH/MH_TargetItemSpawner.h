@@ -10,8 +10,8 @@ UCLASS()
 class SNEAKYBUSINESS_API AMH_TargetItemSpawner : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMH_TargetItemSpawner();
 
@@ -19,20 +19,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere,Category="Spawn Info")
+	UPROPERTY(EditAnywhere, Category="Spawn Info")
 	int32 StageIndex;
 
-	UPROPERTY(EditAnywhere,Category="Spawn Info")
+	UPROPERTY(EditAnywhere, Category="Spawn Info")
 	int32 TargetIndex;
 
-	UPROPERTY(EditAnywhere,Category="Spawn Info")
+	UPROPERTY(EditAnywhere, Category="Spawn Info")
 	TArray<TSubclassOf<AActor>> SpawnedItems;
 
-	
-	
+	UPROPERTY()
+	class ASBGameMode* GM;
+
+
 
 };
