@@ -26,7 +26,7 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 	Enemy->AlignXToPlayer();
 
-	if (Enemy->CurrentState != EEnemyAIState::MovingToAlignX)
+	if (Enemy->GetEnemyAIState() != EEnemyAIState::MovingToAlignX)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
