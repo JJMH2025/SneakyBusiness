@@ -17,7 +17,8 @@ enum class EEnemyAIState : uint8
 	Signal				UMETA(DisplayName = "Signal"),
 	HitByDoor			UMETA(DisplayName = "HitByDoor"),
 	Stunned				UMETA(DisplayName = "Stunned"),
-	WakeUp				UMETA(DisplayName = "WakeUp")
+	WakeUp				UMETA(DisplayName = "WakeUp"),
+	Alerted				UMETA(DisplayName = "Alerted")
 };
 
 UCLASS()
@@ -51,13 +52,19 @@ public:
 	virtual void Attack();					// 공격
 	virtual void Signal();					// 신호
 	virtual void HitByDoor();				// 문에 부딪힘
-	virtual void Stun();					// 기절
+	virtual void Stunned();					// 기절
 	virtual void WakeUp();					// 깨어남
+	virtual void Alerted();					// 경보 상태
 
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
-	void ReceiveDamage();					// 피격
+	// 피격
+	void ReceiveDamage();
+
+	UFUNCTION(BlueprintCallable)
+	// 함정 발동시 해당 위치로 이동
+	void ReactToTrapAlert(FVector InAlertLocation);
 
 protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
@@ -87,12 +94,12 @@ private:
 	class UMH_ShootComp* ShootComp;
 
 	// Chase
-	bool bIsASpace = true;	// 앞공간(A) = true, 뒤공간(B) = false
-	FVector MoveDepthLocation;
+	bool bIsASpace = true;		// 앞공간(A) = true, 뒤공간(B) = false
 	bool bIsMovingDepth = false;
+	FVector MoveDepthLocation;
 
 	// Patrol
-	bool bMovingForward = true;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
+	bool bMovingForward = false;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
 	bool bIsRotating = false;	// 회전 중인지 여부
 	FRotator TargetRot;			// 목표 회전 값
 
@@ -104,4 +111,6 @@ private:
 	FTimerHandle StunTimerHandle;
 	bool bIsStunned = false;
 	
+	// Alert
+	FVector AlertLocation;
 };

@@ -56,6 +56,7 @@ void AEnemy::Tick(float DeltaTime)
 
 	// 순찰 중 회전 보간
 	if (bIsRotating) LerpRotation(DeltaTime);
+	else bMovingForward = GetActorForwardVector().X >= 0.1 ? true : false;
 
 	// 추적 중 공간 이동 보간
 	if (bIsMovingDepth) LerpMoveToDepth(DeltaTime);
@@ -63,7 +64,7 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::Patrol()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
 
 	// 회전 중이거나 기절 상태면 이동하지 않음
 	if (bIsRotating) return;
@@ -80,7 +81,6 @@ void AEnemy::Patrol()
 	{
 		UE_LOG(LogTemp, Log, TEXT("In Patrol 장애물 감지"));
 		// 방향 반전 + 회전
-		bMovingForward = !bMovingForward;
 		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
@@ -92,7 +92,7 @@ void AEnemy::Patrol()
 
 void AEnemy::AlignXToPlayer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is Align X To Player."));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is Align X To Player."));
 
 	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!Player) return;
@@ -119,7 +119,7 @@ void AEnemy::AlignXToPlayer()
 
 void AEnemy::PrepareMoveToOtherSpace()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is Prepare Move To OtherSpace"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is Prepare Move To OtherSpace"));
 
 	if (!bIsMovingDepth)
 	{
@@ -170,7 +170,7 @@ void AEnemy::PrepareMoveToOtherSpace()
 
 void AEnemy::Chase()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
 
 	if (bIsRotating || IsPlayerStateToFrozenOrDead())
 	{
@@ -182,7 +182,6 @@ void AEnemy::Chase()
 	if (IsObstacleAhead(GetActorForwardVector(), 130.0f))
 	{
 		UE_LOG(LogTemp, Log, TEXT("In Chase 장애물 감지"));
-		bMovingForward = !bMovingForward;
 		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
 		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
 		bIsRotating = true;
@@ -257,7 +256,7 @@ void AEnemy::HitByDoor()
 	);
 }
 
-void AEnemy::Stun()
+void AEnemy::Stunned()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
 
@@ -284,6 +283,47 @@ void AEnemy::WakeUp()
 	// 일어나는 애니메이션 재생
 
 	SetEnemyAIState(EEnemyAIState::Patrol);
+}
+
+void AEnemy::Alerted()
+{
+	if (bIsRotating) return;
+
+	// 에너미의 방향에 따라 경보 위치로 이동하기 전 회전할지 여부
+	// 에너미가 왼쪽을 바라보는지 판별
+	bool bEnemyFacingLeft = GetActorForwardVector().X < 0;
+	// 경보 위치가 에너미의 왼쪽에 있는지 판별
+	bool bIsAlertLeftOfEnemy = AlertLocation.X < GetActorLocation().X;
+	// 에너미가 바라보는 방향에 경보 위치가 없다면 회전해야 함
+	bool bShouldTurn = bIsAlertLeftOfEnemy != bEnemyFacingLeft ? true : false;
+
+	if (bShouldTurn)
+	{
+		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
+		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
+		bIsRotating = true;
+	}
+
+	// 목적지와 에너미의 거리 300 미만일 시 Patrol로 상태 전환
+	float Dist = FVector::Dist(AlertLocation, GetActorLocation());
+	if (Dist <= 200)
+	{
+		SetEnemyAIState(EEnemyAIState::Patrol);
+	}
+	
+	if (!bIsRotating)
+	{
+		FVector Dir = FVector(AlertLocation.X - GetActorLocation().X, 0, 0).GetSafeNormal();
+		AddMovementInput(Dir, 0.5);
+	}
+}
+
+void AEnemy::ReactToTrapAlert(FVector InAlertLocation)
+{
+	UE_LOG(LogTemp, Log, TEXT("Called ReactToTrapAlert"));
+
+	this->AlertLocation = InAlertLocation;
+	SetEnemyAIState(EEnemyAIState::Alerted);
 }
 
 void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -313,7 +353,9 @@ void AEnemy::LerpRotation(float DeltaTime)
 	SetActorRotation(NewRot);
 
 	// 목표 회전에 거의 도달하면 종료
-	if (FMath::Abs(NewRot.Yaw - TargetRot.Yaw) < 1.0f)
+	//if (FMath::Abs(NewRot.Yaw - TargetRot.Yaw) < 1.0f)
+	float AngleDiff = FMath::FindDeltaAngleDegrees(NewRot.Yaw, TargetRot.Yaw);
+	if (FMath::Abs(AngleDiff) < 1.0f)
 	{
 		SetActorRotation(TargetRot);
 		bIsRotating = false;

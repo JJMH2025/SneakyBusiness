@@ -16,6 +16,6 @@ EBTNodeResult::Type UBTT_Stun::ExecuteTask(UBehaviorTreeComponent& OwnerComp, ui
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!Enemy) return EBTNodeResult::Failed;
 
-	Enemy->Stun();
+	Enemy->Stunned();
 	return EBTNodeResult::Succeeded;
 }
