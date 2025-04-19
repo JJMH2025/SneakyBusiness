@@ -38,14 +38,6 @@ void AMH_TargetItemSpawner::BeginPlay()
 			FActorSpawnParameters Params;
 			AMH_TargetItem* SpawnedItem = GetWorld()->SpawnActor<
 				AMH_TargetItem>(SpawnActor, GetActorLocation(), GetActorRotation(), Params);
-
-			if (SpawnedItem)
-			{
-				//오버랩 체크용
-				SpawnedItem->Tags.Add("TargetItem");
-				SpawnedItem->StageIndex = StageIndex;
-				SpawnedItem->ItemIndex = TargetIndex;
-			}
 		}
 	}
 }

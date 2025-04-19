@@ -276,8 +276,8 @@ void APlayer_Nick::PlayerInteract()
 			int32 Index = OverlappingItem->ItemIndex;
 
 			//GameMode로 보고, 훔칠 때
-			GM->OnItemStolen(Stage, Index);
-
+			GM->OnItemStolen(Stage, Index,OverlappingItem);
+			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("bCanPickup"));
 			OverlappingItem->Destroy();
 			OverlappingItem = nullptr;
 			bIsOverlapDoor = false;
@@ -532,7 +532,9 @@ void APlayer_Nick::DropItems()
 		//모두 플레이어 발밑으로 떨구기
 		if (GM)
 		{
+			
 			GM->DropItemsOnDeath(GetActorLocation());
+			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("DropItemsOnDeath"));
 		}
 	}
 }

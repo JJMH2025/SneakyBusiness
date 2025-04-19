@@ -118,7 +118,7 @@ int32 ASBGameMode::GetRequiredItemCount() const
 	return GS->RequiredItemCount;
 }
 
-void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex)
+void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex, AMH_TargetItem* TargetItem)
 {
 	ASBGameState* GS = GetGameState<ASBGameState>();
 	if (!GS) return;
@@ -131,11 +131,17 @@ void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex)
 	if (!bAlreadyStolen)
 	{
 		GS->CollectItem(); // 카운트 증가
-
+		GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("ItemStolen!!"));
 		FStolenItemInfo Info;
 		Info.StageIndex = StageIndex;
 		Info.ItemIndex = TargetIndex;
 		GS->StolenItems.Add(Info);
+
+		//MH
+		if (!AllTargetItemBPs.Contains(TargetItem->GetClass()))
+		{
+			AllTargetItemBPs.Add(TargetItem->GetClass());
+		}
 	}
 }
 
@@ -160,6 +166,7 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 			AllTargetItemBPs[SpawnIndex],
 			SpawnLocation,
 			FRotator::ZeroRotator);
+			GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("TargetItemSpawne!"));
 
 		if (AMH_TargetItem* Item = Cast<AMH_TargetItem>(Spawned))
 		{

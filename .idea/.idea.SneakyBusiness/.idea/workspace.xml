@@ -13,13 +13,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_EnemyAlertComp.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_Lasertrap.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/0/85/18M3BIH91WV3CCGNUFOOD2.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/2/LW/0E9GDCJMWME7EK46AQRAAU.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/4/D8/AL0NVQONE6HDHOQXGBXP10.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_EnemyAlertComp.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Lasertrap.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_EnemyAlertComp.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Lasertrap.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/Maps/LV_MHTest_Stage01.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/Maps/LV_MHTest_Stage01.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MH_TargetItemSpawner.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MH_TargetItemSpawner.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_0.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_0.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_1.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/TargetItems/BP_TargetItem0_2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/TS/Q7TKK71ZQBDMMRRED5TYB2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/5/TS/Q7TKK71ZQBDMMRRED5TYB2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/WF/VX58GHEW1ZMKT4ZQ0QYYCW.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/9/WF/VX58GHEW1ZMKT4ZQ0QYYCW.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/DD/0WL58DKXI8S48A6KWWJN2I.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/A/DD/0WL58DKXI8S48A6KWWJN2I.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/S3/BGNU1G9SNWAOV7LMPYOVQL.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/LV_MHTest_Stage01/E/S3/BGNU1G9SNWAOV7LMPYOVQL.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/LHM/GameSystem/SBGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/LHM/GameSystem/SBGameMode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Bullet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Bullet.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItemSpawner.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItemSpawner.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItemSpawner.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItemSpawner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/Player_Nick.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/Player_Nick.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/LHM/GameSystem/SBGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/LHM/GameSystem/SBGameMode.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +49,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Core/Public/Containers/Array.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Core/Public/Containers/ContainerAllocationPolicies.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Core/Public/Delegates/DelegateAccessHandler.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Core/Public/Delegates/DelegateBase.h" root0="FORCE_HIGHLIGHTING" />
@@ -49,6 +66,7 @@
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Engine/Private/Components/CharacterMovementComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/UE_5.5/Engine/Source/Runtime/Engine/Public/TimerManager.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Door.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_Lasertrap.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_ShootComp.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_SlipTrap.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/MH_TargetItem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -56,6 +74,7 @@
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/Player_Nick.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/LHM/Enemy.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Door.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_Lasertrap.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_ShootComp.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_SlipTrap.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/MH_TargetItem.h" root0="FORCE_HIGHLIGHTING" />
@@ -223,7 +242,10 @@
       <workItem from="1744455501146" duration="1753000" />
       <workItem from="1744513401358" duration="18268000" />
       <workItem from="1744696108251" duration="1896000" />
-      <workItem from="1744706809658" duration="3202000" />
+      <workItem from="1744706809658" duration="11580000" />
+      <workItem from="1744776121437" duration="7792000" />
+      <workItem from="1744940693852" duration="7637000" />
+      <workItem from="1745052596250" duration="1991000" />
     </task>
     <servers />
   </component>

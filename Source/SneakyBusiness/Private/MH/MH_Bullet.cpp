@@ -89,7 +89,7 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		//에너미가 쏜 총알 -> 플레이어 피격
 		if (OwnerActor != nullptr && OwnerActor->IsA(AEnemy::StaticClass()))
 		{
-			APlayer_Nick* Hitplayer = Cast<APlayer_Nick>(OwnerActor);
+			APlayer_Nick* Hitplayer = Cast<APlayer_Nick>(OtherActor);
 			if (OtherActor == Hitplayer)
 			{
 				GEngine->AddOnScreenDebugMessage(-4, 5.f, FColor::Green,TEXT("Player Overlap!!"));

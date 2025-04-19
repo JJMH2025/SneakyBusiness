@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "MH/MH_TargetItem.h"
 #include "SBGameMode.generated.h"
 
 /**
@@ -26,12 +27,12 @@ public:
 
 	int32 GetRequiredItemCount() const;
 
-	void OnItemStolen(int32 StageIndex, int32 TargetIndex);
+	void OnItemStolen(int32 StageIndex, int32 TargetIndex, AMH_TargetItem* TargetItem);
 	void DropItemsOnDeath(FVector DeathLocation);
 	
     // 모든 아이템 목록
     UPROPERTY(EditAnywhere)
-    TArray<TSubclassOf<AActor>> AllTargetItemBPs;
+    TArray<TSubclassOf<class AMH_TargetItem>> AllTargetItemBPs;
 
 private:
 	void CheckClearConditions();
