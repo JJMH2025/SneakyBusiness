@@ -212,7 +212,7 @@ void AEnemy::Chase()
 void AEnemy::Attack()
 {
 	//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
 
 	// 플레이어 감지 못하면 순찰상태로 전환
 	if (!IsPlayerDetectedByAIPerception())
