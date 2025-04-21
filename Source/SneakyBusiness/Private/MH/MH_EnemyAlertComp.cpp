@@ -51,7 +51,7 @@ void UMH_EnemyAlertComp::AlertNearbyEnemies(FVector SourceLocation, float Radius
 			if (Enemy)
 			{
 				Enemy->ReactToTrapAlert(SourceLocation);
-				GEngine->AddOnScreenDebugMessage(-2, 3.f, FColor::Red, "AlertNearbyEnemies11111");
+				//GEngine->AddOnScreenDebugMessage(-2, 3.f, FColor::Red, "AlertNearbyEnemies11111");
 			}
 		}
 	}
