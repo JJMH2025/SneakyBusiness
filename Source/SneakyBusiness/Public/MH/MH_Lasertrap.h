@@ -10,8 +10,8 @@ UCLASS()
 class SNEAKYBUSINESS_API AMH_Lasertrap : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMH_Lasertrap();
 
@@ -19,21 +19,27 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LaserTrap")
+	class USceneComponent* LaserRoot ;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LaserTrap")
+	class UBoxComponent* LaserCollisionBox;
+
 	//맞은 플레이어 주변 탐색 반경
 	UPROPERTY(EditAnywhere)
-	float DetectionRenge = 800.f;
+	float DetectionRenge = 1000.f;
 
 	//방향을 바꾸며 발사되는 간격
 	UPROPERTY(EditAnywhere)
-	float LaserInterval = 1.5f;
+	float LaserInterval = 1.f;
 
 	//최대 거리
 	UPROPERTY(EditAnywhere)
-	float LaserLength = 2000.f;
+	float LaserLength = 500.f;
 
 	//레이저 발사 방향
 	UPROPERTY(EditAnywhere)
@@ -49,5 +55,14 @@ public:
 	//플레이어 맞았는지 체크
 	UFUNCTION()
 	void FireLaser();
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Alert")
+	class UMH_EnemyAlertComp* EnemyAlertComp;
+
+	UPROPERTY(EditAnywhere, Category="Alert")
+	float AlertRadius = 1000.f;
+
+	UFUNCTION()
+	void OnLaserOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

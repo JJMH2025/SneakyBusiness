@@ -12,7 +12,7 @@ UMH_EnemyAlertComp::UMH_EnemyAlertComp()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	
 	// ...
 }
 
@@ -42,13 +42,16 @@ void UMH_EnemyAlertComp::AlertNearbyEnemies(FVector SourceLocation, float Radius
 
 	for (AActor* EnemyActor : FoundEnemies)
 	{
-		float Dist = FVector::Dist(EnemyActor->GetActorLocation(), SourceLocation);
-		if (Dist <= Radius)
+		FVector  EnemyLocation = EnemyActor->GetActorLocation();
+		float XY_Dist = FVector::Dist2D(EnemyLocation, SourceLocation); // Z축 무시
+		float Z_Diff = FMath::Abs(EnemyLocation.Z - SourceLocation.Z);  // Z 높이 차이
+		if (XY_Dist <= Radius && Z_Diff < 200.f) // Z 차이 제한을 설정해줌
 		{
 			AEnemy* Enemy = Cast<AEnemy>(EnemyActor);
 			if (Enemy)
 			{
-				//Enemy->OnAlerted(SourceLocation); // 이 함수는 에너미에 구현돼 있어야겠지
+				Enemy->ReactToTrapAlert(SourceLocation);
+				GEngine->AddOnScreenDebugMessage(-2, 3.f, FColor::Red, "AlertNearbyEnemies11111");
 			}
 		}
 	}
