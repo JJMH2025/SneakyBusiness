@@ -4,18 +4,20 @@
 #include "MH/MH_SlipTrap.h"
 
 #include "Components/BoxComponent.h"
+#include "MH/MH_EnemyAlertComp.h"
 #include "MH/Player_Nick.h"
 
 // Sets default values
 AMH_SlipTrap::AMH_SlipTrap()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	//BoxComp
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	RootComponent = BoxComponent;
-	
+
+	EnemyAlertComp = CreateDefaultSubobject<UMH_EnemyAlertComp>(TEXT("EnemyAlertComp"));
 }
 
 // Called when the game starts or when spawned
@@ -29,7 +31,6 @@ void AMH_SlipTrap::BeginPlay()
 void AMH_SlipTrap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AMH_SlipTrap::SlipStart(AActor* Player)
@@ -39,9 +40,9 @@ void AMH_SlipTrap::SlipStart(AActor* Player)
 		GEngine->AddOnScreenDebugMessage(-9, 5.f, FColor::Green,TEXT("CoolTime"));
 		return;
 	}
-	
+
 	bIsOnCooldown = true;
-	
+
 	GEngine->AddOnScreenDebugMessage(-9, 5.f, FColor::Green,TEXT("SlipStart"));
 	FVector LaunchDir = -Player->GetActorForwardVector();
 	LaunchDir.Z += 3.f;
@@ -50,9 +51,9 @@ void AMH_SlipTrap::SlipStart(AActor* Player)
 	LaunchDir.Normalize();
 
 	BoxComponent->SetCollisionResponseToChannel(ECC_EngineTraceChannel1, ECR_Ignore);
-	BoxComponent->AddImpulse(LaunchDir*ForceAmount,NAME_None,true);
+	BoxComponent->AddImpulse(LaunchDir * ForceAmount, NAME_None, true);
 
-	GetWorld()->GetTimerManager().SetTimer(TrapCooldownHandle,this,&AMH_SlipTrap::ResetCooldown,6.0f,false);
+	GetWorld()->GetTimerManager().SetTimer(TrapCooldownHandle, this, &AMH_SlipTrap::ResetCooldown, 6.0f, false);
 
 	ActivateTrapEffect();
 }
@@ -69,12 +70,17 @@ void AMH_SlipTrap::ActivateTrapEffect()
 	//밟으면 소리나기
 	//이슈 올리기
 	//월드 -> 거리 계산해서 일정거리 안에 있는 애들 불러오게 //사운드
+	if (EnemyAlertComp)
+	{
+		GEngine->AddOnScreenDebugMessage(-4, 3.f, FColor::Red, TEXT("Player TRIPPED the Laser!"));
+		EnemyAlertComp->AlertNearbyEnemies(GetActorLocation(), AlertRadius);
+	}
+
 	//에너미 함수(트랩 위치값)
 	//에너미 불러들이기
 }
 
-bool AMH_SlipTrap::CanTrigger()const
+bool AMH_SlipTrap::CanTrigger() const
 {
 	return !bIsOnCooldown;
 }
-

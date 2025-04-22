@@ -16,6 +16,7 @@
 #include "LHM/GameSystem/SBGameMode.h"
 #include "LHM/GameSystem/SBGameState.h"
 #include "MH/MH_Door.h"
+#include "MH/MH_Lever.h"
 #include "MH/MH_LiftActor.h"
 #include "MH/MH_SlipTrap.h"
 #include "MH/MH_TargetItem.h"
@@ -276,7 +277,7 @@ void APlayer_Nick::PlayerInteract()
 			int32 Index = OverlappingItem->ItemIndex;
 
 			//GameMode로 보고, 훔칠 때
-			GM->OnItemStolen(Stage, Index,OverlappingItem);
+			GM->OnItemStolen(Stage, Index, OverlappingItem);
 			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("bCanPickup"));
 			OverlappingItem->Destroy();
 			OverlappingItem = nullptr;
@@ -288,6 +289,12 @@ void APlayer_Nick::PlayerInteract()
 	if (bIsOverlappingLift)
 	{
 		UseLift();
+	}
+
+	//레버
+	if (bIsOverlappingLever && !Lever->bIsLeverActive)
+	{
+		Lever->ActivateLever();
 	}
 }
 
@@ -398,12 +405,22 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		}
 	}
 
+	
 	if (OtherActor && OtherActor->ActorHasTag("Lift"))
 	{
 		Lift = Cast<AMH_LiftActor>(OtherActor);
 		if (Lift)
 		{
 			bIsOverlappingLift = true;
+		}
+	}
+	
+	if (OtherActor && OtherActor->ActorHasTag("Lever"))
+	{
+		Lever = Cast<AMH_Lever>(OtherActor);
+		if (Lever)
+		{
+			bIsOverlappingLever = true;
 		}
 	}
 }
@@ -445,12 +462,14 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (OtherActor && OtherActor->ActorHasTag("Lift"))
 	{
-		Lift = Cast<AMH_LiftActor>(OtherActor);
-		if (Lift)
-		{
-			bIsOverlappingLift = false;
-			Lift = nullptr;
-		}
+		bIsOverlappingLift = false;
+		Lift = nullptr;
+	}
+
+	if (OtherActor && OtherActor->ActorHasTag("Lever"))
+	{
+			bIsOverlappingLever = false;
+			Lever = nullptr;
 	}
 }
 
@@ -532,7 +551,6 @@ void APlayer_Nick::DropItems()
 		//모두 플레이어 발밑으로 떨구기
 		if (GM)
 		{
-			
 			GM->DropItemsOnDeath(GetActorLocation());
 			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("DropItemsOnDeath"));
 		}

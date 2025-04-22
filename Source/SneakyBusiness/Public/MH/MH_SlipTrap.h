@@ -26,6 +26,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Alert")
+	class UMH_EnemyAlertComp* EnemyAlertComp;
+
+	UPROPERTY(EditAnywhere, Category="Alert")
+	float AlertRadius =600.f;
+	
 	UFUNCTION()
 	void SlipStart(AActor* Player);
 

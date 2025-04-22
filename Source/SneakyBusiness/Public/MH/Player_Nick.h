@@ -197,6 +197,9 @@ public:
 
 	UPROPERTY()
 	class AMH_LiftActor* Lift;
+	
+	UPROPERTY()
+	class AMH_Lever* Lever;
 
 	UFUNCTION()
 	void UseLift();
@@ -204,6 +207,10 @@ public:
 	UFUNCTION()
 	void OnLiftArrived();
 	
+	//레버
+	UPROPERTY(VisibleAnywhere)
+	bool bIsOverlappingLever = false;
+
 	UPROPERTY()
 	class ASBGameMode* GM;
 
