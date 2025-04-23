@@ -105,7 +105,7 @@ void ASBGameMode::OnStageClear()
 	// 랭크 UI 호출 또는 Level 전환
 	//CreateWidget<UUserWidget_RankResult>(...) → AddToViewport()
 	//FName NextStageName = FName(TEXT("Stage%d"), GI->CurrentStageIndex);
-	//UGameplayStatics::OpenLevel(this, NextStageName);
+	UGameplayStatics::OpenLevel(this, TEXT("LV_Clear"));
 }
 
 void ASBGameMode::OnStageFailed()
