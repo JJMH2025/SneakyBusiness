@@ -11,6 +11,8 @@
 
 ASBGameMode::ASBGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	static ConstructorHelpers::FClassFinder<APawn> PlyerNickRef (TEXT("/Game/May/BP/BP_MHPlayer_Nick"));
 	if (PlyerNickRef.Class)
 	{
@@ -36,7 +38,7 @@ void ASBGameMode::BeginPlay()
 	{
 		case 1:
 			CurrentStageName = "Stage1";
-			GS->RequiredItemCount = 4;
+			GS->RequiredItemCount = 3;
 			GS->TimeLimit = 180;
 			break;
 
@@ -103,7 +105,7 @@ void ASBGameMode::OnStageClear()
 	// 랭크 UI 호출 또는 Level 전환
 	//CreateWidget<UUserWidget_RankResult>(...) → AddToViewport()
 	//FName NextStageName = FName(TEXT("Stage%d"), GI->CurrentStageIndex);
-	//UGameplayStatics::OpenLevel(this, NextStageName);
+	UGameplayStatics::OpenLevel(this, TEXT("LV_Clear"));
 }
 
 void ASBGameMode::OnStageFailed()
@@ -131,11 +133,14 @@ void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex, AMH_TargetIt
 	if (!bAlreadyStolen)
 	{
 		GS->CollectItem(); // 카운트 증가
-		GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("ItemStolen!!"));
+
 		FStolenItemInfo Info;
 		Info.StageIndex = StageIndex;
 		Info.ItemIndex = TargetIndex;
 		GS->StolenItems.Add(Info);
+
+		UE_LOG(LogTemp, Log, TEXT("CollectItem: %d개"), GS->CollectedItemCount);
+		UE_LOG(LogTemp, Log, TEXT("RequiredItemCount: %d개"), GS->RequiredItemCount);
 
 		//MH
 		if (!AllTargetItemBPs.Contains(TargetItem->GetClass()))
@@ -150,7 +155,7 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 	ASBGameState* GS = GetGameState<ASBGameState>();
 	if(!GS || AllTargetItemBPs.Num() == 0 || GS->StolenItems.Num() == 0) return;
 
-	const float SpreadRadius = 100;
+	const float SpreadRadius = 400;
 
 	for (const FStolenItemInfo& Info : GS->StolenItems)
 	{
@@ -165,8 +170,8 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 		AActor* Spawned = GetWorld()->SpawnActor<AActor>(
 			AllTargetItemBPs[SpawnIndex],
 			SpawnLocation,
-			FRotator::ZeroRotator);
-			GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Turquoise,TEXT("TargetItemSpawne!"));
+			FRotator::ZeroRotator
+		);
 
 		if (AMH_TargetItem* Item = Cast<AMH_TargetItem>(Spawned))
 		{
@@ -175,7 +180,9 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 		}
 	}
 
-	GS->StolenItems.Empty();  // 리셋
+	// 리셋
+	GS->CollectedItemCount = 0;
+	GS->StolenItems.Empty();
 }
 
 void ASBGameMode::CheckClearConditions()
@@ -184,14 +191,31 @@ void ASBGameMode::CheckClearConditions()
 	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!GS || !Player) return;
 
-	// 목표 아이템을 모두 획득하고 목표 지점에 도착했을 때 Clear
+	// Clear
+	// 목표 아이템을 모두 획득하고 목표 지점에 도착했을 때
 	if (GS->bRechedGoal && GS->CollectedItemCount == GS->RequiredItemCount)
 	{
 		OnStageClear();
+		return;
 	}
 	
-	// 제한 시간 초과했거나 플레이어가 사망 상태일 때 Fail
-	if (GS->ElapsedTime >= GS->TimeLimit || Player->CurrentPlayerState == EPlayerState::Dead)
+	// 목표 아이템을 모두 수집하지 못했는데 목표 지점에 도착했을 때
+	if(GS->bRechedGoal && GS->CollectedItemCount < GS->RequiredItemCount)
+	{
+		GS->bRechedGoal = false;
+
+		// 경고 메세지 출력하기 -> UI연결
+		int32 ItemCount = GS->RequiredItemCount - GS->CollectedItemCount;
+		FString ErrorMsg = FString::Printf(TEXT("목표 아이템 %d개가 부족합니다."), ItemCount);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, ErrorMsg);
+		UE_LOG(LogTemp, Log, TEXT("%s"), *ErrorMsg);
+	}
+
+	// Fail
+	// 제한 시간 초과
+	// 플레이어가 사망 상태일 때
+	if (GS->ElapsedTime >= GS->TimeLimit 
+		|| Player->CurrentPlayerState == EPlayerState::Dead)
 	{
 		OnStageFailed();
 	}
