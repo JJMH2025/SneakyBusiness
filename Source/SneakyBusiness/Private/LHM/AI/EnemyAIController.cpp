@@ -15,3 +15,11 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		RunBehaviorTree(Enemy->BT);
 	}
 }
+
+void AEnemyAIController::SetBlackboardBoolValue(FName KeyName, bool bValue)
+{
+	if (Blackboard)
+	{
+		Blackboard->SetValueAsBool(KeyName, bValue);
+	}
+}

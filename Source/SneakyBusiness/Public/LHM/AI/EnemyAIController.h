@@ -17,6 +17,8 @@ class SNEAKYBUSINESS_API AEnemyAIController : public AAIController
 public:
 	virtual void OnPossess(APawn* InPawn) override;
 
+	void SetBlackboardBoolValue(FName KeyName, bool bValue);
+
 private:
 	UPROPERTY()
 	class UBlackboardComponent* BBComp;
