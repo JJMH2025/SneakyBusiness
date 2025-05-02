@@ -48,11 +48,13 @@ void UBTT_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	{
 		Enemy->SetEnemyAIState(EEnemyAIState::Chase);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 
 	// 에너미 현재 상태가 Patrol이 아니면 해당 태스크 종료
 	if (Enemy->GetEnemyAIState() != EEnemyAIState::Patrol)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 }

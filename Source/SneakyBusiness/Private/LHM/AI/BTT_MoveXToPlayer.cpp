@@ -48,6 +48,7 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 			AIController->SetBlackboardBoolValue("bIsPlayerInOtherSpace", true);
 
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			return;
 		}
 	}
 	else
@@ -57,6 +58,7 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		{
 			Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			return;
 		}
 
 		// 플레이어 쫓다가 장애물 있으면 뒤돌아서 Patorl로 상태 전환 -> 해당 태스크 종료
@@ -69,6 +71,7 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 			Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			return;
 		}
 
 		// 장애물이 없으면
@@ -79,6 +82,7 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 			{
 				Enemy->SetEnemyAIState(EEnemyAIState::Attack);
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				return;
 			}
 
 			// 플레이어와 거리가 300 이상이라면 플레이어 방향으로 이동
@@ -94,5 +98,6 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	if (Enemy->GetEnemyAIState() != EEnemyAIState::Chase)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 }

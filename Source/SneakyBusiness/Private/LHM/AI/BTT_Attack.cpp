@@ -28,10 +28,11 @@ void UBTT_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	}
 
 	// 플레이어 감지 못하면 Patrol 전환
-	if (Enemy->IsPlayerDetectedByAIPerception())
+	if (!Enemy->IsPlayerDetectedByAIPerception())
 	{
 		Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 
 	// 총알 발사
@@ -43,5 +44,6 @@ void UBTT_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	if (Enemy->GetEnemyAIState() != EEnemyAIState::Attack)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 }

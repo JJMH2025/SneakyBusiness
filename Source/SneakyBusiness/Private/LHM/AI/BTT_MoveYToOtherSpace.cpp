@@ -65,6 +65,7 @@ void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 			{
 				Enemy->StartMovingDepth();
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				return;
 			}
 		}
 
@@ -75,11 +76,13 @@ void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 			Enemy->StartMovingDepth();
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			return;
 		}
 	}
 
 	if (Enemy->GetEnemyAIState() != EEnemyAIState::Chase)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 }

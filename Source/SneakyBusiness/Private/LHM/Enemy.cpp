@@ -5,10 +5,24 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "LHM/AI/EnemyAIController.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
+	if (BBAssetRef.Succeeded())
+	{
+		BBD = BBAssetRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Game/LHM/BluePrints/AI/BT_Enemy.BT_Enemy"));
+	if (BTAssetRef.Succeeded())
+	{
+		BT = BTAssetRef.Object;
+	}*/
 
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));

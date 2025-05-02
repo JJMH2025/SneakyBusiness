@@ -58,11 +58,13 @@ void UBTT_Alerted::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 	{
 		Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 	
 	// 에너미 현재 상태가 Alerted이 아니면 해당 태스크 종료
 	if (Enemy->GetEnemyAIState() != EEnemyAIState::Alerted)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 }

@@ -33,9 +33,11 @@ public:
 
 	// Behavior Tree
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTree* BT;
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardData* BBD;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* BT;
+	/*UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* CombatSubtree;*/
 
 	virtual void Signal();			// 신호
 
