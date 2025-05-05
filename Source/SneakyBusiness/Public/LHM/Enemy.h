@@ -10,14 +10,10 @@ UENUM(BlueprintType)
 enum class EEnemyAIState : uint8
 {
 	Patrol				UMETA(DisplayName = "Patrol"),
-	MovingToAlignX		UMETA(DisplayName = "MovingToAlignX"),
-	MovingToOtherSpace	UMETA(DisplayName = "MovingToOtherSpace"),
 	Chase				UMETA(DisplayName = "Chase"),
 	Attack				UMETA(DisplayName = "Attack"),
 	Signal				UMETA(DisplayName = "Signal"),
-	HitByDoor			UMETA(DisplayName = "HitByDoor"),
 	Stunned				UMETA(DisplayName = "Stunned"),
-	WakeUp				UMETA(DisplayName = "WakeUp"),
 	Alerted				UMETA(DisplayName = "Alerted")
 };
 
@@ -35,60 +31,61 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	EEnemyAIState GetEnemyAIState() const { return CurrentState; }
-	void SetEnemyAIState(EEnemyAIState NewState) { CurrentState = NewState; }
-
 	// Behavior Tree
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTree* BT;
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardData* BBD;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* BT;
+	/*UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* CombatSubtree;*/
 
-	// 상태에 따른 행동 함수
-	virtual void Patrol();					// 순찰
-	virtual void Chase();					// 추적
-	virtual void AlignXToPlayer();			// 추적 시 플레이어 방향으로 X축 먼저 정렬
-	virtual void PrepareMoveToOtherSpace(); // 추적 시 X축 정렬 후 A/B 공간 전환
-	virtual void Attack();					// 공격
-	virtual void Signal();					// 신호
-	virtual void HitByDoor();				// 문에 부딪힘
-	virtual void Stunned();					// 기절
-	virtual void WakeUp();					// 깨어남
-	virtual void Alerted();					// 경보 상태
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAIPerceptionComponent* AIPerceptionComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
-	UFUNCTION()
-	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	virtual void Signal();			// 신호
 
-	// 피격
-	void ReceiveDamage();
+	void HitByDoor();				// 문에 부딪힘
+	void ReceiveDamage();			// 피격
 
 	UFUNCTION(BlueprintCallable)
 	// 함정 발동시 해당 위치로 이동
 	void ReactToTrapAlert(FVector InAlertLocation);
 
+	// Getter/Setter
+	EEnemyAIState GetEnemyAIState() const { return CurrentState; }
+	void SetEnemyAIState(EEnemyAIState NewState) { CurrentState = NewState; }
+
+	bool IsRotating() { return bIsRotating; }
+	bool IsMovingForward() { return bMovingForward; }
+	void StartRotating() { bIsRotating = true; }
+	void SetTargetRotation(FRotator NewRotation) { TargetRot = NewRotation; }
+	FVector GetAlertLocation() { return AlertLocation; }
+
+	bool IsASpace() { return bIsASpace; }
+	bool IsMovingDepth() { return bIsMovingDepth; }
+	void StartMovingDepth() { bIsMovingDepth = true; }
+	void SetMoveDepthLocation(FVector NewLocation) { MoveDepthLocation = NewLocation; }
+
+	class UMH_ShootComp& GetShootComp() const;
+
+public:
+	// 장애물 판별
+	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
+
+	bool IsPlayerStateToFrozenOrDead();		// 플레이어 상태 체크
+	bool ShouldDetectHiddenPlayer();		// 플레이어가 숨은 방향에 따라서 감지 여부 판단
+
 protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
-	void DoShooting();						// 총알 발사
-	void HandleHitByDoorAndStunEnd();		// 문 부딪힘 & 기절 5초 뒤 깨어남 
 
-	// 플레이어 감지
-	bool IsPlayerDetectedByAIPerception();
-	// 장애물 판별
-	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
-	// 플레이어 상태 체크
-	bool IsPlayerStateToFrozenOrDead();
-	// 플레이어가 숨은 방향에 따라서 감지 여부 판단
-	bool ShouldDetectHiddenPlayer();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
-
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAIPerceptionComponent* AIPerceptionComp;
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
@@ -99,16 +96,11 @@ private:
 	FVector MoveDepthLocation;
 
 	// Patrol
-	bool bMovingForward = false;	// 이동 방향 (true: 오른쪽, false: 왼쪽)
+	bool bMovingForward = false;// 이동 방향 (true: 오른쪽, false: 왼쪽)
 	bool bIsRotating = false;	// 회전 중인지 여부
 	FRotator TargetRot;			// 목표 회전 값
-
-	// Attack
-	FTimerHandle AttackTimerHandle;
-	bool bAttackStarted = false;
 	
 	// Stun
-	FTimerHandle StunTimerHandle;
 	bool bIsStunned = false;
 	
 	// Alert

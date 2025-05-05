@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTT_Stun.generated.h"
+#include "BTT_TakeDamage.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SNEAKYBUSINESS_API UBTT_Stun : public UBTTaskNode
+class SNEAKYBUSINESS_API UBTT_TakeDamage : public UBTTaskNode
 {
 	GENERATED_BODY()
 
 public:
-	UBTT_Stun();
-	
+	UBTT_TakeDamage();
+
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

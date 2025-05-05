@@ -16,10 +16,10 @@ UBTS_UpdateCurrentState::UBTS_UpdateCurrentState()
 void UBTS_UpdateCurrentState::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSectonds)
 {
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!Enemy) return;
-
 	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (!Enemy || !BB) return;
 
+	// CurrentState
 	UEnum* EnumPtr = StaticEnum<EEnemyAIState>();
 	FString EnumStr = EnumPtr->GetNameStringByValue((int64)Enemy->GetEnemyAIState());
 	BB->SetValueAsName("CurrentState", FName(*EnumStr));

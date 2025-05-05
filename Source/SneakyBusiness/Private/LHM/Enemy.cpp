@@ -5,10 +5,24 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "LHM/AI/EnemyAIController.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
+	if (BBAssetRef.Succeeded())
+	{
+		BBD = BBAssetRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Game/LHM/BluePrints/AI/BT_Enemy.BT_Enemy"));
+	if (BTAssetRef.Succeeded())
+	{
+		BT = BTAssetRef.Object;
+	}*/
 
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
@@ -28,9 +42,6 @@ AEnemy::AEnemy()
 	AIPerceptionComp->ConfigureSense(*SightConfig);
 	// 이 AI가 사용하는 주 감지 타입 설정
 	AIPerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());
-	// 델리게이트 바인딩 (감지 대상이 갱신될 때마다 호출)
-	AIPerceptionComp->OnPerceptionUpdated.AddDynamic(this, &AEnemy::OnPerceptionUpdated);
-
 }
 
 void AEnemy::BeginPlay()
@@ -42,197 +53,12 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 시야 범위 시각화
-	if (SightConfig)
-	{
-		FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
-		FVector Forward = GetActorForwardVector();
-
-		float SightRadius = SightConfig->SightRadius;
-		float HalfFOVRadians = FMath::DegreesToRadians(SightConfig->PeripheralVisionAngleDegrees / 2.0f);
-
-		DrawDebugCone(GetWorld(), Start, Forward, SightRadius, HalfFOVRadians, HalfFOVRadians, 12, FColor::Green, false, 0.1f, 0, 2.0f);
-	}
-
 	// 순찰 중 회전 보간
 	if (bIsRotating) LerpRotation(DeltaTime);
 	else bMovingForward = GetActorForwardVector().X >= 0.1 ? true : false;
 
 	// 추적 중 공간 이동 보간
 	if (bIsMovingDepth) LerpMoveToDepth(DeltaTime);
-}
-
-void AEnemy::Patrol()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is patrolling."));
-
-	// 회전 중이거나 기절 상태면 이동하지 않음
-	if (bIsRotating) return;
-
-	// 플레이어 감지
-	if (IsPlayerDetectedByAIPerception())
-	{
-		SetEnemyAIState(EEnemyAIState::MovingToOtherSpace);
-		return;
-	}
-
-	// 장애물 감지
-	if (IsObstacleAhead(GetActorForwardVector(), 150.0f))
-	{
-		UE_LOG(LogTemp, Log, TEXT("In Patrol 장애물 감지"));
-		// 방향 반전 + 회전
-		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
-		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
-		bIsRotating = true;
-	}
-
-	// 정면으로 이동
-	AddMovementInput(GetActorForwardVector(), 0.2f);
-}
-
-void AEnemy::AlignXToPlayer()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is Align X To Player."));
-
-	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!Player) return;
-
-	if (Player->bIsPlayerLoc != bIsASpace)
-	{
-		// 먼저 X축 정렬을 시도
-		FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
-		AddMovementInput(Dir, 0.5f);
-
-		float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
-		if (XDiff < 100.0f)
-		{
-			SetEnemyAIState(EEnemyAIState::MovingToOtherSpace);
-			return;
-		}
-	}
-	else
-	{
-		SetEnemyAIState(EEnemyAIState::Chase);
-		return;
-	}
-}
-
-void AEnemy::PrepareMoveToOtherSpace()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is Prepare Move To OtherSpace"));
-
-	if (!bIsMovingDepth)
-	{
-		float OffsetY = bIsASpace ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
-		MoveDepthLocation = GetActorLocation() + FVector(0, OffsetY, 0);
-
-		FVector DirectionToDepth;
-
-		// 에너미가 왼쪽을 보고 있으면 오른쪽 방향 감지
-		if(GetActorForwardVector().X < 0)
-		{ 
-			DirectionToDepth = GetActorRightVector();
-		}
-		// 에너미가 오른쪽을 보고 있으면 왼쪽 방향 감지
-		else
-		{
-			DirectionToDepth = -GetActorRightVector();
-		}
-
-		// B공간으로 이동할 때 장애물 있으면 다시 X축 정렬
-		if (IsObstacleAhead(DirectionToDepth, 90))
-		{
-			UE_LOG(LogTemp, Log, TEXT("In Prepare Move To Other Space 장애물 감지"));
-			APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			if (!Player) return;
-
-			// X축 정렬 시도
-			FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
-			AddMovementInput(Dir, 0.5f);
-
-			float XDiff = FMath::Abs(Player->GetActorLocation().X - GetActorLocation().X);
-			if (XDiff < 1.0f)
-			{
-				bIsMovingDepth = true;
-				return;
-			}
-		}
-		// 장애물 없으면 B공간으로 이동
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("In Prepare Move To Other Space 장애물 없음 바로 bIsMovingDepth 트루"));
-
-			bIsMovingDepth = true;
-			return;
-		}
-	}
-}
-
-void AEnemy::Chase()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is chasing the player!"));
-
-	if (bIsRotating || IsPlayerStateToFrozenOrDead())
-	{
-		SetEnemyAIState(EEnemyAIState::Patrol);
-		return;
-	}
-
-	// 플레이어 쫓다가 장애물 있으면 뒤돌아서 순찰 상태로 전환
-	if (IsObstacleAhead(GetActorForwardVector(), 130.0f))
-	{
-		UE_LOG(LogTemp, Log, TEXT("In Chase 장애물 감지"));
-		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
-		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
-		bIsRotating = true;
-
-		SetEnemyAIState(EEnemyAIState::Patrol);
-		return;
-	}
-	else
-	{
-		AActor* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-		if (!Player) return;
-
-		// 플레이어와의 거리 체크 (300 이하이면 Attack 상태로 전환)
-		if (FVector::Dist(GetActorLocation(), Player->GetActorLocation()) <= 300.0f)
-		{
-			SetEnemyAIState(EEnemyAIState::Attack);
-			return;
-		}
-		else
-		{
-			// 플레이어 방향으로 이동
-			FVector Dir = FVector((Player->GetActorLocation().X - GetActorLocation().X), 0, 0).GetSafeNormal();
-			AddMovementInput(Dir, 0.5f);
-		}
-	}
-}
-
-void AEnemy::Attack()
-{
-	//GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green, TEXT("Enemy is attacking!"));
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking!"));
-
-	// 플레이어 감지 못하면 순찰상태로 전환
-	if (!IsPlayerDetectedByAIPerception())
-	{
-		SetEnemyAIState(EEnemyAIState::Patrol);
-		return;
-	}
-
-	if (!bAttackStarted)
-	{
-		bAttackStarted = true;
-		// 1초 후 총알 발사
-		GetWorldTimerManager().SetTimer(
-			AttackTimerHandle, 
-			this, 
-			&AEnemy::DoShooting, 
-			1.0f, 
-			false
-		);
-	}
 }
 
 void AEnemy::Signal()
@@ -242,80 +68,22 @@ void AEnemy::Signal()
 
 void AEnemy::HitByDoor()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy was hit by a door and is stunned!"));
+	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+	if (!AIController) return;
 	
-	// 문에 부딪힌 애니메이션 재생
+	AIController->SetBlackboardBoolValue("bHitByDoor", true);
 
-	// 5초 뒤에 깨어남
-	GetWorldTimerManager().SetTimer(
-		StunTimerHandle,
-		this,
-		&AEnemy::HandleHitByDoorAndStunEnd,
-		5.0f,
-		false
-	);
+	SetEnemyAIState(EEnemyAIState::Stunned);
 }
 
-void AEnemy::Stunned()
+void AEnemy::ReceiveDamage()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is stunned!"));
+	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+	if (!AIController) return;
+		
+	AIController->SetBlackboardBoolValue("bTakeDamage", true);
 
-	//if (bIsStunned) return;
-	//bIsStunned = true;
-
-	// 기절하는 애니메이션 재생
-
-	// 5초 뒤에 깨어남
-	GetWorldTimerManager().SetTimer(
-		StunTimerHandle,
-		this,
-		&AEnemy::HandleHitByDoorAndStunEnd,
-		5.0f,
-		false
-	);
-}
-
-void AEnemy::WakeUp()
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy has woken up!"));
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy has woken up!"));
-
-	// 일어나는 애니메이션 재생
-
-	SetEnemyAIState(EEnemyAIState::Patrol);
-}
-
-void AEnemy::Alerted()
-{
-	if (bIsRotating) return;
-
-	// 에너미의 방향에 따라 경보 위치로 이동하기 전 회전할지 여부
-	// 에너미가 왼쪽을 바라보는지 판별
-	bool bEnemyFacingLeft = GetActorForwardVector().X < 0;
-	// 경보 위치가 에너미의 왼쪽에 있는지 판별
-	bool bIsAlertLeftOfEnemy = AlertLocation.X < GetActorLocation().X;
-	// 에너미가 바라보는 방향에 경보 위치가 없다면 회전해야 함
-	bool bShouldTurn = bIsAlertLeftOfEnemy != bEnemyFacingLeft ? true : false;
-
-	if (bShouldTurn)
-	{
-		float RotationAmount = bMovingForward ? -180.0f : 180.0f;
-		TargetRot = GetActorRotation() + FRotator(0, RotationAmount, 0);
-		bIsRotating = true;
-	}
-
-	// 목적지와 에너미의 거리 300 미만일 시 Patrol로 상태 전환
-	float Dist = FVector::Dist(AlertLocation, GetActorLocation());
-	if (Dist <= 200)
-	{
-		SetEnemyAIState(EEnemyAIState::Patrol);
-	}
-	
-	if (!bIsRotating)
-	{
-		FVector Dir = FVector(AlertLocation.X - GetActorLocation().X, 0, 0).GetSafeNormal();
-		AddMovementInput(Dir, 0.5);
-	}
+	SetEnemyAIState(EEnemyAIState::Stunned);
 }
 
 void AEnemy::ReactToTrapAlert(FVector InAlertLocation)
@@ -324,25 +92,6 @@ void AEnemy::ReactToTrapAlert(FVector InAlertLocation)
 
 	this->AlertLocation = InAlertLocation;
 	SetEnemyAIState(EEnemyAIState::Alerted);
-}
-
-void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
-{
-	if (bIsRotating) return;
-	
-	// 플레이어가 Frozen 또는 Dead 상태가 아니고
-	// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
-	if (IsPlayerStateToFrozenOrDead()) return;
-	if (!ShouldDetectHiddenPlayer()) return;
-
-	for (AActor* Actor : UpdatedActors)
-	{
-		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
-		{
-			SetEnemyAIState(EEnemyAIState::MovingToAlignX);
-			return;
-		}
-	}
 }
 
 void AEnemy::LerpRotation(float DeltaTime)
@@ -372,57 +121,18 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 		SetActorLocation(MoveDepthLocation);
 		bIsASpace = !bIsASpace;
 		bIsMovingDepth = false;
-		SetEnemyAIState(EEnemyAIState::Chase);
+
+		AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+		if (!AIController) return;
+
+		AIController->SetBlackboardBoolValue("bIsPlayerInOtherSpace", false);
 	}
 }
 
-void AEnemy::DoShooting()
+UMH_ShootComp& AEnemy::GetShootComp() const
 {
-	// 총알 발사
-	if (ShootComp)
-	{
-		FVector FireLocation = GetActorLocation();
-		FRotator FireRotation = GetActorRotation();
-		ShootComp->Shooting(FireLocation, FireRotation);
-	}
-
-	bAttackStarted = false;
-}
-
-void AEnemy::HandleHitByDoorAndStunEnd()
-{
-	//bIsStunned = false;
-	SetEnemyAIState(EEnemyAIState::WakeUp);
-}
-
-void AEnemy::ReceiveDamage()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Enemy is Received Damage!"));
-	UE_LOG(LogTemp, Log, TEXT("Enemy is Received Damage!"));
-	
-	SetEnemyAIState(EEnemyAIState::Stunned);
-}
-
-bool AEnemy::IsPlayerDetectedByAIPerception()
-{
-	if (bIsRotating || bIsMovingDepth || bIsStunned) return false;
-
-	// 플레이어가 Frozen 또는 Dead 상태가 아니고
-	// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
-	if(IsPlayerStateToFrozenOrDead()) return false;
-	if(!ShouldDetectHiddenPlayer()) return false;
-
-	TArray<AActor*> SensedActors;
-	AIPerceptionComp->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SensedActors);
-
-	for (AActor* Actor : SensedActors)
-	{
-		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
-		{
-			return true;
-		}
-	}
-	return false;
+	check(ShootComp);
+	return *ShootComp;
 }
 
 bool AEnemy::IsObstacleAhead(FVector DirectionToDetect, float Distance)
