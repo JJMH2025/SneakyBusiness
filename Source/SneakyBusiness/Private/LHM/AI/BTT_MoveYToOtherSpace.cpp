@@ -22,9 +22,18 @@ EBTNodeResult::Type UBTT_MoveYToOtherSpace::ExecuteTask(UBehaviorTreeComponent& 
 void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (!Enemy)
+	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (!Enemy || !BB)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+	// 플레이어 감지 못하면 Patrol로 상태 전환 -> 해당 태스크 종료
+	if (!BB->GetValueAsObject("Player"))
+	{
+		Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 
@@ -68,7 +77,6 @@ void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 				return;
 			}
 		}
-
 		// 장애물 없으면 B공간으로 이동
 		else
 		{

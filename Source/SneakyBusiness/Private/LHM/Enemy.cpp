@@ -42,9 +42,6 @@ AEnemy::AEnemy()
 	AIPerceptionComp->ConfigureSense(*SightConfig);
 	// 이 AI가 사용하는 주 감지 타입 설정
 	AIPerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());
-	// 델리게이트 바인딩 (감지 대상이 갱신될 때마다 호출)
-	AIPerceptionComp->OnPerceptionUpdated.AddDynamic(this, &AEnemy::OnPerceptionUpdated);
-
 }
 
 void AEnemy::BeginPlay()
@@ -55,18 +52,6 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// 시야 범위 시각화
-	if (SightConfig)
-	{
-		FVector Start = GetActorLocation() + FVector(0, 0, 50.0f);
-		FVector Forward = GetActorForwardVector();
-
-		float SightRadius = SightConfig->SightRadius;
-		float HalfFOVRadians = FMath::DegreesToRadians(SightConfig->PeripheralVisionAngleDegrees / 2.0f);
-
-		DrawDebugCone(GetWorld(), Start, Forward, SightRadius, HalfFOVRadians, HalfFOVRadians, 12, FColor::Green, false, 0.1f, 0, 2.0f);
-	}
 
 	// 순찰 중 회전 보간
 	if (bIsRotating) LerpRotation(DeltaTime);
@@ -109,25 +94,6 @@ void AEnemy::ReactToTrapAlert(FVector InAlertLocation)
 	SetEnemyAIState(EEnemyAIState::Alerted);
 }
 
-void AEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
-{
-	if (bIsRotating) return;
-	
-	// 플레이어가 Frozen 또는 Dead 상태가 아니고
-	// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
-	if (IsPlayerStateToFrozenOrDead()) return;
-	if (!ShouldDetectHiddenPlayer()) return;
-
-	for (AActor* Actor : UpdatedActors)
-	{
-		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
-		{
-			SetEnemyAIState(EEnemyAIState::Chase);
-			return;
-		}
-	}
-}
-
 void AEnemy::LerpRotation(float DeltaTime)
 {
 	FRotator CurrrentRot = GetActorRotation();
@@ -167,28 +133,6 @@ UMH_ShootComp& AEnemy::GetShootComp() const
 {
 	check(ShootComp);
 	return *ShootComp;
-}
-
-bool AEnemy::IsPlayerDetectedByAIPerception()
-{
-	if (bIsRotating || bIsMovingDepth || bIsStunned) return false;
-
-	// 플레이어가 Frozen 또는 Dead 상태가 아니고
-	// 플레이어가 숨은 상태인지 + 방향 비교로 감지 여부 판단
-	if(IsPlayerStateToFrozenOrDead()) return false;
-	if(!ShouldDetectHiddenPlayer()) return false;
-
-	TArray<AActor*> SensedActors;
-	AIPerceptionComp->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SensedActors);
-
-	for (AActor* Actor : SensedActors)
-	{
-		if (APlayer_Nick* Player = Cast<APlayer_Nick>(Actor))
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 bool AEnemy::IsObstacleAhead(FVector DirectionToDetect, float Distance)

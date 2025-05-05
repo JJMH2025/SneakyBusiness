@@ -23,9 +23,18 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 {
 	AEnemy* Enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
 	APlayer_Nick* Player = Cast<APlayer_Nick>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (!Enemy || !Player)
+	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (!Enemy || !Player || !BB)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+
+	// 플레이어 감지 못하면 Patrol로 상태 전환 -> 해당 태스크 종료
+	if (!BB->GetValueAsObject("Player"))
+	{
+		Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 

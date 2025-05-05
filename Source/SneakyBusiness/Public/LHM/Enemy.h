@@ -39,13 +39,16 @@ public:
 	/*UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* CombatSubtree;*/
 
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAIPerceptionComponent* AIPerceptionComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI");
+	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
+
 	virtual void Signal();			// 신호
 
 	void HitByDoor();				// 문에 부딪힘
 	void ReceiveDamage();			// 피격
-
-	UFUNCTION()
-	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 	UFUNCTION(BlueprintCallable)
 	// 함정 발동시 해당 위치로 이동
@@ -72,23 +75,17 @@ public:
 	// 장애물 판별
 	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
 
-	bool IsPlayerDetectedByAIPerception();	// 플레이어 감지
 	bool IsPlayerStateToFrozenOrDead();		// 플레이어 상태 체크
+	bool ShouldDetectHiddenPlayer();		// 플레이어가 숨은 방향에 따라서 감지 여부 판단
 
 protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
 
-	bool ShouldDetectHiddenPlayer();		// 플레이어가 숨은 방향에 따라서 감지 여부 판단
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
-
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAIPerceptionComponent* AIPerceptionComp;
-	UPROPERTY(VisibleAnywhere, Category = "AI");
-	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
