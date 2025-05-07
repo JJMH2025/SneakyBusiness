@@ -642,3 +642,12 @@ void APlayer_Nick::OnLiftArrived()
 
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Lift 도착 완료! 중력 복구"));
 }
+
+void APlayer_Nick::FloorTrapFrozen()
+{
+	//기절
+	Frozen();
+	//바닥함정 밟았을 때 추락 후 쓰러지는 애니메이션
+	// 3초 후 다시 Normal 상태로 복귀
+	GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &APlayer_Nick::ResetToNormal, 3.0f, false);
+}

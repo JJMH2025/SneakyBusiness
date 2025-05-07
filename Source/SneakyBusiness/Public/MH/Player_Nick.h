@@ -217,4 +217,8 @@ public:
 	UPROPERTY()
 	class ASBGameState* GS;
 
+	//바닥함정 기절
+	UFUNCTION()
+	void FloorTrapFrozen();
+
 };
