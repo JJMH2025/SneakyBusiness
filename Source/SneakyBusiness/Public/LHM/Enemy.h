@@ -72,6 +72,8 @@ public:
 	class UMH_ShootComp& GetShootComp() const;
 
 public:
+	void StartMoveToOtherSpace(float YOffset);
+
 	// 장애물 판별
 	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
 
