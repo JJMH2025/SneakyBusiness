@@ -1,6 +1,7 @@
-﻿#include "LHM/Enemy.h"
+﻿#include "LHM/Enemy/Enemy.h"
 #include "MH/MH_ShootComp.h"
 #include "MH/Player_Nick.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -12,7 +13,19 @@ AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny"));
+	if (MeshAsset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
+	}
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Characters/Mannequins/Animations/ABP_Manny.ABP_MannyC"));
+	if (AnimBPClass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
 	if (BBAssetRef.Succeeded())
 	{
 		BBD = BBAssetRef.Object;
@@ -22,8 +35,18 @@ AEnemy::AEnemy()
 	if (BTAssetRef.Succeeded())
 	{
 		BT = BTAssetRef.Object;
-	}*/
+	}
 
+	// AI Controller Class 지정
+	AIControllerClass = AEnemyAIController::StaticClass();
+
+	// 캐릭터 메시 트랜스폼, 콜리전 설정
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	GetMesh()->SetRelativeRotation(FRotator(0.0f, 270.0f, 0.0f));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionProfileName(FName("Enemy"));
+
+	// 컴포넌트 초기화
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
@@ -61,9 +84,14 @@ void AEnemy::Tick(float DeltaTime)
 	if (bIsMovingDepth) LerpMoveToDepth(DeltaTime);
 }
 
+void AEnemy::Attack()
+{
+	UE_LOG(LogTemp, Log, TEXT("Enemy State is Attack"));
+}
+
 void AEnemy::Signal()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is signaling nearby enemies!"));
+	UE_LOG(LogTemp, Log, TEXT("Enemy State is Signal"));
 }
 
 void AEnemy::HitByDoor()
@@ -127,12 +155,6 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 
 		AIController->SetBlackboardBoolValue("bIsPlayerInOtherSpace", false);
 	}
-}
-
-UMH_ShootComp& AEnemy::GetShootComp() const
-{
-	check(ShootComp);
-	return *ShootComp;
 }
 
 void AEnemy::StartMoveToOtherSpace(float YOffset)

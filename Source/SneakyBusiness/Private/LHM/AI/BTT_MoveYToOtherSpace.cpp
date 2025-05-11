@@ -2,7 +2,7 @@
 
 
 #include "LHM/AI/BTT_MoveYToOtherSpace.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LHM/AI/EnemyAIController.h"
 #include "MH/Player_Nick.h"
