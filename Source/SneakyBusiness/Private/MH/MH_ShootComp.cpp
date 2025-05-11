@@ -3,7 +3,7 @@
 
 #include "MH/MH_ShootComp.h"
 
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "MH/MH_Bullet.h"
 #include "MH/Player_Nick.h"
 

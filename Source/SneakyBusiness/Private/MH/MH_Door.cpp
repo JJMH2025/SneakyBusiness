@@ -5,7 +5,7 @@
 
 #include "MovieSceneTracksComponentTypes.h"
 #include "Components/BoxComponent.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "MH/Player_Nick.h"
 
 // Sets default values

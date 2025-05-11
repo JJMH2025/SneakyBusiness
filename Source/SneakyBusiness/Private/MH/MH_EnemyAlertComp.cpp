@@ -4,7 +4,7 @@
 #include "MH/MH_EnemyAlertComp.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 
 // Sets default values for this component's properties
 UMH_EnemyAlertComp::UMH_EnemyAlertComp()
