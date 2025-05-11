@@ -32,17 +32,29 @@ void UBTT_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	if (Enemy->IsRotating()) return;
 
 	// 2. 장애물 감지
-	if (Enemy->IsObstacleAhead(Enemy->GetActorForwardVector(), 150.0f))
+	if (Enemy->IsObstacleAhead(Enemy->GetActorForwardVector(), 100.0f))
 	{
 		UE_LOG(LogTemp, Log, TEXT("In Patrol 장애물 감지"));
 
+		// 3. B 공간이면 A 공간으로 이동
+		if (!Enemy->IsASpace())
+		{
+			if (!Enemy->IsMovingDepth())
+			{
+				UE_LOG(LogTemp, Log, TEXT("B 공간에서 A 공간으로 이동 시작"));
+				Enemy->StartMoveToOtherSpace(90);
+			}
+		}
+		else
+		{
 		// 방향 반전 + 회전
-		float RotationAmount = Enemy->IsMovingForward() ? -180.0f : 180.0f;
-		Enemy->SetTargetRotation(Enemy->GetActorRotation() + FRotator(0, RotationAmount, 0));
-		Enemy->StartRotating();
+			float RotationAmount = Enemy->IsMovingForward() ? -180.0f : 180.0f;
+			Enemy->SetTargetRotation(Enemy->GetActorRotation() + FRotator(0, RotationAmount, 0));
+			Enemy->StartRotating();
+		}
 	}
 
-	// 3. 정면으로 이동
+	// 4. 정면으로 이동
 	Enemy->AddMovementInput(Enemy->GetActorForwardVector(), 0.2f);
 
 	// 플레이어 감지하면 Chase 전환

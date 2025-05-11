@@ -29,8 +29,8 @@ AEnemy::AEnemy()
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
 	// 시야 설정
-	SightConfig->SightRadius = 500.0f; // 플레이어를 감지할 수 있는 거리
-	SightConfig->LoseSightRadius = 520.0f; // 플레이어를 시야에서 놓치는 거리 (약간 여유)
+	SightConfig->SightRadius = 750.0f; // 플레이어를 감지할 수 있는 거리
+	SightConfig->LoseSightRadius = 770.0f; // 플레이어를 시야에서 놓치는 거리 (약간 여유)
 	SightConfig->PeripheralVisionAngleDegrees = 90.0f; // 양 옆으로 45도씩 총 90도 시야각
 
 	// DetectionByAffiliation 어떤 팀 타입(Pawn) 감지할지 여부
@@ -133,6 +133,13 @@ UMH_ShootComp& AEnemy::GetShootComp() const
 {
 	check(ShootComp);
 	return *ShootComp;
+}
+
+void AEnemy::StartMoveToOtherSpace(float YOffset)
+{
+	FVector CurrentLoc = GetActorLocation();
+	MoveDepthLocation = CurrentLoc +FVector(0, YOffset, 0);
+	bIsMovingDepth = true;
 }
 
 bool AEnemy::IsObstacleAhead(FVector DirectionToDetect, float Distance)
