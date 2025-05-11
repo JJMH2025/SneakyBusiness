@@ -2,7 +2,7 @@
 
 
 #include "LHM/AI/BTT_MoveXToPlayer.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "MH/Player_Nick.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LHM/AI/EnemyAIController.h"
@@ -62,8 +62,8 @@ void UBTT_MoveXToPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	}
 	else
 	{
-		// 에너미가 회전 중이거나 플레이어의 상태가 Frozen 또는 Dead라면 Patorl로 상태 전환 -> 해당 태스크 종료
-		if (Enemy->IsRotating() || Enemy->IsPlayerStateToFrozenOrDead())
+		// 에너미가 회전 중이라면 Patorl로 상태 전환 -> 해당 태스크 종료
+		if (Enemy->IsRotating())
 		{
 			Enemy->SetEnemyAIState(EEnemyAIState::Patrol);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

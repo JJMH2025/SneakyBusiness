@@ -12,7 +12,7 @@ enum class EEnemyAIState : uint8
 	Patrol				UMETA(DisplayName = "Patrol"),
 	Chase				UMETA(DisplayName = "Chase"),
 	Attack				UMETA(DisplayName = "Attack"),
-	Signal				UMETA(DisplayName = "Signal"),
+	//Signal				UMETA(DisplayName = "Signal"),
 	Stunned				UMETA(DisplayName = "Stunned"),
 	Alerted				UMETA(DisplayName = "Alerted")
 };
@@ -31,13 +31,13 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	// Behavior Tree
+// Behavior Tree
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBlackboardData* BBD;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BT;
-	/*UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTree* CombatSubtree;*/
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	class UBehaviorTree* CombatSubtree;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	class UAIPerceptionComponent* AIPerceptionComp;
@@ -45,16 +45,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	class UAISenseConfig_Sight* SightConfig; // 시각 기반 감지
 
-	virtual void Signal();			// 신호
+// Method
+	virtual void Attack();		// 공격
+	virtual void Signal();		// 신호
 
-	void HitByDoor();				// 문에 부딪힘
-	void ReceiveDamage();			// 피격
+	void HitByDoor();			// 문에 부딪힘
+	void ReceiveDamage();		// 피격
 
-	UFUNCTION(BlueprintCallable)
 	// 함정 발동시 해당 위치로 이동
 	void ReactToTrapAlert(FVector InAlertLocation);
 
-	// Getter/Setter
+// Getter/Setter
 	EEnemyAIState GetEnemyAIState() const { return CurrentState; }
 	void SetEnemyAIState(EEnemyAIState NewState) { CurrentState = NewState; }
 
@@ -69,13 +70,10 @@ public:
 	void StartMovingDepth() { bIsMovingDepth = true; }
 	void SetMoveDepthLocation(FVector NewLocation) { MoveDepthLocation = NewLocation; }
 
-	class UMH_ShootComp& GetShootComp() const;
-
 public:
 	void StartMoveToOtherSpace(float YOffset);
 
-	// 장애물 판별
-	bool IsObstacleAhead(FVector DirectionToDetect,float Distance);
+	bool IsObstacleAhead(FVector DirectionToDetect,float Distance); // 장애물 판별
 
 	bool IsPlayerStateToFrozenOrDead();		// 플레이어 상태 체크
 	bool ShouldDetectHiddenPlayer();		// 플레이어가 숨은 방향에 따라서 감지 여부 판단
@@ -84,14 +82,13 @@ protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
 
-
-private:
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
 
+private:
 	// Chase
 	bool bIsASpace = true;		// 앞공간(A) = true, 뒤공간(B) = false
 	bool bIsMovingDepth = false;

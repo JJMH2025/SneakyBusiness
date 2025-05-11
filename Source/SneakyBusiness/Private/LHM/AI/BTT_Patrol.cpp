@@ -2,7 +2,7 @@
 
 
 #include "LHM/AI/BTT_Patrol.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LHM/AI/EnemyAIController.h"
