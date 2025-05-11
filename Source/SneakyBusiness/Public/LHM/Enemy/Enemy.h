@@ -87,6 +87,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	class UMH_ShootComp* ShootComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	class UMH_EnemyAlertComp* AlertComp;
 
 private:
 	// Chase

@@ -4,6 +4,7 @@
 #include "LHM/Enemy/Enemy_ShooterFlare.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "MH/MH_ShootComp.h"
+#include "MH/MH_EnemyAlertComp.h"
 
 AEnemy_ShooterFlare::AEnemy_ShooterFlare()
 {
@@ -40,5 +41,5 @@ void AEnemy_ShooterFlare::Signal()
 		PlayAnimMontage(Whistle);
 	}*/
 
-	//AlertComp->AlertNearbyEnemies(this);
+	AlertComp->AlertNearbyEnemies(GetActorLocation(), 1000.0f);
 }

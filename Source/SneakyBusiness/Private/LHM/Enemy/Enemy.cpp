@@ -1,8 +1,9 @@
 ﻿#include "LHM/Enemy/Enemy.h"
-#include "MH/MH_ShootComp.h"
 #include "MH/Player_Nick.h"
-#include "Components/CapsuleComponent.h"
+#include "MH/MH_ShootComp.h"
+#include "MH/MH_EnemyAlertComp.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "LHM/AI/EnemyAIController.h"
@@ -48,6 +49,7 @@ AEnemy::AEnemy()
 
 	// 컴포넌트 초기화
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
+	AlertComp = CreateDefaultSubobject<UMH_EnemyAlertComp>(TEXT("AlertComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
