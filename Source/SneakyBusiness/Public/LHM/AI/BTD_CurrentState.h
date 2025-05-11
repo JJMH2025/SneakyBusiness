@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Decorators/BTDecorator_BlackboardBase.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "BTD_CurrentState.generated.h"
 
 /**

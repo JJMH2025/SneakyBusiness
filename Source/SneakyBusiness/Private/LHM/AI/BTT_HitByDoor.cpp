@@ -2,7 +2,7 @@
 
 
 #include "LHM/AI/BTT_HitByDoor.h"
-#include <LHM/Enemy.h>
+#include "LHM/Enemy/Enemy.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "LHM/AI/EnemyAIController.h"
 

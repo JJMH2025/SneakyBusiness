@@ -4,7 +4,7 @@
 #include "LHM/AI/BTS_UpdateCurrentState.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LHM/AI/EnemyAIController.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 
 UBTS_UpdateCurrentState::UBTS_UpdateCurrentState()
 {

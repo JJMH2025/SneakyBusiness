@@ -1,7 +1,9 @@
-﻿#include "LHM/Enemy.h"
-#include "MH/MH_ShootComp.h"
+﻿#include "LHM/Enemy/Enemy.h"
 #include "MH/Player_Nick.h"
+#include "MH/MH_ShootComp.h"
+#include "MH/MH_EnemyAlertComp.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "LHM/AI/EnemyAIController.h"
@@ -12,7 +14,19 @@ AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny"));
+	if (MeshAsset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
+	}
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Characters/Mannequins/Animations/ABP_Manny.ABP_MannyC"));
+	if (AnimBPClass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/LHM/BluePrints/AI/BB_Enemy.BB_Enemy"));
 	if (BBAssetRef.Succeeded())
 	{
 		BBD = BBAssetRef.Object;
@@ -22,15 +36,26 @@ AEnemy::AEnemy()
 	if (BTAssetRef.Succeeded())
 	{
 		BT = BTAssetRef.Object;
-	}*/
+	}
 
+	// AI Controller Class 지정
+	AIControllerClass = AEnemyAIController::StaticClass();
+
+	// 캐릭터 메시 트랜스폼, 콜리전 설정
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	GetMesh()->SetRelativeRotation(FRotator(0.0f, 270.0f, 0.0f));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionProfileName(FName("Enemy"));
+
+	// 컴포넌트 초기화
 	ShootComp = CreateDefaultSubobject<UMH_ShootComp>(TEXT("ShootComp"));
+	AlertComp = CreateDefaultSubobject<UMH_EnemyAlertComp>(TEXT("AlertComp"));
 	AIPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 
 	// 시야 설정
-	SightConfig->SightRadius = 500.0f; // 플레이어를 감지할 수 있는 거리
-	SightConfig->LoseSightRadius = 520.0f; // 플레이어를 시야에서 놓치는 거리 (약간 여유)
+	SightConfig->SightRadius = 750.0f; // 플레이어를 감지할 수 있는 거리
+	SightConfig->LoseSightRadius = 770.0f; // 플레이어를 시야에서 놓치는 거리 (약간 여유)
 	SightConfig->PeripheralVisionAngleDegrees = 90.0f; // 양 옆으로 45도씩 총 90도 시야각
 
 	// DetectionByAffiliation 어떤 팀 타입(Pawn) 감지할지 여부
@@ -61,9 +86,14 @@ void AEnemy::Tick(float DeltaTime)
 	if (bIsMovingDepth) LerpMoveToDepth(DeltaTime);
 }
 
+void AEnemy::Attack()
+{
+	UE_LOG(LogTemp, Log, TEXT("Enemy State is Attack"));
+}
+
 void AEnemy::Signal()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Enemy is signaling nearby enemies!"));
+	UE_LOG(LogTemp, Log, TEXT("Enemy State is Signal"));
 }
 
 void AEnemy::HitByDoor()
@@ -129,10 +159,11 @@ void AEnemy::LerpMoveToDepth(float DeltaTime)
 	}
 }
 
-UMH_ShootComp& AEnemy::GetShootComp() const
+void AEnemy::StartMoveToOtherSpace(float YOffset)
 {
-	check(ShootComp);
-	return *ShootComp;
+	FVector CurrentLoc = GetActorLocation();
+	MoveDepthLocation = CurrentLoc +FVector(0, YOffset, 0);
+	bIsMovingDepth = true;
 }
 
 bool AEnemy::IsObstacleAhead(FVector DirectionToDetect, float Distance)

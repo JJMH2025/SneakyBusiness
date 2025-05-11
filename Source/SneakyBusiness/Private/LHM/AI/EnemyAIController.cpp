@@ -2,20 +2,24 @@
 
 
 #include "LHM/AI/EnemyAIController.h"
-#include "LHM/Enemy.h"
+#include "LHM/Enemy/Enemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
 	AEnemy* Enemy = Cast<AEnemy>(GetPawn());
+
 	if (Enemy && UseBlackboard(Enemy->BBD, BBComp))
 	{
 		RunBehaviorTree(Enemy->BT);
 
-		// 런타임에 서브트리 설정
-		//Blackboard->SetValueAsObject(TEXT("SelectorSubtree"), Enemy->CombatSubtree);
+		Blackboard->SetValueAsObject("SelfActor", Enemy);
+
+		// 런타임에 Combat Subtree 설정
+		Blackboard->SetValueAsObject("CombatSubtree", Enemy->CombatSubtree);
 	}
 }
 
