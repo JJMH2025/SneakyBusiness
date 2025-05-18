@@ -5,9 +5,10 @@
 #include "LHM/GameSystem/SBGameInstance.h"
 #include "LHM/GameSystem/SBGameState.h"
 #include "LHM/GameSystem/SBSaveGame.h"
-#include <Kismet/GameplayStatics.h>
-#include <MH/Player_Nick.h>
-#include <MH/MH_TargetItem.h>
+#include "LHM/GameSystem/SBHUD.h"
+#include "Kismet/GameplayStatics.h"
+#include "MH/Player_Nick.h"
+#include "MH/MH_TargetItem.h"
 
 ASBGameMode::ASBGameMode()
 {
@@ -24,6 +25,8 @@ ASBGameMode::ASBGameMode()
 	{
 		GameStateClass = GameStateRef.Class;
 	}
+
+	HUDClass = ASBHUD::StaticClass();
 }
 
 void ASBGameMode::BeginPlay()
@@ -73,9 +76,9 @@ void ASBGameMode::OnStageClear()
 	if (!GI || !GS) return;
 
 	// 스코어 산정
-	int32 CurrentScore = GS->CurrentScore;					// 현재 스코어
-	float TimeLeft = GS->TimeLimit - GS->ElapsedTime * 100;	// 남은 시간
-	int32 TotalScore = CurrentScore + TimeLeft;				// 최종 스코어
+	int32 CurrentScore = GS->CurrentScore;						// 현재 스코어
+	float TimeLeft = GS->TimeLimit - GS->ElapsedTime;			// 남은 시간
+	int32 TotalScore = CurrentScore + (int32)(TimeLeft * 100);	// 최종 스코어
 	
 	// 게임 인스턴스에 최종 스코어 저장
 	GI->SetTotalScore(TotalScore);
