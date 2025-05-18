@@ -28,6 +28,7 @@ class SNEAKYBUSINESS_API ASBGameState : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
+	ASBGameState();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -42,7 +43,7 @@ public:
 	float ElapsedTime = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float TimeLimit = 0;
+	float TimeLimit = 300.0f;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 CurrentScore = 0;
