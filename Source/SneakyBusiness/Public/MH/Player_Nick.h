@@ -123,7 +123,7 @@ public:
 	float ALoc = 0.f;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Input")
-	float BLoc = -100.f;
+	float BLoc = -130.f;
 	
 	float TargetYawLot; // 목표 이동 위치
 	bool bIsMovingDepth; // 이동 중인지 확인
@@ -161,7 +161,7 @@ public:
 
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxHP = 4;
+	int32 MaxHP = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	int32 CurrentPlayerHP = MaxHP;
