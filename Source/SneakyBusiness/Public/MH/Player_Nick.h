@@ -161,7 +161,7 @@ public:
 
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxHP = 1;
+	int32 MaxHP = 2;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	int32 CurrentPlayerHP = MaxHP;

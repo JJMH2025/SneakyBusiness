@@ -492,7 +492,7 @@ void APlayer_Nick::Frozen()
 {
 	if (CurrentPlayerState == EPlayerState::Invincible || CurrentPlayerState == EPlayerState::Frozen)
 		return;
-
+	DropItems();
 	CurrentPlayerState = EPlayerState::Frozen;
 	//움직임 X
 	APlayerController* PC = Cast<APlayerController>(GetController());

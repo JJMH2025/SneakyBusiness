@@ -143,10 +143,12 @@ void ASBGameMode::OnItemStolen(int32 StageIndex, int32 TargetIndex, AMH_TargetIt
 		UE_LOG(LogTemp, Log, TEXT("RequiredItemCount: %d개"), GS->RequiredItemCount);
 
 		//MH
-		if (!AllTargetItemBPs.Contains(TargetItem->GetClass()))
+		int32 SpawnIndex = StageIndex * GetRequiredItemCount() + TargetIndex;
+		if (!AllTargetItemBPs.IsValidIndex(SpawnIndex))
 		{
-			AllTargetItemBPs.Add(TargetItem->GetClass());
+			AllTargetItemBPs.SetNum(SpawnIndex + 1);
 		}
+		AllTargetItemBPs[SpawnIndex] = TargetItem->GetClass();
 	}
 }
 
@@ -156,11 +158,14 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 	if(!GS || AllTargetItemBPs.Num() == 0 || GS->StolenItems.Num() == 0) return;
 
 	const float SpreadRadius = 400;
-
+	
 	for (const FStolenItemInfo& Info : GS->StolenItems)
 	{
 		int32 SpawnIndex = Info.StageIndex * GetRequiredItemCount() + Info.ItemIndex;
-
+		if (!AllTargetItemBPs.IsValidIndex(SpawnIndex) || !AllTargetItemBPs[SpawnIndex])
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Invalid SpawnIndex %d or null BP!"), SpawnIndex);
+		}
 		if(!AllTargetItemBPs.IsValidIndex(SpawnIndex)) continue;
 
 		FVector SpawnLocation = DeathLocation + FVector(
