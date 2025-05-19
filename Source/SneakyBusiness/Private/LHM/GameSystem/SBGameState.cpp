@@ -16,9 +16,8 @@ void ASBGameState::Tick(float DeltaTime)
 	ElapsedTime += DeltaTime;
 }
 
-void ASBGameState::AddScoreForEnemy(class AEnemy* Enemy, bool bIsFinalStun = true)
+void ASBGameState::AddScoreForEnemy(class AEnemy* Enemy, bool bIsFinalStun)
 {
-	
 	if (!Enemy) return;
 
 	int32 ScoreToAdd = 0;
@@ -42,6 +41,7 @@ void ASBGameState::AddScoreForEnemy(class AEnemy* Enemy, bool bIsFinalStun = tru
 			break;
 
 		case EEnemyType::None:
+			UE_LOG(LogTemp, Log, TEXT("EnemyType::None"));
 			break;
 		default:
 			break;
