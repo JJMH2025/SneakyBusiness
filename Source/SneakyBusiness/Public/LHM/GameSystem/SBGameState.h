@@ -35,8 +35,7 @@ public:
 	void CollectItem() { CollectedItemCount++; }
 
 	// 에너미가 기절시킬 때 마다 호출
-	void KilledEnemy();
-
+	void AddScoreForEnemy(class AEnemy* Enemy, bool bIsFinalStun = true);
 
 	UPROPERTY(BlueprintReadOnly)
 	float ElapsedTime = 0;
