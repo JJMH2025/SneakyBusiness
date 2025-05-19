@@ -4,6 +4,11 @@
 #include "LHM/GameSystem/SBGameState.h"
 #include "LHM/Enemy/Enemy.h"
 
+ASBGameState::ASBGameState()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void ASBGameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
