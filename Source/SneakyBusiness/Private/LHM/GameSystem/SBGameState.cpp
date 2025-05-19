@@ -2,6 +2,7 @@
 
 
 #include "LHM/GameSystem/SBGameState.h"
+#include "LHM/Enemy/Enemy.h"
 
 ASBGameState::ASBGameState()
 {
@@ -15,11 +16,37 @@ void ASBGameState::Tick(float DeltaTime)
 	ElapsedTime += DeltaTime;
 }
 
-void ASBGameState::KilledEnemy()
+void ASBGameState::AddScoreForEnemy(class AEnemy* Enemy, bool bIsFinalStun = true)
 {
-	// 매개변수로 에너미 타입을 받음
-	// 에너미 타입에 따른 점수 합산해주기
-	// Switch(EnemyType)
+	
+	if (!Enemy) return;
 
-	CurrentScore++;
+	int32 ScoreToAdd = 0;
+	EEnemyType Type = Enemy->GetEnemyType();
+
+	// 에너미 타입에 따라 점수 합산
+	switch (Type)
+	{
+		case EEnemyType::MeleeWhistle:
+		case EEnemyType::ShooterFlare:
+			ScoreToAdd = 100;
+			break;
+
+		case EEnemyType::ShooterShielded:
+		case EEnemyType::MeleeShieldWhistle:
+			ScoreToAdd = 150;
+			break;
+
+		case EEnemyType::Bomber:
+			ScoreToAdd = bIsFinalStun ? 300 : 200;
+			break;
+
+		case EEnemyType::None:
+			break;
+		default:
+			break;
+	}
+
+	CurrentScore += ScoreToAdd;
+	UE_LOG(LogTemp, Log, TEXT("Score +%d from %s. Total: %d"), ScoreToAdd, *UEnum::GetValueAsString(Type), CurrentScore);
 }

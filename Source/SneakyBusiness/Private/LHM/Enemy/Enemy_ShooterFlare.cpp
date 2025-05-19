@@ -8,11 +8,14 @@
 
 AEnemy_ShooterFlare::AEnemy_ShooterFlare()
 {
+	EnemyType = EEnemyType::ShooterFlare;
+
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Game/LHM/BluePrints/AI/BT_Combat_ShooterFlare.BT_Combat_ShooterFlare"));
 	if (BTAssetRef.Succeeded())
 	{
 		CombatSubtree = BTAssetRef.Object;
 	}
+
 }
 
 void AEnemy_ShooterFlare::Attack()

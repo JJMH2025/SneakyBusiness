@@ -5,6 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	MeleeWhistle,
+	ShooterFlare,
+	ShooterShielded,
+	MeleeShieldWhistle,
+	Bomber,
+	None
+};
 
 UENUM(BlueprintType)
 enum class EEnemyAIState : uint8
@@ -56,6 +66,8 @@ public:
 	void ReactToTrapAlert(FVector InAlertLocation);
 
 // Getter/Setter
+	EEnemyType GetEnemyType() const { return EnemyType; }
+
 	EEnemyAIState GetEnemyAIState() const { return CurrentState; }
 	void SetEnemyAIState(EEnemyAIState NewState) { CurrentState = NewState; }
 
@@ -81,6 +93,9 @@ public:
 protected:
 	void LerpRotation(float DeltaTime);		// 순찰 중 회전
 	void LerpMoveToDepth(float DeltaTime);	// 추적 중 공간 이동
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
+	EEnemyType EnemyType = EEnemyType::None;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI");
 	EEnemyAIState CurrentState = EEnemyAIState::Patrol;
