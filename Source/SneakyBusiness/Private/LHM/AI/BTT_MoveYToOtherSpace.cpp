@@ -41,7 +41,7 @@ void UBTT_MoveYToOtherSpace::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	{
 		FVector EnemyLoc = Enemy->GetActorLocation();
 
-		float OffsetY = Enemy->IsASpace() ? -90.0f : 90.0f; // A → B : -90 / B → A : +90
+		float OffsetY = Enemy->IsASpace() ? -130.0f : 130.0f; // A → B : -130 / B → A : +130
 		Enemy->SetMoveDepthLocation(EnemyLoc + FVector(0, OffsetY, 0));
 
 		FVector DirectionToDepth;

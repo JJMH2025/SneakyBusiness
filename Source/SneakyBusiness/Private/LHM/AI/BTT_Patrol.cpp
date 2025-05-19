@@ -42,7 +42,7 @@ void UBTT_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 			if (!Enemy->IsMovingDepth())
 			{
 				UE_LOG(LogTemp, Log, TEXT("B 공간에서 A 공간으로 이동 시작"));
-				Enemy->StartMoveToOtherSpace(90);
+				Enemy->StartMoveToOtherSpace(130);
 			}
 		}
 		else
