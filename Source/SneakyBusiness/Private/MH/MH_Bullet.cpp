@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "LHM/Enemy/Enemy.h"
+#include "LHM/GameSystem/SBGameState.h"
 #include "MH/Player_Nick.h"
 
 // Sets default values
@@ -78,6 +79,8 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 				GEngine->AddOnScreenDebugMessage(-4, 5.f, FColor::Green,TEXT("Enemy Overlap!!"));
 				//에너미 기절
 				Hitenemy->ReceiveDamage();
+				ASBGameState* GS = Cast<ASBGameState>(GetWorld()->GetGameState());
+				GS->AddScoreForEnemy(Hitenemy,true);		
 			}
 			//플레이어 총알 재장전 ++
 			if (Player_Nick)
