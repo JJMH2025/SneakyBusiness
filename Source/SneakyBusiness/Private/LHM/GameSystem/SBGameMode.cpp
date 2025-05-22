@@ -82,6 +82,7 @@ void ASBGameMode::OnStageClear()
 	
 	// 게임 인스턴스에 최종 스코어 저장
 	GI->SetTotalScore(TotalScore);
+	GI->UploadScoreToLeaderboard(TotalScore);
 
 	// 게임 데이터 저장
 	USBSaveGame* Save = Cast<USBSaveGame>(UGameplayStatics::CreateSaveGameObject(USBSaveGame::StaticClass()));
@@ -108,7 +109,7 @@ void ASBGameMode::OnStageClear()
 	// 랭크 UI 호출 또는 Level 전환
 	//CreateWidget<UUserWidget_RankResult>(...) → AddToViewport()
 	//FName NextStageName = FName(TEXT("Stage%d"), GI->CurrentStageIndex);
-	UGameplayStatics::OpenLevel(this, TEXT("LV_Clear"));
+	UGameplayStatics::OpenLevel(this, TEXT("LV_Rank"));
 }
 
 void ASBGameMode::OnStageFailed()
