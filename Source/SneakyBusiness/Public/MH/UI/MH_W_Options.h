@@ -9,6 +9,8 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOptionBackPressed);
+
 UCLASS()
 class SNEAKYBUSINESS_API UMH_W_Options : public UUserWidget
 {
@@ -17,14 +19,16 @@ class SNEAKYBUSINESS_API UMH_W_Options : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-protected:
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(EditAnywhere)
+	FOnOptionBackPressed	OnBackPressed;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Save;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Back;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Credits;
 	
 	UPROPERTY(meta = (BindWidget))

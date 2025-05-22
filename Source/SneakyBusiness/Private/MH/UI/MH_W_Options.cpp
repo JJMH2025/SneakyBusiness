@@ -47,6 +47,7 @@ void UMH_W_Options::OnSaveClicked()
 
 void UMH_W_Options::OnBackClicked()
 {
+	OnBackPressed.Broadcast();
 }
 
 void UMH_W_Options::OnCreditsClicked()

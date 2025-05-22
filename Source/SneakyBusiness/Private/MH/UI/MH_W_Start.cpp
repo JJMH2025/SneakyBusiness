@@ -4,6 +4,7 @@
 #include "MH/UI/MH_W_Start.h"
 
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void UMH_W_Start::NativeConstruct()
 {
@@ -33,6 +34,11 @@ void UMH_W_Start::NativeConstruct()
 	{
 		Btn_Stage04->OnClicked.AddDynamic(this,&UMH_W_Start::OnStage04Clicked);
 	}
+
+	if (Btn_Back)
+	{
+		Btn_Back->OnClicked.AddDynamic(this,&UMH_W_Start::OnBackClicked);
+	}
 }
 
 void UMH_W_Start::OnTutorialClicked()
@@ -42,7 +48,7 @@ void UMH_W_Start::OnTutorialClicked()
 
 void UMH_W_Start::OnStage01Clicked()
 {
-	
+	UGameplayStatics::OpenLevel(this,FName("MH_LV_Stage01"));
 }
 
 void UMH_W_Start::OnStage02Clicked()
@@ -58,4 +64,9 @@ void UMH_W_Start::OnStage03Clicked()
 void UMH_W_Start::OnStage04Clicked()
 {
 	
+}
+
+void UMH_W_Start::OnBackClicked()
+{
+	OnBackPressed.Broadcast();
 }

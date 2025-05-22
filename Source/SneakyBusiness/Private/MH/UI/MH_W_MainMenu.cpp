@@ -9,7 +9,7 @@
 void UMH_W_MainMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	
 	if (Btn_Start)
 	{
 		Btn_Start->OnClicked.AddDynamic(this,&UMH_W_MainMenu::OnStartClicked);
@@ -29,17 +29,15 @@ void UMH_W_MainMenu::NativeConstruct()
 
 void UMH_W_MainMenu::OnStartClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Start clicked"));
+	OnStartPressed.Broadcast();
 }
 
 void UMH_W_MainMenu::OnOptionsClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Options clicked"));
+	OnOptionsPressed.Broadcast();
 }
 
 void UMH_W_MainMenu::OnExitClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Exit clicked"));
-	//Exit 창열리기
-
+	OnExitPressed.Broadcast();
 }

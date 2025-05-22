@@ -9,6 +9,10 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOptionsPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitPressed);
+
 UCLASS()
 class SNEAKYBUSINESS_API UMH_W_MainMenu : public UUserWidget
 {
@@ -17,14 +21,23 @@ class SNEAKYBUSINESS_API UMH_W_MainMenu : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UPROPERTY(EditAnywhere)
+	FOnStartPressed	OnStartPressed;
+	
+	UPROPERTY(EditAnywhere)
+	FOnOptionsPressed	OnOptionsPressed;
+
+	UPROPERTY(EditAnywhere)
+	FOnExitPressed	OnExitPressed;
+
 protected:
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Start;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Options;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Exit;
 
 	UFUNCTION()

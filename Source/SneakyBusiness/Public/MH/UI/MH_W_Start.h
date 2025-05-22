@@ -9,6 +9,8 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartBackPressed);
+
 UCLASS()
 class SNEAKYBUSINESS_API UMH_W_Start : public UUserWidget
 {
@@ -17,21 +19,26 @@ class SNEAKYBUSINESS_API UMH_W_Start : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-protected:
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(EditAnywhere)
+	FOnStartBackPressed	OnBackPressed;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Tutorial;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Stage01;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Stage02;
 	
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Stage03;
 
-	UPROPERTY(meta = (BindWidget), Category = "UI")
+	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Stage04;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_Back;
 
 	UFUNCTION()
 	void OnTutorialClicked();
@@ -47,4 +54,7 @@ protected:
 	
 	UFUNCTION()
 	void OnStage04Clicked();
+	
+	UFUNCTION()
+	void OnBackClicked();
 };

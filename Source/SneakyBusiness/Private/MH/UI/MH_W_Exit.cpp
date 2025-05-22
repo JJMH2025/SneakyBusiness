@@ -28,4 +28,5 @@ void UMH_W_Exit::OnExitClicked()
 void UMH_W_Exit::OnStayClicked()
 {
 	//창닫기
+	OnStayPressed.Broadcast();
 }
