@@ -9,6 +9,8 @@
 #include "SneakyBusiness/SneakyBusinessCharacter.h"
 #include "Player_Nick.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIngameMenuPressed);
+
 //플레이어 상태 enum
 UENUM(BlueprintType)
 enum class EPlayerState : uint8
@@ -18,7 +20,6 @@ enum class EPlayerState : uint8
 	Invincible,
 	Dead
 };
-
 UCLASS()
 class SNEAKYBUSINESS_API APlayer_Nick : public ACharacter
 {
@@ -47,7 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* IATest1;
 ///////////////////////////////////
-	
+
+	UPROPERTY(EditAnywhere)
+	FOnIngameMenuPressed OnIngameMenuPressed;
 	
 	//메쉬
 
@@ -158,7 +161,14 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* IAInteract;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* IAInGameMenu;
 
+	//InGameMenu
+	UFUNCTION()
+	void OnInGameMenuClicked();
+	
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	int32 MaxHP = 2;

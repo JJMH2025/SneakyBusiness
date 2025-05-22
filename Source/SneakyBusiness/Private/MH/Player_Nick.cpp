@@ -179,6 +179,7 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::Shooting);
 		EnhancedInputComp->BindAction(IATest1, ETriggerEvent::Triggered, this, &APlayer_Nick::TestF);
 		EnhancedInputComp->BindAction(IAInteract, ETriggerEvent::Triggered, this, &APlayer_Nick::PlayerInteract);
+		EnhancedInputComp->BindAction(IAInGameMenu,ETriggerEvent::Triggered,this,&APlayer_Nick::OnInGameMenuClicked);
 	}
 }
 
@@ -336,6 +337,11 @@ void APlayer_Nick::Shooting()
 	}
 }
 
+
+void APlayer_Nick::OnInGameMenuClicked()
+{
+	OnIngameMenuPressed.Broadcast();
+}
 
 void APlayer_Nick::PlayerTakeDamage()
 {
