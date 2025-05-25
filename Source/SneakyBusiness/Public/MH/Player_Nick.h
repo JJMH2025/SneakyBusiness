@@ -9,8 +9,6 @@
 #include "SneakyBusiness/SneakyBusinessCharacter.h"
 #include "Player_Nick.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIngameMenuPressed);
-
 //플레이어 상태 enum
 UENUM(BlueprintType)
 enum class EPlayerState : uint8
@@ -48,9 +46,6 @@ public:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* IATest1;
 ///////////////////////////////////
-
-	UPROPERTY(EditAnywhere)
-	FOnIngameMenuPressed OnIngameMenuPressed;
 	
 	//메쉬
 

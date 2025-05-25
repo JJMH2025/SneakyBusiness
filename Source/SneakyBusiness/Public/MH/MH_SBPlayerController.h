@@ -10,6 +10,9 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIngameMenuPressed);
+
 UCLASS()
 class SNEAKYBUSINESS_API AMH_SBPlayerController : public APlayerController
 {
@@ -23,5 +26,11 @@ public:
 	
 	UPROPERTY(EditAnywhere,Category = UI)
 	TSubclassOf<class UMH_W_MainUI> MainUIClass;
+
+	UPROPERTY(EditAnywhere,Category = UI)
+	TSubclassOf<class UMH_W_InGameUIRoot> InGameRootClass;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnIngameMenuPressed OnIngameMenuPressed;
 	
 };

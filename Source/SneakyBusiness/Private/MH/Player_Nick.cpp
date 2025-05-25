@@ -18,6 +18,7 @@
 #include "MH/MH_Door.h"
 #include "MH/MH_Lever.h"
 #include "MH/MH_LiftActor.h"
+#include "MH/MH_SBPlayerController.h"
 #include "MH/MH_SlipTrap.h"
 #include "MH/MH_TargetItem.h"
 
@@ -340,7 +341,11 @@ void APlayer_Nick::Shooting()
 
 void APlayer_Nick::OnInGameMenuClicked()
 {
-	OnIngameMenuPressed.Broadcast();
+	AMH_SBPlayerController* SBPC = Cast<AMH_SBPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	if (SBPC)
+	{
+		SBPC->OnIngameMenuPressed.Broadcast();
+	}
 }
 
 void APlayer_Nick::PlayerTakeDamage()
@@ -646,7 +651,6 @@ void APlayer_Nick::OnLiftArrived()
 		EnableInput(PC);
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Lift 도착 완료! 중력 복구"));
 }
 
 void APlayer_Nick::FloorTrapFrozen()

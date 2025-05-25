@@ -19,7 +19,7 @@ class SNEAKYBUSINESS_API UMH_W_Options : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnOptionBackPressed	OnBackPressed;
 	
 	UPROPERTY(meta = (BindWidget))

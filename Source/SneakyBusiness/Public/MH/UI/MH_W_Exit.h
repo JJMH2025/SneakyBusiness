@@ -30,6 +30,6 @@ public:
 	UFUNCTION()
 	void OnStayClicked();
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnStayPressed OnStayPressed;
 };

@@ -19,7 +19,7 @@ class SNEAKYBUSINESS_API UMH_W_Start : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnStartBackPressed	OnBackPressed;
 	
 	UPROPERTY(meta = (BindWidget))

@@ -4,6 +4,7 @@
 #include "MH/MH_SBPlayerController.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "MH/UI/MH_W_InGameUIRoot.h"
 #include "MH/UI/MH_W_MainUI.h"
 #include "Settings/EditorStyleSettings.h"
 
@@ -38,6 +39,17 @@ void AMH_SBPlayerController::BeginPlay()
 	}
 	else
 	{
+		if (InGameRootClass)
+		{
+			UMH_W_InGameUIRoot* InGameUIRoot = CreateWidget<UMH_W_InGameUIRoot>(this, InGameRootClass);
+			if (InGameUIRoot)
+			{
+				InGameUIRoot->AddToViewport();
+			}
+		}
+		else
+		{
+		}
 		if (!GetPawn())
 		{
 			APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);

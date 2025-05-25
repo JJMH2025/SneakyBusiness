@@ -48,7 +48,7 @@ class SNEAKYBUSINESS_API UMH_W_InGameUIRoot : public UUserWidget
 	void HandleBackPressed();
 
 	UPROPERTY()
-	EInGameUIPage CurrentPage;
+	EInGameUIPage CurrentPage = EInGameUIPage::InGameHUD;
 	
 	UFUNCTION()
 	void SetExitVisible(bool bIsVisible);
@@ -57,6 +57,15 @@ class SNEAKYBUSINESS_API UMH_W_InGameUIRoot : public UUserWidget
 	void SetOptionsVisible(bool bIsVisible);
 
 	UFUNCTION()
+	void SetInGameMenuVisible(bool bIsVisible);
+	
+	UFUNCTION()
+	void ShowInGameMenu();
+	
+	UFUNCTION()
 	void ShowInGameExit();
+		
+	UFUNCTION()
+	void ShowInGameOptions();
 	
 };

@@ -18,6 +18,11 @@ void UMH_W_InGameMenu::NativeConstruct()
 	{
 		Btn_Exit->OnClicked.AddDynamic(this,&UMH_W_InGameMenu::OnExitClicked);
 	}
+	
+	if (Btn_Options)
+	{
+		Btn_Options->OnClicked.AddDynamic(this,&UMH_W_InGameMenu::OnOptionsClicked);
+	}
 		
 }
 
@@ -29,4 +34,9 @@ void UMH_W_InGameMenu::OnResumeClicked()
 void UMH_W_InGameMenu::OnExitClicked()
 {
 	OnInGameMenuExitPressed.Broadcast();
+}
+
+void UMH_W_InGameMenu::OnOptionsClicked()
+{
+	OnInGameMenuOptionsPressed.Broadcast();
 }

@@ -21,13 +21,13 @@ class SNEAKYBUSINESS_API UMH_W_MainMenu : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnStartPressed	OnStartPressed;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnOptionsPressed	OnOptionsPressed;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintAssignable)
 	FOnExitPressed	OnExitPressed;
 
 protected:

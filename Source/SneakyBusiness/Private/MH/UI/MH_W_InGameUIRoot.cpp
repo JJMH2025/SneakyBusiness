@@ -3,6 +3,9 @@
 
 #include "MH/UI/MH_W_InGameUIRoot.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "MH/MH_SBPlayerController.h"
+#include "MH/Player_Nick.h"
 #include "MH/UI/MH_W_Exit.h"
 #include "MH/UI/MH_W_InGameMenu.h"
 #include "MH/UI/MH_W_Options.h"
@@ -10,11 +13,16 @@
 void UMH_W_InGameUIRoot::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	if (AMH_SBPlayerController* PC = Cast<AMH_SBPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
+	{
+		PC->OnIngameMenuPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameMenu);
+	}
+	
 	if (WBPInGameMenu)
 	{
 		WBPInGameMenu->OnInGameMenuExitPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameExit);
 		WBPInGameMenu->OnInGameMenuResumePressed.AddDynamic(this, &UMH_W_InGameUIRoot::HandleBackPressed);
+		WBPInGameMenu->OnInGameMenuOptionsPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameOptions);
 	}
 	if (WBPInGameExit)
 	{
@@ -24,7 +32,10 @@ void UMH_W_InGameUIRoot::NativeConstruct()
 	{
 		WBPInGameOptions->OnBackPressed.AddDynamic(this, &UMH_W_InGameUIRoot::HandleBackPressed);
 	}
-	
+
+	SetExitVisible(false);
+	SetOptionsVisible(false);
+	SetInGameMenuVisible(false);
 }
 
 void UMH_W_InGameUIRoot::SetExitVisible(bool bIsVisible)
@@ -59,7 +70,12 @@ void UMH_W_InGameUIRoot::SetOptionsVisible(bool bIsVisible)
 
 void UMH_W_InGameUIRoot::ShowInGameExit()
 {
-	SetExitVisible(true);
+	SetActiveMenu(EInGameUIPage::Exit);
+}
+
+void UMH_W_InGameUIRoot::ShowInGameOptions()
+{
+	SetActiveMenu(EInGameUIPage::Options);
 }
 
 void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
@@ -69,12 +85,12 @@ void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
 	switch (Page)
 	{
 	case EInGameUIPage::InGameHUD:
-		
+		//SetInGameMenuVisible(true);
 		break;
 
 	case EInGameUIPage::InGameMenu:
-	
-		break;;
+		SetInGameMenuVisible(true);
+		break;
 
 	case EInGameUIPage::Options:
 		SetOptionsVisible(true);
@@ -82,9 +98,11 @@ void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
 
 	case EInGameUIPage::Exit:
 		SetExitVisible(true);
+		break;
 		
 	case EInGameUIPage::GameOver:
 		//SetExitVisible(true);
+		break;
 		
 	case EInGameUIPage::GameClear:
 		//SetExitVisible(true);
@@ -112,6 +130,30 @@ void UMH_W_InGameUIRoot::HandleBackPressed()
 	}
 	else if (CurrentPage == EInGameUIPage::InGameMenu)
 	{
+		SetInGameMenuVisible(false);
 		SetActiveMenu(EInGameUIPage::InGameHUD);
+	}
+}
+
+void UMH_W_InGameUIRoot::ShowInGameMenu()
+{
+	if (CurrentPage == EInGameUIPage::InGameHUD)
+	{
+		SetActiveMenu(EInGameUIPage::InGameMenu);
+	}
+}
+
+void UMH_W_InGameUIRoot::SetInGameMenuVisible(bool bIsVisible)
+{
+	if (WBPInGameMenu)
+	{
+		if (bIsVisible)
+		{
+			WBPInGameMenu->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			WBPInGameMenu->SetVisibility(ESlateVisibility::Collapsed);
+		}
 	}
 }
