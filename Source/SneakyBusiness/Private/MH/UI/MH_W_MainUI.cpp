@@ -4,11 +4,15 @@
 #include "MH/UI/MH_W_MainUI.h"
 
 #include "NetworkMessage.h"
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
 #include "Components/WidgetSwitcher.h"
+#include "LHM/UI/RankResultWidget.h"
 #include "MH/UI/MH_W_Exit.h"
 #include "MH/UI/MH_W_Options.h"
 #include "MH/UI/MH_W_Start.h"
 #include "MH/UI/MH_W_MainMenu.h"
+#include "MH/UI/MH_W_ViewRankings.h"
 
 void UMH_W_MainUI::NativeConstruct()
 {
@@ -19,6 +23,7 @@ void UMH_W_MainUI::NativeConstruct()
 		WBPMainMenu->OnStartPressed.AddDynamic(this, &UMH_W_MainUI::ShowStart);
 		WBPMainMenu->OnOptionsPressed.AddDynamic(this, &UMH_W_MainUI::ShowOptions);
 		WBPMainMenu->OnExitPressed.AddDynamic(this, &UMH_W_MainUI::ShowExit);
+		WBPMainMenu->OnViewRankstPressed.AddDynamic(this, &UMH_W_MainUI::ShowViewRankings);
 	}
 	if (WBPExit)
 	{
@@ -33,6 +38,11 @@ void UMH_W_MainUI::NativeConstruct()
 		WBPStart->OnBackPressed.AddDynamic(this, &UMH_W_MainUI::HandleBackPressed);
 	}
 
+	if (WBPViewRankings)
+	{
+		WBPViewRankings->OnViewRankingsBackPressed.AddDynamic(this, &UMH_W_MainUI::HandleBackPressed);
+	}
+	
 	SetOptionsVisible(false);
 	SetExitVisible(false);
 }
@@ -72,6 +82,11 @@ void UMH_W_MainUI::ShowStart()
 	SetActiveMenu(EUIPage::Start);
 }
 
+void UMH_W_MainUI::ShowViewRankings()
+{
+	SetActiveMenu(EUIPage::ViewRankings);
+}
+
 void UMH_W_MainUI::ShowOptions()
 {
 	SetActiveMenu(EUIPage::Options);
@@ -98,6 +113,10 @@ void UMH_W_MainUI::HandleBackPressed()
 	{
 		SetActiveMenu(EUIPage::Main);
 	}
+	else if (CurrentPage == EUIPage::ViewRankings)
+	{
+		SetActiveMenu(EUIPage::Main);
+	}
 }
 
 void UMH_W_MainUI::SetActiveMenu(EUIPage Page)
@@ -120,6 +139,10 @@ void UMH_W_MainUI::SetActiveMenu(EUIPage Page)
 
 	case EUIPage::Exit:
 		SetExitVisible(true);
+		break;
+
+	case EUIPage::ViewRankings:
+		WS_MainUI->SetActiveWidget(WBPViewRankings);
 		break;
 
 

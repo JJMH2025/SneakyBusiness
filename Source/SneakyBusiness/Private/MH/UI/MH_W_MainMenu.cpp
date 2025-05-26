@@ -24,12 +24,22 @@ void UMH_W_MainMenu::NativeConstruct()
 	{
 		Btn_Exit->OnClicked.AddDynamic(this,&UMH_W_MainMenu::OnExitClicked);
 	}
+
+	if (Btn_ViewRankings)
+	{
+		Btn_ViewRankings->OnClicked.AddDynamic(this,&UMH_W_MainMenu::OnViewRanksClicked);
+	}
 	
 }
 
 void UMH_W_MainMenu::OnStartClicked()
 {
 	OnStartPressed.Broadcast();
+}
+
+void UMH_W_MainMenu::OnViewRanksClicked()
+{
+	OnViewRankstPressed.Broadcast();
 }
 
 void UMH_W_MainMenu::OnOptionsClicked()

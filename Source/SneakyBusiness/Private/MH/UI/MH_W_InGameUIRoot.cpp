@@ -3,10 +3,17 @@
 
 #include "MH/UI/MH_W_InGameUIRoot.h"
 
+#include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "LHM/UI/GameUI.h"
+#include "LHM/UI/RankResultWidget.h"
 #include "MH/MH_SBPlayerController.h"
 #include "MH/Player_Nick.h"
 #include "MH/UI/MH_W_Exit.h"
+#include "MH/UI/MH_W_GameClear.h"
+#include "MH/UI/MH_W_GameOver.h"
 #include "MH/UI/MH_W_InGameMenu.h"
 #include "MH/UI/MH_W_Options.h"
 
@@ -23,6 +30,8 @@ void UMH_W_InGameUIRoot::NativeConstruct()
 		WBPInGameMenu->OnInGameMenuExitPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameExit);
 		WBPInGameMenu->OnInGameMenuResumePressed.AddDynamic(this, &UMH_W_InGameUIRoot::HandleBackPressed);
 		WBPInGameMenu->OnInGameMenuOptionsPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameOptions);
+		WBPInGameMenu->OnInGameMainMenuPressed.AddDynamic(this,&UMH_W_InGameUIRoot::OnInGameUIMainMenuClicked);
+		WBPInGameMenu->OnInGameMainReStartPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ReStartStage);
 	}
 	if (WBPInGameExit)
 	{
@@ -33,6 +42,16 @@ void UMH_W_InGameUIRoot::NativeConstruct()
 		WBPInGameOptions->OnBackPressed.AddDynamic(this, &UMH_W_InGameUIRoot::HandleBackPressed);
 	}
 
+	if (WBPGameClear)
+	{
+		WBPGameClear->OnNextStagePressed.AddDynamic(this,&UMH_W_InGameUIRoot::OnInGameUINextStageClicked);
+		WBPGameClear->OnGameClearMainMenuPressed.AddDynamic(this,&UMH_W_InGameUIRoot::OnInGameUIMainMenuClicked);
+	}
+	if (WBPGameOver)
+	{
+		WBPGameOver->OnGameOverMainMenuPressed.AddDynamic(this,&UMH_W_InGameUIRoot::OnInGameUIMainMenuClicked);
+		WBPGameOver->OnReStartStagePressed.AddDynamic(this,&UMH_W_InGameUIRoot::ReStartStage);
+	}
 	SetExitVisible(false);
 	SetOptionsVisible(false);
 	SetInGameMenuVisible(false);
@@ -78,6 +97,26 @@ void UMH_W_InGameUIRoot::ShowInGameOptions()
 	SetActiveMenu(EInGameUIPage::Options);
 }
 
+void UMH_W_InGameUIRoot::OnInGameUIMainMenuClicked()
+{
+	UGameplayStatics::OpenLevel(this,FName("MH_LV_MainUI"));
+}
+
+void UMH_W_InGameUIRoot::OnInGameUINextStageClicked()
+{
+	//클리어 되는 순간 GI에 정보 보내야함.
+	//수정필요
+	//GI 정보 확인? 지금이 몇번 쨰 스테이지인지에 따라 다음 레벨 스테이지로 이동.
+	UGameplayStatics::OpenLevel(this,FName("MH_LV_Stage02"));
+}
+
+void UMH_W_InGameUIRoot::ReStartStage()
+{
+	//수정필요
+	//GI 정보 확인? 지금이 몇번 쨰 스테이지인지에 따라 해당 레벨 스테이지로 이동. 다시시작.
+	UGameplayStatics::OpenLevel(this,FName("MH_LV_Stage01"));
+}
+
 void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
 {
 	CurrentPage = Page;
@@ -85,7 +124,7 @@ void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
 	switch (Page)
 	{
 	case EInGameUIPage::InGameHUD:
-		//SetInGameMenuVisible(true);
+		WS_InGameUIRoot->SetActiveWidget(WBPInGameHUD);
 		break;
 
 	case EInGameUIPage::InGameMenu:
@@ -101,13 +140,12 @@ void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)
 		break;
 		
 	case EInGameUIPage::GameOver:
-		//SetExitVisible(true);
+		WS_InGameUIRoot->SetActiveWidget(WBPGameOver);
 		break;
 		
 	case EInGameUIPage::GameClear:
-		//SetExitVisible(true);
+		WS_InGameUIRoot->SetActiveWidget(WBPGameClear);
 		break;
-
 
 	default:
 		break;

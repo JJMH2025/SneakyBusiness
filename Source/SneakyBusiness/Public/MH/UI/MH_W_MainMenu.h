@@ -12,6 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartPressed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOptionsPressed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnViewRankstPressed);
 
 UCLASS()
 class SNEAKYBUSINESS_API UMH_W_MainMenu : public UUserWidget
@@ -29,10 +30,16 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnExitPressed	OnExitPressed;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnViewRankstPressed OnViewRankstPressed;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Start;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_ViewRankings;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Options;
@@ -42,6 +49,9 @@ protected:
 
 	UFUNCTION()
 	void OnStartClicked();
+
+	UFUNCTION()
+	void OnViewRanksClicked();
 
 	UFUNCTION()
 	void OnOptionsClicked();

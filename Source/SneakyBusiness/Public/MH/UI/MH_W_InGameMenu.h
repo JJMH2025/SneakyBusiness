@@ -13,6 +13,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInGameMenuResumePressed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInGameMenuExitPressed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInGameMenuOptionsPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInGameMainMenuPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInGameMainReStartPressed);
 
 UCLASS()
 class SNEAKYBUSINESS_API UMH_W_InGameMenu : public UUserWidget
@@ -30,12 +32,21 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnInGameMenuExitPressed OnInGameMenuOptionsPressed;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnInGameMainMenuPressed OnInGameMainMenuPressed;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnInGameMainReStartPressed OnInGameMainReStartPressed;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Resume;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_ReStart;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Btn_InGameMainMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_Options;
@@ -45,12 +56,18 @@ public:
 
 	UFUNCTION()
 	void OnResumeClicked();
+	
+	UFUNCTION()
+	void OnInGameMainmenuClicked();
 
 	UFUNCTION()
 	void OnExitClicked();
 	
 	UFUNCTION()
 	void OnOptionsClicked();
+	
+	UFUNCTION()
+	void OnReStartClicked();
 
 	
 	

@@ -26,9 +26,9 @@ class SNEAKYBUSINESS_API UMH_W_InGameUIRoot : public UUserWidget
 {
 	GENERATED_BODY()
 
-	public:
+public:
 	virtual void NativeConstruct() override;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	class UGameUI* WBPInGameHUD;
 
@@ -37,19 +37,29 @@ class SNEAKYBUSINESS_API UMH_W_InGameUIRoot : public UUserWidget
 
 	UPROPERTY(meta = (BindWidget))
 	class UMH_W_Exit* WBPInGameExit;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	class UMH_W_Options* WBPInGameOptions;
 
+	UPROPERTY(meta = (BindWidget))
+	class UMH_W_GameClear* WBPGameClear;
+
+	UPROPERTY(meta = (BindWidget))
+	class UMH_W_GameOver* WBPGameOver;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* WS_InGameUIRoot;
+
+
 	UFUNCTION()
 	void SetActiveMenu(EInGameUIPage Page);
-	
+
 	UFUNCTION()
 	void HandleBackPressed();
 
 	UPROPERTY()
 	EInGameUIPage CurrentPage = EInGameUIPage::InGameHUD;
-	
+
 	UFUNCTION()
 	void SetExitVisible(bool bIsVisible);
 
@@ -58,14 +68,23 @@ class SNEAKYBUSINESS_API UMH_W_InGameUIRoot : public UUserWidget
 
 	UFUNCTION()
 	void SetInGameMenuVisible(bool bIsVisible);
-	
+
 	UFUNCTION()
 	void ShowInGameMenu();
-	
+
 	UFUNCTION()
 	void ShowInGameExit();
-		
+
 	UFUNCTION()
 	void ShowInGameOptions();
 	
+	UFUNCTION()
+	void OnInGameUIMainMenuClicked();
+	
+	UFUNCTION()
+	void OnInGameUINextStageClicked();
+
+	UFUNCTION()
+	void ReStartStage();
+
 };

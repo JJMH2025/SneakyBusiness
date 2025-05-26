@@ -16,7 +16,8 @@ enum class EUIPage : uint8
 	Main,
 	Start,
 	Options,
-	Exit
+	Exit,
+	ViewRankings
 };
 
 UCLASS()
@@ -40,8 +41,12 @@ public:
 	class UMH_W_Exit* WBPExit;
 	
 	UPROPERTY(meta = (BindWidget))
+	class UMH_W_ViewRankings* WBPViewRankings;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WS_MainUI;
 
+	
 	UFUNCTION()
 	void SetOptionsVisible(bool bIsVisible);
 
@@ -50,6 +55,9 @@ public:
 
 	UFUNCTION()
 	void ShowStart();
+	
+	UFUNCTION()
+	void ShowViewRankings();
 
 	UFUNCTION()
 	void ShowOptions();
@@ -65,6 +73,7 @@ public:
 
 	UPROPERTY()
 	EUIPage CurrentPage;
+
 protected:
 	
 };

@@ -23,12 +23,26 @@ void UMH_W_InGameMenu::NativeConstruct()
 	{
 		Btn_Options->OnClicked.AddDynamic(this,&UMH_W_InGameMenu::OnOptionsClicked);
 	}
-		
+
+	if (Btn_InGameMainMenu)
+	{
+		Btn_InGameMainMenu->OnClicked.AddDynamic(this,&UMH_W_InGameMenu::OnInGameMainmenuClicked);
+	}
+
+	if (Btn_ReStart)
+	{
+		Btn_ReStart->OnClicked.AddDynamic(this,&UMH_W_InGameMenu::OnReStartClicked);
+	}
 }
 
 void UMH_W_InGameMenu::OnResumeClicked()
 {
 	OnInGameMenuResumePressed.Broadcast();
+}
+
+void UMH_W_InGameMenu::OnInGameMainmenuClicked()
+{
+	OnInGameMainMenuPressed.Broadcast();
 }
 
 void UMH_W_InGameMenu::OnExitClicked()
@@ -39,4 +53,9 @@ void UMH_W_InGameMenu::OnExitClicked()
 void UMH_W_InGameMenu::OnOptionsClicked()
 {
 	OnInGameMenuOptionsPressed.Broadcast();
+}
+
+void UMH_W_InGameMenu::OnReStartClicked()
+{
+	OnInGameMainReStartPressed.Broadcast();
 }

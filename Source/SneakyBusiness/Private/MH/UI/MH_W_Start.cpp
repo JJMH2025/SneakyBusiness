@@ -53,7 +53,8 @@ void UMH_W_Start::OnStage01Clicked()
 
 void UMH_W_Start::OnStage02Clicked()
 {
-	
+	//if 스테이지 1을 클리어 했다면. 클리어 스테이지 정보 GI에서 받아오기
+	UGameplayStatics::OpenLevel(this,FName("MH_LV_Stage02"));
 }
 
 void UMH_W_Start::OnStage03Clicked()
