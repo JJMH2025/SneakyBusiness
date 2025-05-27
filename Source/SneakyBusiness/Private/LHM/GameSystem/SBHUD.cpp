@@ -36,7 +36,8 @@ void ASBHUD::BeginPlay()
 			}
 		}
 	}
-	else if (CurrentLevel == "LV_Rank") // HM: Rank test level
+	
+	if (CurrentLevel == "LV_Rank") // HM: Rank test level
 	{
 		USBGameInstance* GI = GetGameInstance<USBGameInstance>();
 		if (GI)
