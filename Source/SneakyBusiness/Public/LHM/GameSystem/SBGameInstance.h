@@ -27,9 +27,9 @@ public:
 
 // Rank System - Steam Leaderboard 연동 관련
 public:
-	TSharedRef<class FOnlineLeaderboardRead> LeaderboardRead = MakeShared<class FOnlineLeaderboardRead>();
+	//TSharedRef<class FOnlineLeaderboardRead> LeaderboardRead = MakeShared<class FOnlineLeaderboardRead>();
 
-	//TSharedPtr<class FOnlineLeaderboardRead> LeaderboardRead;
+	TSharedPtr<class FOnlineLeaderboardRead> LeaderboardRead;
 	FDelegateHandle ReadCompleteHandle;
 
 	// 점수 업로드 함수
@@ -42,5 +42,5 @@ public:
 	void OnLeaderboardReadComplete(bool bWasSuccessful);
 	
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UUserWidget> RankResultWidgetClass;
+	TSubclassOf<class URankResultWidget> RankResultWidgetClass;
 };
