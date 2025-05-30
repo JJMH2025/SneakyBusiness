@@ -27,10 +27,22 @@ public:
 	UPROPERTY(EditAnywhere,Category = UI)
 	TSubclassOf<class UMH_W_MainUI> MainUIClass;
 
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	UMH_W_MainUI* MainUI;
+	
+	
 	UPROPERTY(EditAnywhere,Category = UI)
 	TSubclassOf<class UMH_W_InGameUIRoot> InGameRootClass;
 	
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	UMH_W_InGameUIRoot* InGameUIRoot;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnIngameMenuPressed OnIngameMenuPressed;
-	
+
+	UFUNCTION()
+	void GameOver();
+
+	UFUNCTION()
+	void GameClear();
 };

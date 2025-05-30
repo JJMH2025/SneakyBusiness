@@ -4,6 +4,7 @@
 #include "MH/MH_SBPlayerController.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "LHM/GameSystem/SBGameMode.h"
 #include "MH/UI/MH_W_InGameUIRoot.h"
 #include "MH/UI/MH_W_MainUI.h"
 #include "Settings/EditorStyleSettings.h"
@@ -12,6 +13,22 @@
 AMH_SBPlayerController::AMH_SBPlayerController()
 {
 	
+}
+
+void AMH_SBPlayerController::GameOver()
+{
+	if (InGameUIRoot)
+	{
+		InGameUIRoot->ShowInGameOver();
+	}
+}
+
+void AMH_SBPlayerController::GameClear()
+{
+	if (InGameUIRoot)
+	{
+		InGameUIRoot->ShowInGameClear();
+	}
 }
 
 void AMH_SBPlayerController::BeginPlay()
@@ -26,7 +43,7 @@ void AMH_SBPlayerController::BeginPlay()
 	{
 		if (MainUIClass)
 		{
-			UMH_W_MainUI* MainUI = CreateWidget<UMH_W_MainUI>(this, MainUIClass);
+			MainUI = CreateWidget<UMH_W_MainUI>(this, MainUIClass);
 
 			if (MainUI)
 			{
@@ -41,10 +58,18 @@ void AMH_SBPlayerController::BeginPlay()
 	{
 		if (InGameRootClass)
 		{
-			UMH_W_InGameUIRoot* InGameUIRoot = CreateWidget<UMH_W_InGameUIRoot>(this, InGameRootClass);
+			InGameUIRoot = CreateWidget<UMH_W_InGameUIRoot>(this, InGameRootClass);
 			if (InGameUIRoot)
 			{
 				InGameUIRoot->AddToViewport();
+
+				OnIngameMenuPressed.AddDynamic(InGameUIRoot,&UMH_W_InGameUIRoot::ShowInGameMenu);
+
+				if (ASBGameMode* GM = Cast<ASBGameMode>(UGameplayStatics::GetGameMode(this)))
+				{
+					GM->OnGameOver.AddDynamic(this, &AMH_SBPlayerController::GameOver);
+					GM->OnGameClear.AddDynamic(this, &AMH_SBPlayerController::GameClear);
+				}
 			}
 		}
 		else
@@ -66,4 +91,5 @@ void AMH_SBPlayerController::BeginPlay()
 		SetInputMode(FInputModeGameAndUI());
 		bShowMouseCursor = true;
 	}
+	
 }

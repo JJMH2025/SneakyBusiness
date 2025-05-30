@@ -87,4 +87,12 @@ public:
 	UFUNCTION()
 	void ReStartStage();
 
+	UFUNCTION()
+	void ShowInGameClear();
+
+	UFUNCTION()
+	void ShowInGameOver();
+
+	
+
 };

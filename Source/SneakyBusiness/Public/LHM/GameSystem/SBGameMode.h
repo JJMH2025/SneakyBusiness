@@ -10,6 +10,8 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameClear);
 
 UCLASS()
 class SNEAKYBUSINESS_API ASBGameMode : public AGameModeBase
@@ -33,6 +35,19 @@ public:
     // 모든 아이템 목록
     UPROPERTY(EditAnywhere)
     TArray<TSubclassOf<class AMH_TargetItem>> AllTargetItemBPs;
+
+	//MH
+	UPROPERTY(BlueprintAssignable)
+	FOnGameOver OnGameOver;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGameClear OnGameClear;
+
+	UFUNCTION()
+	void ShowGameClearWidget();
+
+	UFUNCTION()
+	void ShowGameOverWidget();
 
 private:
 	void CheckClearConditions();

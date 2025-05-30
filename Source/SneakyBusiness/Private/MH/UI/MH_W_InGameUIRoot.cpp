@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "LHM/GameSystem/SBGameMode.h"
 #include "LHM/UI/GameUI.h"
 #include "LHM/UI/RankResultWidget.h"
 #include "MH/MH_SBPlayerController.h"
@@ -20,10 +21,6 @@
 void UMH_W_InGameUIRoot::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (AMH_SBPlayerController* PC = Cast<AMH_SBPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
-	{
-		PC->OnIngameMenuPressed.AddDynamic(this, &UMH_W_InGameUIRoot::ShowInGameMenu);
-	}
 	
 	if (WBPInGameMenu)
 	{
@@ -52,6 +49,8 @@ void UMH_W_InGameUIRoot::NativeConstruct()
 		WBPGameOver->OnGameOverMainMenuPressed.AddDynamic(this,&UMH_W_InGameUIRoot::OnInGameUIMainMenuClicked);
 		WBPGameOver->OnReStartStagePressed.AddDynamic(this,&UMH_W_InGameUIRoot::ReStartStage);
 	}
+
+	
 	SetExitVisible(false);
 	SetOptionsVisible(false);
 	SetInGameMenuVisible(false);
@@ -115,6 +114,17 @@ void UMH_W_InGameUIRoot::ReStartStage()
 	//수정필요
 	//GI 정보 확인? 지금이 몇번 쨰 스테이지인지에 따라 해당 레벨 스테이지로 이동. 다시시작.
 	UGameplayStatics::OpenLevel(this,FName("MH_LV_Stage01"));
+}
+
+void UMH_W_InGameUIRoot::ShowInGameClear()
+{
+	SetActiveMenu(EInGameUIPage::GameClear);
+	
+}
+
+void UMH_W_InGameUIRoot::ShowInGameOver()
+{
+	SetActiveMenu(EInGameUIPage::GameOver);
 }
 
 void UMH_W_InGameUIRoot::SetActiveMenu(EInGameUIPage Page)

@@ -109,13 +109,17 @@ void ASBGameMode::OnStageClear()
 	// 랭크 UI 호출 또는 Level 전환
 	//CreateWidget<UUserWidget_RankResult>(...) → AddToViewport()
 	//FName NextStageName = FName(TEXT("Stage%d"), GI->CurrentStageIndex);
-	UGameplayStatics::OpenLevel(this, TEXT("LV_Rank"));
+	//MH
+	ShowGameClearWidget();
+	//UGameplayStatics::OpenLevel(this, TEXT("LV_Rank"));
 }
 
 void ASBGameMode::OnStageFailed()
 {
 	UE_LOG(LogTemp, Log, TEXT("Stage Failed."));
 	// RETRY UI 표시 또는 메인 메뉴 전환
+	//MH
+	ShowGameOverWidget();
 }
 
 int32 ASBGameMode::GetRequiredItemCount() const
@@ -192,6 +196,16 @@ void ASBGameMode::DropItemsOnDeath(FVector DeathLocation)
 	// 리셋
 	GS->CollectedItemCount = 0;
 	GS->StolenItems.Empty();
+}
+
+void ASBGameMode::ShowGameClearWidget()
+{
+	OnGameClear.Broadcast();
+}
+
+void ASBGameMode::ShowGameOverWidget()
+{
+	OnGameOver.Broadcast();
 }
 
 void ASBGameMode::CheckClearConditions()
