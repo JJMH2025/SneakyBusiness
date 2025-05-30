@@ -14,25 +14,15 @@
   <component name="ChangeListManager">
     <list default="true" id="644b95cb-4ded-4375-aa21-c588f0a632f7" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SneakyBusiness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/UI/MH_WBP_InGameMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/UI/MH_WBP_InGameMenu.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/UI/MH_WBP_InGameUIRoot.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/UI/MH_WBP_InGameUIRoot.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/UI/MH_WBP_MainMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/UI/MH_WBP_MainMenu.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/May/UI/MH_WBP_MainUI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/UI/MH_WBP_MainUI.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/3/LV/GBPNXS29CR5V03QAURDP2Z.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/3/LV/GBPNXS29CR5V03QAURDP2Z.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/6/39/FXAIZW9F122PI8B59BJWIP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/6/39/FXAIZW9F122PI8B59BJWIP.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/6/PR/Z27TX6YP4VBYIAF4OEYZYG.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/6/PR/Z27TX6YP4VBYIAF4OEYZYG.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/7/TZ/RBE0HCC6J72VCS18CXE30S.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/7/TZ/RBE0HCC6J72VCS18CXE30S.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/D/H3/EQ21EAGWCFP9BT8CG8PVKT.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/D/H3/EQ21EAGWCFP9BT8CG8PVKT.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/E/H0/2ZHT1VAOHUVGVUJL9F1QZA.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/E/H0/2ZHT1VAOHUVGVUJL9F1QZA.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_InGameMenu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_InGameMenu.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_InGameUIRoot.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_InGameUIRoot.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_MainMenu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_MainMenu.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_MainUI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_MainUI.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_Start.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Private/MH/UI/MH_W_Start.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_InGameMenu.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_InGameMenu.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_InGameUIRoot.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_InGameUIRoot.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_MainMenu.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_MainMenu.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_MainUI.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SneakyBusiness/Public/MH/UI/MH_W_MainUI.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_0507_rig.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_0507_rig.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_0507_rig_PhysicsAsset.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_0507_rig_Skeleton.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_Chatacter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_Eyes.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/Asset/Character/Player/Nick_Hat.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/May/BP/BP_MHPlayer_Nick.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/May/BP/BP_MHPlayer_Nick.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/4/RF/OXB56CRV7HPXDDO2QY88RY.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/May/Maps/MH_LV_Stage01/5/50/KBAIIMRRO2PJRQH41WGT0M.uasset" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,23 +101,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "C/C++ 프로젝트.SneakyBusiness.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature/JMH01",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;C/C++ 프로젝트.SneakyBusiness.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/JMH01&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ 프로젝트.SneakyBusiness">
     <configuration name="SneakyBusiness" type="CppProject" factoryName="C++ Project">
       <configuration_1 setup="1">
@@ -303,7 +293,9 @@
       <workItem from="1748270794110" duration="173000" />
       <workItem from="1748270987352" duration="11000" />
       <workItem from="1748271516709" duration="379000" />
-      <workItem from="1748271913222" duration="1891000" />
+      <workItem from="1748271913222" duration="2886000" />
+      <workItem from="1748329628482" duration="601000" />
+      <workItem from="1748425274306" duration="1571000" />
     </task>
     <servers />
   </component>
