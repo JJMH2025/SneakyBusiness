@@ -36,7 +36,7 @@ AMH_Bullet::AMH_Bullet()
 	MovementComp->MaxSpeed = 1800;
 	MovementComp->bShouldBounce = true;
 	MovementComp->Bounciness = 0.5;
-	MovementComp->ProjectileGravityScale = 0.2f;
+	MovementComp->ProjectileGravityScale = 0.1f;
 	MovementComp->Friction = 0.2f;
 }
 
@@ -46,6 +46,10 @@ void AMH_Bullet::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AMH_Bullet::OnBulletBeginOverlap);
+	if (!GetWorldTimerManager().IsTimerActive(BulletDestroyTimer))
+	{
+		GetWorldTimerManager().SetTimer(BulletDestroyTimer, this, &AMH_Bullet::BulletDestroy, 0.5f, false);
+	}
 }
 
 // Called every frame
@@ -80,7 +84,7 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 				//에너미 기절
 				Hitenemy->ReceiveDamage();
 				ASBGameState* GS = Cast<ASBGameState>(GetWorld()->GetGameState());
-				GS->AddScoreForEnemy(Hitenemy,true);		
+				GS->AddScoreForEnemy(Hitenemy, true);
 			}
 			//플레이어 총알 재장전 ++
 			if (Player_Nick)
@@ -101,12 +105,21 @@ void AMH_Bullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			}
 		}
 
-		//어딘가에 닿은 뒤 0.5초후 사라지기
-		this->Destroy();
+		if (!GetWorldTimerManager().IsTimerActive(BulletDestroyTimer))
+		{
+			//어딘가에 닿은 뒤 0.5초후 사라지기
+			GetWorldTimerManager().SetTimer(BulletDestroyTimer, this, &AMH_Bullet::BulletDestroy, 0.5f, false);
+		}
 	}
 }
 
 void AMH_Bullet::SetOwnerActor(AActor* NewOwner)
 {
 	OwnerActor = NewOwner;
+}
+
+void AMH_Bullet::BulletDestroy()
+{
+	GetWorldTimerManager().ClearTimer(BulletDestroyTimer);
+	this->Destroy();
 }

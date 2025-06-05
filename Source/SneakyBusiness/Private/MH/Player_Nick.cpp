@@ -10,6 +10,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -79,6 +80,9 @@ void APlayer_Nick::BeginPlay()
 			Subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
+
+	//TargetItems 검사
+	GetWorldTimerManager().SetTimer(NearbyCheckTimerHandle, this, &APlayer_Nick::CheckNearbyPickup,0.2f, true);
 }
 
 // Called every frame
@@ -180,7 +184,7 @@ void APlayer_Nick::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComp->BindAction(IAShoot, ETriggerEvent::Triggered, this, &APlayer_Nick::Shooting);
 		EnhancedInputComp->BindAction(IATest1, ETriggerEvent::Triggered, this, &APlayer_Nick::TestF);
 		EnhancedInputComp->BindAction(IAInteract, ETriggerEvent::Triggered, this, &APlayer_Nick::PlayerInteract);
-		EnhancedInputComp->BindAction(IAInGameMenu,ETriggerEvent::Triggered,this,&APlayer_Nick::OnInGameMenuClicked);
+		EnhancedInputComp->BindAction(IAInGameMenu, ETriggerEvent::Triggered, this, &APlayer_Nick::OnInGameMenuClicked);
 	}
 }
 
@@ -272,19 +276,7 @@ void APlayer_Nick::PlayerInteract()
 	//훔치기
 	if (bCanPickup)
 	{
-		if (OverlappingItem)
-		{
-			//여기서 아이템 태그 확인하고 게임모드에 1번 아이템 습득 표시!!_현민
-			int32 Stage = OverlappingItem->StageIndex;
-			int32 Index = OverlappingItem->ItemIndex;
-
-			//GameMode로 보고, 훔칠 때
-			GM->OnItemStolen(Stage, Index, OverlappingItem);
-			GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("bCanPickup"));
-			OverlappingItem->Destroy();
-			OverlappingItem = nullptr;
-			bIsOverlapDoor = false;
-		}
+		TryPickupItem();
 	}
 
 	//리프트
@@ -397,13 +389,6 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		}
 	}
 
-	if (OtherActor && OtherActor->ActorHasTag("TargetItem"))
-	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("BeginOverlap TargetItem"));
-		OverlappingItem = Cast<AMH_TargetItem>(OtherActor);
-		bCanPickup = true;
-	}
-
 	if (OtherActor && OtherActor->ActorHasTag("SlipTrap"))
 	{
 		AMH_SlipTrap* SlipTrap = Cast<AMH_SlipTrap>(OtherActor);
@@ -416,7 +401,7 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 		}
 	}
 
-	
+
 	if (OtherActor && OtherActor->ActorHasTag("Lift"))
 	{
 		Lift = Cast<AMH_LiftActor>(OtherActor);
@@ -425,7 +410,7 @@ void APlayer_Nick::OnPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent
 			bIsOverlappingLift = true;
 		}
 	}
-	
+
 	if (OtherActor && OtherActor->ActorHasTag("Lever"))
 	{
 		Lever = Cast<AMH_Lever>(OtherActor);
@@ -464,13 +449,6 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 		}
 	}
 
-	if (OtherActor && OtherActor->ActorHasTag("TargetItem"))
-	{
-		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("EndOverlap TargetItem"));
-		OverlappingItem = nullptr;
-		bCanPickup = false;
-	}
-
 	if (OtherActor && OtherActor->ActorHasTag("Lift"))
 	{
 		bIsOverlappingLift = false;
@@ -479,8 +457,8 @@ void APlayer_Nick::OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (OtherActor && OtherActor->ActorHasTag("Lever"))
 	{
-			bIsOverlappingLever = false;
-			Lever = nullptr;
+		bIsOverlappingLever = false;
+		Lever = nullptr;
 	}
 }
 
@@ -611,6 +589,88 @@ void APlayer_Nick::PlayerHideOFF()
 	GEngine->AddOnScreenDebugMessage(-3, 5.f, FColor::Purple,TEXT("PlayerHideOFF"));
 }
 
+void APlayer_Nick::CheckNearbyPickup()
+{
+	FVector PlayerLoc = GetActorLocation();
+	TArray<FOverlapResult> Results;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		Results,
+		PlayerLoc,
+		FQuat::Identity,
+		ECC_GameTraceChannel6, //TargetItems
+		FCollisionShape::MakeSphere(90.f), //습득 반경
+		Params
+	);
+	//가장 가까운 아이템을 찾기 위한 초기화
+	AMH_TargetItem* ClosestItem = nullptr;
+	float MinDist = TNumericLimits<float>::Max();
+
+	//가장 가까운
+	for (auto& Result : Results)
+	{
+		if (AMH_TargetItem* Item = Cast<AMH_TargetItem>(Result.GetActor())) //타겟 아이템인지 확인
+		{
+			float Dist = FVector::Dist(PlayerLoc, Item->GetActorLocation());
+			if (Dist < MinDist) //가장 가까운 아이템 갱신
+			{
+				MinDist = Dist;
+				ClosestItem = Item;
+			}
+		}
+	}
+
+	//가장 가까운 아이템이 있다면
+	if (ClosestItem)
+	{
+		//UI 띄우기 E:상호작용
+		//오버랩 아이템 등록
+		OverlappingItem = ClosestItem;
+		bCanPickup = true;
+	}
+	else
+	{
+		//UI 숨김
+		//오버랩 아이템 초기화
+		OverlappingItem = nullptr;
+		bCanPickup = false;
+	}
+
+	if (ClosestItem)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("감지됨: ") + ClosestItem->GetName());
+		OverlappingItem = ClosestItem;
+		bCanPickup = true;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("감지 안됨"));
+		OverlappingItem = nullptr;
+		bCanPickup = false;
+	}
+}
+
+void APlayer_Nick::TryPickupItem()
+{
+	if (OverlappingItem)
+	{
+		//여기서 아이템 태그 확인하고 게임모드에 1번 아이템 습득 표시!!_현민
+		int32 Stage = OverlappingItem->StageIndex;
+		int32 Index = OverlappingItem->ItemIndex;
+
+		//GameMode로 보고, 훔칠 때
+		GM->OnItemStolen(Stage, Index, OverlappingItem);
+		GEngine->AddOnScreenDebugMessage(-2, 5.f, FColor::Green,TEXT("bCanPickup"));
+		
+		OverlappingItem->Destroy();
+		OverlappingItem = nullptr;
+		bIsOverlapDoor = false;
+		bCanPickup = false;
+	}
+}
+
 void APlayer_Nick::UseLift()
 {
 	if (Lift)
@@ -650,7 +710,6 @@ void APlayer_Nick::OnLiftArrived()
 	{
 		EnableInput(PC);
 	}
-
 }
 
 void APlayer_Nick::FloorTrapFrozen()

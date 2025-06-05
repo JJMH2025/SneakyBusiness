@@ -166,7 +166,7 @@ public:
 	
 	//플레이어 HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
-	int32 MaxHP = 2;
+	int32 MaxHP = 4;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyPlayerSettings")
 	int32 CurrentPlayerHP = MaxHP;
@@ -191,6 +191,14 @@ public:
 	UPROPERTY()
 	class AMH_TargetItem* OverlappingItem;
 	bool bCanPickup = false;
+
+	UFUNCTION()
+	void CheckNearbyPickup();
+
+	UFUNCTION()
+	void TryPickupItem();
+	
+FTimerHandle NearbyCheckTimerHandle;
 
 	//리프트
 	UPROPERTY(VisibleAnywhere)

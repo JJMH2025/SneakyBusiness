@@ -45,4 +45,13 @@ public:
 
 	UPROPERTY()
 	AActor* OwnerActor;
+
+	UFUNCTION()
+	void BulletDestroy();
+
+	UPROPERTY()
+	FTimerHandle BulletDestroyTimer;
+
+	
 };
+
